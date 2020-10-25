@@ -1,10 +1,8 @@
 import sys, os
-from flask_login import login_user, logout_user, login_required, current_user, LoginManager
 from flask import Flask, render_template,request,json, url_for, flash, request, session, redirect, Blueprint
 import pymysql.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
-from flask import Flask, request
 import datetime
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'premium'))
