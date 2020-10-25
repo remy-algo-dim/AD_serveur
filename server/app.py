@@ -99,6 +99,7 @@ def login_post():
             return redirect(url_for('login'))
         else:
             session['email'] = email
+            session['password'] = password
             return redirect(url_for('profile'))
 
 
@@ -121,7 +122,7 @@ def profile():
         # !!!!! Comme vu ds la fonction logout, si la session a expire, on ne rentrera meme pas ds le if car session['email'] n'existe
         # meme plus et donc on ne peux plus acceder a cette page
         if session['email']:
-            return render_template('profile.html', name=session['name'])
+            return render_template('profile.html', name=session['email'])
     except:
         return redirect(url_for('login'))
 

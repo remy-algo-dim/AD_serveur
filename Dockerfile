@@ -30,4 +30,4 @@ CMD /bin/bash
 RUN pip install --no-cache-dir -U -r requirements.txt
 
 
-CMD ["python3", "app.py", "--host=0.0.0.0"]
+CMD ["python3", "server/app.py", "--host=0.0.0.0"]
