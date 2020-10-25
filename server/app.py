@@ -98,6 +98,8 @@ def login_post():
             flash('Please check your login details and try again.')
             return redirect(url_for('login'))
         else:
+            query = cursor.execute("""SELECT id FROM linkedin.user WHERE email=%s""", email)
+            session['id'] = cursor.fetchall()[0]['id']
             session['email'] = email
             session['password'] = password
             return redirect(url_for('profile'))
@@ -160,10 +162,8 @@ def logout():
 def script():
     try:
         if session['email']:
-            id_ = session['id']
-            email = session['email']
-            print('on, a fo nbro')
-            return main_robot_1.main(id_, email, session['password_non_hashed'])
+            print('on va appliquer main robot 1')
+            return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
     except:
         return redirect(url_for('login'))
 
@@ -172,8 +172,7 @@ def dashboard():
     # le dashboard va chercher les datas dans le json
     try:
         if session['email']:
-            id_ = session['id']
-            with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(id_)+'.json'),'r') as j:
+            with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(session['id'])+'.json'),'r') as j:
                 json_data = json.load(j)
                 nb_contacted_total = json_data["Total messages envoyes"]
                 nb_contacted_today = json_data["Total envoyes aujourd'hui"]
@@ -187,7 +186,7 @@ def dashboard():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=5000, host='0.0.0.0')
 
 
     #login_manager = LoginManager()

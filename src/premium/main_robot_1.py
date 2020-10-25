@@ -15,7 +15,6 @@ from premium_filters import location_filter, langue_filter, secteur_filter, degr
 from premium_filters import	niveau_hierarchique_filter, anciennete_poste_actuel_filter, anciennete_entreprise_actuelle_filter
 from premium_filters import	fonction_filter, titre_filter, experience, entreprise_filter, effectif_entreprise_filter
 from premium_filters import	type_entreprise_filter, validate_research
-from variables import CHROME_DRIVER_PATH
 
 
 """ 
@@ -65,9 +64,12 @@ def main(id_, id_linkedin, password_linkedin):
 
 	
 	# CONNEXION	
+	print('Connexion')
 	chrome_options = Options()  
 	#chrome_options.add_argument("--headless")  
-	browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options)  
+	#browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+	browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+	print('on va se connecter a linkedin')
 	browser.get('https://www.linkedin.com/login/us?')
 	time.sleep(randrange(1, 3))
 
@@ -92,7 +94,7 @@ def main(id_, id_linkedin, password_linkedin):
 	"""       		******************		2eme partie		 	******************       		"""
 
 
-
+	print('on va acceder aux filtres')
 
 	# Recherche des profils
 	# All filters Linkedin Premium
@@ -146,7 +148,7 @@ def main(id_, id_linkedin, password_linkedin):
 	type_entreprise_filter(browser, TYPE)
 	time.sleep(randrange(2, 4))
 
-	
+	print('on a applique les filtres')
 
 
 	validate_research(browser)
