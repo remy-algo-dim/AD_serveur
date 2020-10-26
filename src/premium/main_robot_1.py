@@ -90,7 +90,6 @@ def main(id_, id_linkedin, password_linkedin):
 
 
 
-
     """             ******************      2eme partie         ******************              """
 
 
