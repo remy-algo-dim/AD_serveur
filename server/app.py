@@ -18,6 +18,7 @@ try:
 								 db='linkedin',
 								 charset='utf8mb4',
 								 cursorclass=pymysql.cursors.DictCursor)
+	
 except:
 	# So we create the db
 	print('Database not exists')
