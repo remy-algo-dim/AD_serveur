@@ -18,7 +18,7 @@ try:
 								 db='linkedin',
 								 charset='utf8mb4',
 								 cursorclass=pymysql.cursors.DictCursor)
-	
+
 except:
 	# So we create the db
 	print('Database not exists')
@@ -161,13 +161,17 @@ def logout():
 
 @app.route('/script')
 def script():
-	try:
-		if session['email']:
+	#try:
+	#	if session['email']:
+	#		print('on va appliquer main robot 1')
+	#		return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+	#except:
+	#	return redirect(url_for('login'))
+
+	if session['email']:
 			print('on va appliquer main robot 1')
 			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
-	except:
-		return redirect(url_for('login'))
-
+			
 @app.route('/dash')
 def dashboard():
 	# le dashboard va chercher les datas dans le json
