@@ -86,6 +86,32 @@ def main(id_, id_linkedin, password_linkedin):
     Linkedin_connexion(browser, id_linkedin, password_linkedin)
     time.sleep(randrange(2, 5))
 
+    # SECURITY VERIFICATION
+    try:
+        code_content = browser.find_element_by_class_name('form__input--text')
+        code_content.click()
+        time.sleep(randrange(120, 180))
+        # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
+        connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
+                                 user='root',
+                                 password='Leomessi9',
+                                 db='linkedin',
+                                 charset='utf8mb4',
+                                 cursorclass=pymysql.cursors.DictCursor)
+        conn.cursor().execute('use linkedin')
+        conn.cursor().execute('SELECT security_code FROM linkedin.user WHERE email=%s', id_linkedin)
+        security_code = cursor.fetchall()[0]['security_code']
+
+        code_content.send_keys(security_code)
+        time.sleep(randrange(2, 4))
+        browser.find_element_by_class_name('form__submit').click()
+        time.sleep(randrange(2, 4))
+    except:
+        print('***** Verification par mail non necessaire *****')
+
+
+
+
 
     # PENDING INVIT
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau

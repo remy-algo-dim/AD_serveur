@@ -25,7 +25,7 @@ except:
 	conn = pymysql.connect(host='localhost',user='root',password='Leomessi9')
 	conn.cursor().execute('create database linkedin')
 	conn.cursor().execute('create table linkedin.user (id int NOT NULL AUTO_INCREMENT,email varchar(255) NOT NULL,\
-									password varchar(255), name varchar(255), client varchar(255), PRIMARY KEY (id));')
+									password varchar(255), name varchar(255), client varchar(255), security_code int, PRIMARY KEY (id));')
 	connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
 								 user='root',
 								 password='Leomessi9',
@@ -171,7 +171,7 @@ def script():
 	if session['email']:
 			print('on va appliquer main robot 1')
 			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
-			
+
 @app.route('/dash')
 def dashboard():
 	# le dashboard va chercher les datas dans le json
@@ -205,3 +205,9 @@ if __name__ == "__main__":
 	#        return session['id']
 	#    except:
 	#        return None  
+
+
+# ssh -i remy_key.pem  ubuntu@ec2-15-188-147-7.eu-west-3.compute.amazonaws.com
+# sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
+
+
