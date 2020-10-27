@@ -16,6 +16,7 @@ from premium_filters import niveau_hierarchique_filter, anciennete_poste_actuel_
 from premium_filters import fonction_filter, titre_filter, experience, entreprise_filter, effectif_entreprise_filter
 from premium_filters import type_entreprise_filter, validate_research
 
+CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
 """ 
 Il s'agit de la version que l'on deploiera en production -- D'ou la presence d'une fonction main() afin de l'importer dans le Flask
@@ -66,7 +67,15 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     print('Connexion')
     chrome_options = Options()
-    #chrome_options.add_argument("--headless")  
+    chrome_options.add_argument("--headless")
+    options.add_argument("window-size=1400,1500")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--no-sandbox")
+    options.add_argument("start-maximized")
+    options.add_argument("enable-automation")
+    options.add_argument("--disable-infobars")
+    options.add_argument("--disable-dev-shm-usage")
+      
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     print('on va se connecter a linkedin')
