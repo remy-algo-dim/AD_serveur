@@ -8,6 +8,7 @@ import json
 from random import randrange
 from selenium.webdriver.chrome.options import Options  
 from os import path
+import pymysql.cursors
 
 
 from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit
@@ -68,13 +69,9 @@ def main(id_, id_linkedin, password_linkedin):
     print('Connexion')
     chrome_options = Options()
     chrome_options.add_argument("--headless")
-    options.add_argument("window-size=1400,1500")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
-    options.add_argument("start-maximized")
-    options.add_argument("enable-automation")
-    options.add_argument("--disable-infobars")
-    options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument('--disable-dev-shm-usage')
+
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
@@ -98,9 +95,10 @@ def main(id_, id_linkedin, password_linkedin):
                                  db='linkedin',
                                  charset='utf8mb4',
                                  cursorclass=pymysql.cursors.DictCursor)
-        conn.cursor().execute('use linkedin')
-        conn.cursor().execute('SELECT security_code FROM linkedin.user WHERE email=%s', id_linkedin)
-        security_code = cursor.fetchall()[0]['security_code']
+        with connection.cursor() as cursor:
+            cursor.execute('use linkedin')
+            cursor.execute('SELECT security_code FROM linkedin.user WHERE email=%s', id_linkedin)
+            security_code = cursor.fetchall()[0]['security_code']
 
         code_content.send_keys(security_code)
         time.sleep(randrange(2, 4))
@@ -197,6 +195,9 @@ def main(id_, id_linkedin, password_linkedin):
     # On visite les profils
     list_of_links = get_list_of_profiles(browser, df)
     today_total = connect_note_list_profile(df, browser, list_of_links, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
+
+    print("Cest fini pour aujourd'hui")
+    browser.quit()
 
 
 
