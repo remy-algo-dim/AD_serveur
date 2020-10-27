@@ -161,16 +161,13 @@ def logout():
 
 @app.route('/script')
 def script():
-	#try:
-	#	if session['email']:
-	#		print('on va appliquer main robot 1')
-	#		return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
-	#except:
-	#	return redirect(url_for('login'))
-
-	if session['email']:
+	try:
+		if session['email']:
 			print('on va appliquer main robot 1')
 			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+	except:
+		return redirect(url_for('login'))
+
 
 @app.route('/dash')
 def dashboard():
