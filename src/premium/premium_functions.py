@@ -6,9 +6,7 @@ import re
 import json
 from random import randrange
 from datetime import date
-
-from variables import CHROME_DRIVER_PATH
-
+import logging
 
 def Linkedin_connexion(browser, username, password):
     """Connexion to Linkedin platform"""
@@ -28,10 +26,9 @@ def connect_add_note_single(browser, profile_link, message_file_path):
     try:
         time.sleep(randrange(2, 5))
         # Menu Ajout
-        print('On retrieve le name')
+        logging.info('On retrieve le name')
         name = retrieve_name(browser)
         time.sleep(randrange(5, 8))
-        print('On a reussi')
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
         # Connexion
         time.sleep(randrange(5, 8))
@@ -54,7 +51,7 @@ def connect_add_note_single(browser, profile_link, message_file_path):
         #browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         return name, profile_link    
     except:
-        print("Impossible d'ajouter ce contact en ami")
+        logging.info("Impossible d'ajouter ce contact en ami")
         return 'echec', 'echec'
 
 
@@ -179,7 +176,7 @@ def get_list_of_profiles(browser, df):
             if NEXT_URL == CURRENT_URL:
                 break
         except:
-            print('Impossible de cliquer sur SUIVANT')
+            logging.info('Impossible de cliquer sur SUIVANT')
 
 
     print('Nombre de profiles trouves : ', len(final_list_of_profiles))

@@ -9,7 +9,7 @@ from random import randrange
 from selenium.webdriver.chrome.options import Options  
 from os import path
 import pymysql.cursors
-
+import logging
 
 from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit
 from premium_filters import location_filter, langue_filter, secteur_filter, degre_filter, ecole_filter
@@ -39,12 +39,11 @@ def main(id_, id_linkedin, password_linkedin):
 
 
     # Initialisation des fichiers stats
-    print(os.path.join(os.path.dirname(__file__),CONTACTS_CSV))
     if path.exists(os.path.join(os.path.dirname(__file__),CONTACTS_CSV)) is False:
         df = pd.DataFrame(columns=['Personnes', 'Links', 'Dates'])
         df.to_csv(os.path.join(os.path.dirname(__file__), CONTACTS_CSV), sep=';') # A verifier si ce ; est le meme pour tous les clients
     else:
-        print('Le CSV existe deja')
+        logging.info('Le CSV existe deja')
 
     if path.exists(os.path.join(os.path.dirname(__file__), CONTACTS_JSON)) is False:
         updated_json = {"Total messages envoyes": 0, "Total envoyes aujourd'hui": 0, 
@@ -53,20 +52,20 @@ def main(id_, id_linkedin, password_linkedin):
         with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON), 'w') as json_file:
             json.dump(updated_json, json_file)
     else:
-        print('Le JSON existe deja')
+        logging.info('Le JSON existe deja')
 
 
 
     # Premiere condition a respecter : message ne depasse pas les 300 caracteres
     msg_length = check_length_msg(MESSAGE_FILE_PATH)
     if msg_length > 300:
-        print('Votre message depasse les 300 catacteres')
+        logging.info('Votre message depasse les 300 catacteres')
         sys.exit()
 
 
     
     # CONNEXION 
-    print('Connexion')
+    logging.info('Initialisation ChromeDriver')
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -75,7 +74,7 @@ def main(id_, id_linkedin, password_linkedin):
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
-    print('on va se connecter a linkedin')
+    logging.info('Connexion a Linkedin')
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
 
@@ -85,10 +84,12 @@ def main(id_, id_linkedin, password_linkedin):
 
     # SECURITY VERIFICATION
     try:
+        logging.info("Verifions si une verification par mail est necessaire")
         code_content = browser.find_element_by_class_name('form__input--text')
         code_content.click()
         time.sleep(randrange(120, 180))
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
+        logging.info("Cherchons le code dans MySQL")
         connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
                                  user='root',
                                  password='Leomessi9',
@@ -104,8 +105,9 @@ def main(id_, id_linkedin, password_linkedin):
         time.sleep(randrange(2, 4))
         browser.find_element_by_class_name('form__submit').click()
         time.sleep(randrange(2, 4))
+        logging.info("Code de securite envoye")
     except:
-        print('***** Verification par mail non necessaire *****')
+        logging.info('***** Verification par mail non necessaire *****')
 
 
 
@@ -113,9 +115,10 @@ def main(id_, id_linkedin, password_linkedin):
 
     # PENDING INVIT
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau
+    logging.info("Verifions les pending invitations")
     pendings = pending_invit(browser)
     if pendings > 4900:
-        print('ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900')
+        logging.info('ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900')
         sys.exit()
     else:
         print(pendings, ' pending invit')
@@ -126,7 +129,7 @@ def main(id_, id_linkedin, password_linkedin):
     """             ******************      2eme partie         ******************              """
 
 
-    print('on va acceder aux filtres')
+    logging.info('Accedons aux filtres')
 
     # Recherche des profils
     # All filters Linkedin Premium
@@ -149,6 +152,9 @@ def main(id_, id_linkedin, password_linkedin):
     ENTREPRISE = df_filtres['ENTREPRISE'].tolist()[0]
     EFFECTIF = df_filtres['EFFECTIF'].tolist()[0]
     TYPE = df_filtres["TYPE D'ENTREPRISE"].tolist()[0]
+
+    logging.info("Acces aux filtres depuis Excel : ok")
+    logging.debug("Entrons les filtres")
 
     time.sleep(randrange(5, 8))
     location_filter(browser, LOCATION)
@@ -180,12 +186,13 @@ def main(id_, id_linkedin, password_linkedin):
     type_entreprise_filter(browser, TYPE)
     time.sleep(randrange(2, 4))
 
-    print('on a applique les filtres')
+    logging.info("Filtres appliques : valide")
 
 
     validate_research(browser)
     time.sleep(randrange(3, 6))
     # How many profiles to contact (to scrap) ?
+    logging.info("On recupere le nombre de profiles a scrapper")
     nb2scrap = how_many_profiles(browser)
     time.sleep(randrange(4, 7))
 
@@ -193,10 +200,14 @@ def main(id_, id_linkedin, password_linkedin):
 
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     # On visite les profils
+    logging.info("On recupere la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
+
+    logging.debug("Debut des envois de messages")
     today_total = connect_note_list_profile(df, browser, list_of_links, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
 
-    print("Cest fini pour aujourd'hui")
+    time.sleep(randrange(3, 6))
+    logging.info("Cest fini pour aujourd'hui")
     browser.quit()
 
 

@@ -4,6 +4,7 @@ import pymysql.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import datetime
+import logging
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'premium'))
 import main_robot_1
@@ -11,6 +12,7 @@ import main_robot_1
 sys.dont_write_bytecode = True
 
 try:
+	logging.info("Connexion to the database")
 	# Connect to the database
 	connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
 								 user='root',
@@ -21,7 +23,7 @@ try:
 
 except:
 	# So we create the db
-	print('Database not exists')
+	logging.info('Database not exists')
 	conn = pymysql.connect(host='localhost',user='root',password='Leomessi9')
 	conn.cursor().execute('create database linkedin')
 	conn.cursor().execute('create table linkedin.user (id int NOT NULL AUTO_INCREMENT,email varchar(255) NOT NULL,\
@@ -163,9 +165,10 @@ def logout():
 def script():
 	try:
 		if session['email']:
-			print('on va appliquer main robot 1')
+			logging.info("Lancement de l'algorithme")
 			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
 	except:
+		logging.info("Algo non execute jusqu'a la fin")
 		return redirect(url_for('login'))
 
 
