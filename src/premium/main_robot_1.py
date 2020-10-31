@@ -93,6 +93,7 @@ def main(id_, id_linkedin, password_linkedin):
         logging.info("Verifions si une verification par mail est necessaire")
         code_content = browser.find_element_by_class_name('form__input--text')
         code_content.click()
+        logging.info('On a 2 mn pour rentrer le code dans MySQL')
         time.sleep(randrange(120, 180))
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logging.info("Cherchons le code dans MySQL")
@@ -112,6 +113,7 @@ def main(id_, id_linkedin, password_linkedin):
         browser.find_element_by_class_name('form__submit').click()
         time.sleep(randrange(2, 4))
         logging.info("Code de securite envoye")
+        connection.close()
     except:
         logging.info('***** Verification par mail non necessaire *****')
 
