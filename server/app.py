@@ -11,7 +11,7 @@ import main_robot_1
 
 sys.dont_write_bytecode = True
 
-try:
+def db_connect():
 	logging.info("Connexion to the database")
 	# Connect to the database
 	connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
@@ -20,8 +20,9 @@ try:
 								 db='linkedin',
 								 charset='utf8mb4',
 								 cursorclass=pymysql.cursors.DictCursor)
+	return connection
 
-except:
+def db_create():
 	# So we create the db
 	logging.info('Database not exists')
 	conn = pymysql.connect(host='localhost',user='root',password='Leomessi9')
@@ -62,15 +63,18 @@ def signup_post():
 	name = request.form.get('name')
 	password = request.form.get('password')
 
+	connection = db_connect()
 	with connection.cursor() as cursor:
 		# On check si le mail n'est pas ds la DB
 		if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", (email)) == 1:
 			flash('Email address already exists')
+			connection.close()
 			return redirect(url_for('signup'))
 		else:
 			# On rajoute la personne ds la DB
 			cursor.execute("""INSERT INTO linkedin.user (email, name, password) VALUES (%s, %s, %s)""", (email, name, generate_password_hash(password, method='sha256')))
 			connection.commit()
+			connection.close()
 			return redirect(url_for('login'))
 
 
@@ -87,11 +91,17 @@ def login_post():
 	password = request.form.get('password')
 	remember = True if request.form.get('remember') else False
 
+	connection = db_connect()
 	with connection.cursor() as cursor:
 		# On verifie d'abord si le mail existe
 		if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", email) == 0:    
 			flash('Please check your login details and try again.')
+			connection.close()
 			return redirect(url_for('login'))
+			
+	connection.close()
+	connection = db_connect()
+	with connection.cursor() as cursor:
 		# On recupere ici le mdp de la db correspondant au mail entre par le user
 		query_expected_pwd = cursor.execute("""SELECT password FROM linkedin.user WHERE email=%s""", email)
 		password_hached = cursor.fetchall()[0]['password'] # Password hache
@@ -99,12 +109,14 @@ def login_post():
 		if expected_pwd is False:
 			# Si le mdp entre est faux
 			flash('Please check your login details and try again.')
+			connection.close()
 			return redirect(url_for('login'))
 		else:
 			query = cursor.execute("""SELECT id FROM linkedin.user WHERE email=%s""", email)
 			session['id'] = cursor.fetchall()[0]['id']
 			session['email'] = email
 			session['password'] = password
+			connection.close()
 			return redirect(url_for('profile'))
 
 
@@ -135,14 +147,17 @@ def profile():
 def profile_post():
 	password_non_hashed = request.form.get('password')
 	try:
+		connection = db_connect()
 		with connection.cursor() as cursor:
 			query_expected_pwd = cursor.execute("""SELECT password FROM linkedin.user WHERE email=%s""", session['email'])
 			password_hached = cursor.fetchall()[0]['password']
 			expected_pwd = check_password_hash(password_hached, password_non_hashed)
 			if expected_pwd:
 				session['password_non_hashed'] = password_non_hashed #on cree ce nouvel objet ds la session pr l'utiliser dans la route script
+				connection.close()
 				return redirect(url_for('script'))
 			else:
+				connection.close()
 				return redirect(url_for('profile'))
 	except:
 		return redirect(url_for('login'))
@@ -207,7 +222,7 @@ if __name__ == "__main__":
 	#        return None  
 
 
-# ssh -i remy_key.pem  ubuntu@ec2-15-188-147-7.eu-west-3.compute.amazonaws.com
+# ssh -i remy_key.pem  ubuntu@ec2-15-237-137-177.eu-west-3.compute.amazonaws.com
 # sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
 
 

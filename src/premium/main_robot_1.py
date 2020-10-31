@@ -30,6 +30,12 @@ car le script s'appuiera dessus pour ne pas recontacter les memes personnes
 
 def main(id_, id_linkedin, password_linkedin):
 
+    # Dans le cas ou on a rencontre une erreur lors du run precedent, il faut fermer le browser qui ete ouvert
+    try:
+        browser.quit()
+    except:
+        print('Le browser precedent a bien ete ferme')
+
     CONTACTS_JSON = 'Contacts/stats_' + str(id_) + '.json'
     CONTACTS_CSV = 'Contacts/liste_personnes_' + str(id_) + '.csv'
     MESSAGE_FILE_PATH = 'Config/message_personalise_' + str(id_) + '.txt'
@@ -67,13 +73,13 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     logging.info('Initialisation ChromeDriver')
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument('--disable-dev-shm-usage')
+    #chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--no-sandbox")
+    #chrome_options.add_argument('--disable-dev-shm-usage')
 
       
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logging.info('Connexion a Linkedin')
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
