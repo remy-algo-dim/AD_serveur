@@ -72,20 +72,25 @@ def signup_post():
 	email = request.form.get('email')
 	name = request.form.get('name')
 	password = request.form.get('password')
+	check_pswd = request.form.get('check your password')
 
-	connection = db_connect()
-	with connection.cursor() as cursor:
-		# On check si le mail n'est pas ds la DB
-		if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", (email)) == 1:
-			flash('Email address already exists')
-			connection.close()
-			return redirect(url_for('signup'))
-		else:
-			# On rajoute la personne ds la DB
-			cursor.execute("""INSERT INTO linkedin.user (email, name, password) VALUES (%s, %s, %s)""", (email, name, generate_password_hash(password, method='sha256')))
-			connection.commit()
-			connection.close()
-			return redirect(url_for('login'))
+	if password != check_pswd:
+		flash('Check again your password')
+		return redirect(url_for('signup'))
+	else:
+		connection = db_connect()
+		with connection.cursor() as cursor:
+			# On check si le mail n'est pas ds la DB
+			if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", (email)) == 1:
+				flash('Email address already exists')
+				connection.close()
+				return redirect(url_for('signup'))
+			else:
+				# On rajoute la personne ds la DB
+				cursor.execute("""INSERT INTO linkedin.user (email, name, password) VALUES (%s, %s, %s)""", (email, name, generate_password_hash(password, method='sha256')))
+				connection.commit()
+				connection.close()
+				return redirect(url_for('login'))
 
 
 
@@ -127,7 +132,7 @@ def login_post():
 			session['email'] = email
 			session['password'] = password
 			connection.close()
-			return redirect(url_for('profile'))
+			return redirect(url_for('algo'))
 
 
 
@@ -140,7 +145,7 @@ On peut aussi cree des colonnes intermediaires comme : session['new_val'] = X
 Lorsqu'on fera session.pop, la session expirera et session[X] ne renverra rien """
 
 
-@app.route('/profile')
+@app.route('/algo')
 def profile():
 	""" Profile est divise en une methode GET et une POST afin de pouvoir acceder a son profil sans avoir besoin de runner
 	l'algo ou de le runner par erreur. Dans la methode POST on fait en sorte que le user entre une nouvelle fois son mdp
@@ -149,11 +154,11 @@ def profile():
 		# !!!!! Comme vu ds la fonction logout, si la session a expire, on ne rentrera meme pas ds le if car session['email'] n'existe
 		# meme plus et donc on ne peux plus acceder a cette page
 		if session['email']:
-			return render_template('profile.html', name=session['email'])
+			return render_template('profile.html')
 	except:
 		return redirect(url_for('login'))
 
-@app.route('/profile', methods=['POST'])
+@app.route('/algo', methods=['POST'])
 def profile_post():
 	password_non_hashed = request.form.get('password')
 	try:
@@ -168,7 +173,7 @@ def profile_post():
 				return redirect(url_for('script'))
 			else:
 				connection.close()
-				return redirect(url_for('profile'))
+				return redirect(url_for('algo'))
 	except:
 		return redirect(url_for('login'))
 
@@ -207,7 +212,7 @@ def dashboard():
 				nb_contacted_total = json_data["Total messages envoyes"]
 				nb_contacted_today = json_data["Total envoyes aujourd'hui"]
 				nb_contacted_per_filter = json_data["Personnes a contacter pour ce filtre"]
-				pending_invit = json_data["Pending invit"]
+				pending_invit = json_data["Invitations en attente"]
 				print(nb_contacted_total, nb_contacted_today,nb_contacted_per_filter, pending_invit)
 				return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
 						nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit)
