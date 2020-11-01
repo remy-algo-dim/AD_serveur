@@ -216,10 +216,8 @@ def main(id_, id_linkedin, password_linkedin):
 
     """ ---------------------------------- Envoi de messages ---------------------------------- """
 
-    print('DFFFFF')
-    print(os.path.join(os.path.dirname(__file__),CONTACTS_CSV))
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
-    print(df.head())
+    print(df.head(2))
     # On visite les profils
     logger.info("On recupere la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)

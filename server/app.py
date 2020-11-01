@@ -72,20 +72,24 @@ def signup_post():
 	email = request.form.get('email')
 	name = request.form.get('name')
 	password = request.form.get('password')
-
-	connection = db_connect()
-	with connection.cursor() as cursor:
-		# On check si le mail n'est pas ds la DB
-		if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", (email)) == 1:
-			flash('Email address already exists')
-			connection.close()
-			return redirect(url_for('signup'))
-		else:
-			# On rajoute la personne ds la DB
-			cursor.execute("""INSERT INTO linkedin.user (email, name, password) VALUES (%s, %s, %s)""", (email, name, generate_password_hash(password, method='sha256')))
-			connection.commit()
-			connection.close()
-			return redirect(url_for('login'))
+	check_pswd = request.form.get('check your password')
+	if password != check_pswd:
+		flash('Check again your password')
+		return redirect(url_for('signup'))
+	else:
+		connection = db_connect()
+		with connection.cursor() as cursor:
+			# On check si le mail n'est pas ds la DB
+			if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", (email)) == 1:
+				flash('Email address already exists')
+				connection.close()
+				return redirect(url_for('signup'))
+			else:
+				# On rajoute la personne ds la DB
+				cursor.execute("""INSERT INTO linkedin.user (email, name, password) VALUES (%s, %s, %s)""", (email, name, generate_password_hash(password, method='sha256')))
+				connection.commit()
+				connection.close()
+				return redirect(url_for('login'))
 
 
 
@@ -149,7 +153,7 @@ def profile():
 		# !!!!! Comme vu ds la fonction logout, si la session a expire, on ne rentrera meme pas ds le if car session['email'] n'existe
 		# meme plus et donc on ne peux plus acceder a cette page
 		if session['email']:
-			return render_template('profile.html', name=session['email'])
+			return render_template('profile.html')
 	except:
 		return redirect(url_for('login'))
 
