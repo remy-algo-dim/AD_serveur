@@ -73,13 +73,13 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     logging.info('Initialisation ChromeDriver')
     chrome_options = Options()
-    #chrome_options.add_argument("--headless")
-    #chrome_options.add_argument("--no-sandbox")
-    #chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument('--disable-dev-shm-usage')
 
       
-    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logging.info('Connexion a Linkedin')
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
