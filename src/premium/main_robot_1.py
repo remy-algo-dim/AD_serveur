@@ -51,6 +51,15 @@ def main(id_, id_linkedin, password_linkedin):
     MESSAGE_FILE_PATH = 'Config/message_personalise_' + str(id_) + '.txt'
     CONFIG_FILTRES = 'Config/filtres_' + str(id_) + '.xlsx'
 
+    # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
+    with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'r') as j:
+        json_data = json.load(j)
+        nb_contacted_today = json_data["Total envoyes aujourd'hui"]
+        if int(nb_contacted_today) >= 20:
+            logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
+            sys.exit()
+
+
     """             ******************      1ere partie         ******************              """
 
 
