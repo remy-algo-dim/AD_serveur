@@ -98,7 +98,7 @@ def login_post():
 			flash('Please check your login details and try again.')
 			connection.close()
 			return redirect(url_for('login'))
-			
+
 	connection.close()
 	connection = db_connect()
 	with connection.cursor() as cursor:
@@ -181,10 +181,10 @@ def script():
 	try:
 		if session['email']:
 			logging.info("Lancement de l'algorithme")
-			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed']), render_template('fin_algo.html')
 	except:
 		logging.info("Algo non execute jusqu'a la fin")
-		return redirect(url_for('login'))
+		return render_template('error.html')
 
 
 @app.route('/dash')
@@ -224,5 +224,5 @@ if __name__ == "__main__":
 
 # ssh -i remy_key.pem  ubuntu@ec2-15-237-137-177.eu-west-3.compute.amazonaws.com
 # sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
-
+# TODO : beaux logs, dashboard AD, stop the algo lorsquon le souhaite, templates error
 
