@@ -11,8 +11,18 @@ import main_robot_1
 
 sys.dont_write_bytecode = True
 
+# Logger
+logger = logging.getLogger("app.py")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
+
 def db_connect():
-	logging.info("Connexion to the database")
+	logger.info("Connexion to the database")
 	# Connect to the database
 	connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
 								 user='root',
@@ -24,7 +34,7 @@ def db_connect():
 
 def db_create():
 	# So we create the db
-	logging.info('Database not exists')
+	logger.info('Database not exists')
 	conn = pymysql.connect(host='localhost',user='root',password='Leomessi9')
 	conn.cursor().execute('create database linkedin')
 	conn.cursor().execute('create table linkedin.user (id int NOT NULL AUTO_INCREMENT,email varchar(255) NOT NULL,\
@@ -180,10 +190,10 @@ def logout():
 def script():
 	try:
 		if session['email']:
-			logging.info("Lancement de l'algorithme")
+			logger.info("Lancement de l'algorithme")
 			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed']), render_template('fin_algo.html')
 	except:
-		logging.info("Algo non execute jusqu'a la fin")
+		logger.info("Algo non execute jusqu'a la fin")
 		return render_template('error.html')
 
 

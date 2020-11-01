@@ -8,6 +8,15 @@ from random import randrange
 from datetime import date
 import logging
 
+# Logger
+logger = logging.getLogger("premium_functions.py")
+logger.setLevel(logging.DEBUG)
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+ch.setFormatter(formatter)
+logger.addHandler(ch)
+
 def Linkedin_connexion(browser, username, password):
     """Connexion to Linkedin platform"""
     elementID = browser.find_element_by_id('username')
@@ -26,7 +35,7 @@ def connect_add_note_single(browser, profile_link, message_file_path):
     try:
         time.sleep(randrange(2, 5))
         # Menu Ajout
-        logging.info('On retrieve le name')
+        logger.info('On retrieve le name')
         name = retrieve_name(browser)
         time.sleep(randrange(5, 8))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
@@ -51,7 +60,7 @@ def connect_add_note_single(browser, profile_link, message_file_path):
         #browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         return name, profile_link    
     except:
-        logging.info("Impossible d'ajouter ce contact en ami")
+        logger.info("Impossible d'ajouter ce contact en ami")
         return 'echec', 'echec'
 
 
@@ -98,7 +107,7 @@ def just_connect(browser, profile_link):
         #browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         return name
     except:
-        print('Impossible de se connecter')
+        logger.info('Impossible de se connecter')
         return 'echec'
 
 
@@ -159,7 +168,7 @@ def get_list_of_profiles(browser, df):
 
         final_list_of_profiles.extend(list_of_profiles_per_page)
         final_list_of_profiles = list(set(final_list_of_profiles))
-        print('Page :', page, ' : ', len(final_list_of_profiles), ' liens scrapes')
+        print('Page ', page, ' : ', len(final_list_of_profiles), ' liens scrapes')
 
         # On envoie 20 msg par jour, donc des que notre liste contient 40 contacts (pour compenser les cas
         # ou il y a echec lors de l'envoie du message), on stop la fonctionn
@@ -176,7 +185,8 @@ def get_list_of_profiles(browser, df):
             if NEXT_URL == CURRENT_URL:
                 break
         except:
-            logging.info('Impossible de cliquer sur SUIVANT')
+            logger.info('Impossible de cliquer sur SUIVANT')
+            break
 
 
     print('Nombre de profiles trouves : ', len(final_list_of_profiles))
