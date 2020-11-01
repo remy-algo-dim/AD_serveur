@@ -89,6 +89,7 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             df = df.append(new_row, ignore_index=True)
             df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
             # On update egalement le JSON
+            logger.info('Message envoye')
             update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
         else:
             print('Echec de connexion pour : ', name)

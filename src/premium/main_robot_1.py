@@ -10,6 +10,7 @@ from selenium.webdriver.chrome.options import Options
 from os import path
 import pymysql.cursors
 import logging
+from flask import Flask, render_template
 
 from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit
 from premium_filters import location_filter, langue_filter, secteur_filter, degre_filter, ecole_filter
@@ -227,6 +228,7 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("----------------------- Cest fini pour aujourd'hui -----------------------")
     browser.quit()
 
+    return render_template('fin_algo.html')
 
 
 

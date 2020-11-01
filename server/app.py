@@ -191,7 +191,7 @@ def script():
 	try:
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
-			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed']), render_template('fin_algo.html')
+			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
 	except:
 		logger.info("Algo non execute jusqu'a la fin")
 		return render_template('error.html')
