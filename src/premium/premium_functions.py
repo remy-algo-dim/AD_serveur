@@ -246,6 +246,6 @@ def how_many_profiles(browser):
     total_profiles = browser.find_element_by_xpath('/html/body/main/div[1]/div/div/div/div/div/button[1]/span[1]').text
     print('------------------------------')
     print(total_profiles, ' profiles must be contacted')
-    #return int(total_profiles) # car parfois ce n'est pas un int !!
+    return total_profiles # car parfois ce n'est pas un int !!
 
 
