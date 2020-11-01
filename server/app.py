@@ -73,7 +73,6 @@ def signup_post():
 	name = request.form.get('name')
 	password = request.form.get('password')
 	check_pswd = request.form.get('check your password')
-
 	if password != check_pswd:
 		flash('Check again your password')
 		return redirect(url_for('signup'))
@@ -132,7 +131,7 @@ def login_post():
 			session['email'] = email
 			session['password'] = password
 			connection.close()
-			return redirect(url_for('algo'))
+			return redirect(url_for('profile'))
 
 
 
@@ -145,7 +144,7 @@ On peut aussi cree des colonnes intermediaires comme : session['new_val'] = X
 Lorsqu'on fera session.pop, la session expirera et session[X] ne renverra rien """
 
 
-@app.route('/algo')
+@app.route('/profile')
 def profile():
 	""" Profile est divise en une methode GET et une POST afin de pouvoir acceder a son profil sans avoir besoin de runner
 	l'algo ou de le runner par erreur. Dans la methode POST on fait en sorte que le user entre une nouvelle fois son mdp
@@ -158,7 +157,7 @@ def profile():
 	except:
 		return redirect(url_for('login'))
 
-@app.route('/algo', methods=['POST'])
+@app.route('/profile', methods=['POST'])
 def profile_post():
 	password_non_hashed = request.form.get('password')
 	try:
@@ -173,7 +172,7 @@ def profile_post():
 				return redirect(url_for('script'))
 			else:
 				connection.close()
-				return redirect(url_for('algo'))
+				return redirect(url_for('profile'))
 	except:
 		return redirect(url_for('login'))
 
@@ -212,7 +211,7 @@ def dashboard():
 				nb_contacted_total = json_data["Total messages envoyes"]
 				nb_contacted_today = json_data["Total envoyes aujourd'hui"]
 				nb_contacted_per_filter = json_data["Personnes a contacter pour ce filtre"]
-				pending_invit = json_data["Invitations en attente"]
+				pending_invit = json_data["Pending invit"]
 				print(nb_contacted_total, nb_contacted_today,nb_contacted_per_filter, pending_invit)
 				return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
 						nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit)
