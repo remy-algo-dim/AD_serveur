@@ -57,7 +57,7 @@ def connect_add_note_single(browser, profile_link, message_file_path):
         # Envoyer . Il se peut que linkedin demande de rentrer ladresse mail du contact pour pouvoir se connecter ...
         time.sleep(randrange(5, 8))
         ####@ ON DESACTIVE LE BOUTON ENVOYE POUR LINSTANT
-        #browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
+        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         return name, profile_link    
     except:
         logger.info("Impossible d'ajouter ce contact en ami")
@@ -105,6 +105,7 @@ def just_connect(browser, profile_link):
         name = retrieve_name(browser)
         time.sleep(randrange(1, 4))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
+        # ON DESACTIVE LE BOUTON ENVOYE PR LINSTANT
         #browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         return name
     except:

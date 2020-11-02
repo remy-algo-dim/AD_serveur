@@ -240,6 +240,7 @@ if __name__ == "__main__":
 # sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
 """ TODO : beaux logs, dashboard AD, stop the algo lorsquon le souhaite, templates error... si jactualise la page script pr rien
 100 fois jaiemrais que lalgo ne se run que sil doit se runner, je veux donc eviter les connexions superflues a linkedin
+ajouter les stats du dash a mysql et pas que les fihiers temporaires
 
 
 """
