@@ -54,8 +54,10 @@ def main(id_, id_linkedin, password_linkedin):
     CONFIG_FILTRES = 'Config/filtres_' + str(id_) + '.xlsx'
 
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
+    print(df.head(2))
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
     with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'w') as j:
+        logger.info('Update du json')
         # Je check le nbe de messages envoyes aujourd'hui
         today = date.today()
         today_list = df['Dates'].tolist()
@@ -64,6 +66,7 @@ def main(id_, id_linkedin, password_linkedin):
             logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
             sys.exit()
         else:
+            logger.info("Demarrage d'une nouvelle journee")
             json_data = json.load(j)
             nb2scrap, pendings = json_data["Personnes a contacter pour ce filtre"], json_data["Pending invit"]
             update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
