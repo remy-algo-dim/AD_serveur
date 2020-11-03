@@ -65,12 +65,9 @@ def main(id_, id_linkedin, password_linkedin):
         logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
         sys.exit()
     else:
-        with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'r') as j:
-            logger.info("Demarrage d'une nouvelle journee")
-            json_data = json.load(j)
-            print(json_data)
-            nb2scrap, pendings = json_data["Personnes a contacter pour ce filtre"], json_data["Pending invit"]
-            print('on a bien lu lancien json')
+        logger.info("Demarrage d'une nouvelle journee")
+        nb2scrap, pendings = '...', '...'
+        print('on a bien lu lancien json')
         update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
         print('on a bien applique le uodate json')
 
