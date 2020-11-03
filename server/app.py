@@ -241,6 +241,7 @@ if __name__ == "__main__":
 """ TODO : beaux logs, dashboard AD, stop the algo lorsquon le souhaite, templates error... si jactualise la page script pr rien
 100 fois jaiemrais que lalgo ne se run que sil doit se runner, je veux donc eviter les connexions superflues a linkedin
 ajouter les stats du dash a mysql et pas que les fihiers temporaires
+quand le jour change, remettre a 0 le nbe de messages envoyes ds le dashboard aujourdhui
 
 
 """

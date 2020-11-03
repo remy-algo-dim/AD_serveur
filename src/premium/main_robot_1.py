@@ -11,6 +11,8 @@ from os import path
 import pymysql.cursors
 import logging
 from flask import Flask, render_template
+from datetime import date
+
 
 from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit
 from premium_filters import location_filter, langue_filter, secteur_filter, degre_filter, ecole_filter
@@ -51,13 +53,20 @@ def main(id_, id_linkedin, password_linkedin):
     MESSAGE_FILE_PATH = 'Config/message_personalise_' + str(id_) + '.txt'
     CONFIG_FILTRES = 'Config/filtres_' + str(id_) + '.xlsx'
 
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
-    with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'r') as j:
-        json_data = json.load(j)
-        nb_contacted_today = json_data["Total envoyes aujourd'hui"]
-        if int(nb_contacted_today) >= 20:
+    with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'w') as j:
+        # Je check le nbe de messages envoyes aujourd'hui
+        today = date.today()
+        today_list = df['Dates'].tolist()
+        today_list = [date for date in today_list if date==str(today)]
+        if len(today_list) >= 20:
             logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
             sys.exit()
+        else:
+            json_data = json.load(j)
+            nb2scrap, pendings = json_data["Personnes a contacter pour ce filtre"], json_data["Pending invit"]
+            update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
 
 
     """             ******************      1ere partie         ******************              """
@@ -126,13 +135,13 @@ def main(id_, id_linkedin, password_linkedin):
             cursor.execute('use linkedin')
             cursor.execute('SELECT security_code FROM linkedin.user WHERE email=%s', id_linkedin)
             security_code = cursor.fetchall()[0]['security_code']
+        connection.close()
 
         code_content.send_keys(security_code)
         time.sleep(randrange(2, 4))
         browser.find_element_by_class_name('form__submit').click()
         time.sleep(randrange(2, 4))
         logger.info("Code de securite envoye")
-        connection.close()
     except:
         logger.info('***** Verification par mail non necessaire *****')
 
@@ -225,8 +234,6 @@ def main(id_, id_linkedin, password_linkedin):
 
     """ ---------------------------------- Envoi de messages ---------------------------------- """
 
-    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
-    print(df.head(2))
     # On visite les profils
     logger.info("On recupere la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
