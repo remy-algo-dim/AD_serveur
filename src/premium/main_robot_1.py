@@ -69,7 +69,9 @@ def main(id_, id_linkedin, password_linkedin):
             logger.info("Demarrage d'une nouvelle journee")
             json_data = json.load(j)
             nb2scrap, pendings = json_data["Personnes a contacter pour ce filtre"], json_data["Pending invit"]
+            print('on a bien lu lancien json')
             update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+            print('on a bien applique le uodate json')
 
 
     """             ******************      1ere partie         ******************              """
