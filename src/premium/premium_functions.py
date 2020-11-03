@@ -7,6 +7,7 @@ import json
 from random import randrange
 from datetime import date
 import logging
+import pymysql.cursors
 
 # Logger
 logger = logging.getLogger("premium_functions.py")
@@ -26,6 +27,7 @@ def Linkedin_connexion(browser, username, password):
     elementID.send_keys(password)
 
     elementID.submit()
+
 
 def connect_add_note_single(browser, profile_link, message_file_path):
     """ Permet de se connecter a une personne et d'ajouter une note """
@@ -214,7 +216,7 @@ def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
     updated_json = {"Total messages envoyes":len(df),
-                    "Total envoyes aujourd'hui":len(today_list)+1,
+                    "Total envoyes aujourd'hui":len(today_list),
                     "Personnes a contacter pour ce filtre": nb2scrap,
                     "Pending invit": pendings}
                     
@@ -225,7 +227,7 @@ def update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
     updated_json = {"Total connexions envoyees":len(df),
-                    "Total envoyes aujourd'hui":len(today_list)+1,
+                    "Total envoyes aujourd'hui":len(today_list),
                     "Personnes a contacter pour ce filtre": nb2scrap,
                     "Pending invit": pendings}
                     
