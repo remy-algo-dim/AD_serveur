@@ -53,6 +53,7 @@ def main(id_, id_linkedin, password_linkedin):
     MESSAGE_FILE_PATH = 'Config/message_personalise_' + str(id_) + '.txt'
     CONFIG_FILTRES = 'Config/filtres_' + str(id_) + '.xlsx'
 
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
     with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'w') as j:
         # Je check le nbe de messages envoyes aujourd'hui
@@ -233,8 +234,6 @@ def main(id_, id_linkedin, password_linkedin):
 
     """ ---------------------------------- Envoi de messages ---------------------------------- """
 
-    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
-    print(df.head(2))
     # On visite les profils
     logger.info("On recupere la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
