@@ -56,22 +56,22 @@ def main(id_, id_linkedin, password_linkedin):
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     print(df.head(2))
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
-    with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'w') as j:
-        logger.info('Update du json')
-        # Je check le nbe de messages envoyes aujourd'hui
-        today = date.today()
-        today_list = df['Dates'].tolist()
-        today_list = [date for date in today_list if date==str(today)]
-        if len(today_list) >= 20:
-            logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
-            sys.exit()
-        else:
+    logger.info('Update du json')
+    # Je check le nbe de messages envoyes aujourd'hui
+    today = date.today()
+    today_list = df['Dates'].tolist()
+    today_list = [date for date in today_list if date==str(today)]
+    if len(today_list) >= 20:
+        logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
+        sys.exit()
+    else:
+        with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON),'r') as j:
             logger.info("Demarrage d'une nouvelle journee")
             json_data = json.load(j)
             nb2scrap, pendings = json_data["Personnes a contacter pour ce filtre"], json_data["Pending invit"]
             print('on a bien lu lancien json')
-            update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
-            print('on a bien applique le uodate json')
+        update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+        print('on a bien applique le uodate json')
 
 
     """             ******************      1ere partie         ******************              """
