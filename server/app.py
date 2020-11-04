@@ -169,13 +169,19 @@ def profile_post():
 			if expected_pwd:
 				session['password_non_hashed'] = password_non_hashed #on cree ce nouvel objet ds la session pr l'utiliser dans la route script
 				connection.close()
-				return redirect(url_for('script'))
+				return redirect(url_for('algo'))
 			else:
 				connection.close()
 				return redirect(url_for('profile'))
 	except:
 		return redirect(url_for('login'))
 
+
+#Cette fonction sert seulement d'intermediaire. Lorsqu'on lance un script, on ne peut pas avoir un template en meme temps
+#qui nous precise que le script est en cours d'execution. Mais en passant par cette page qui ELLE lance le script, on fixe le pb
+@app.route('/algo')
+def execution_algo():
+	return redirect(url_for('script'))
 
 
 @app.route('/logout')

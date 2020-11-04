@@ -60,18 +60,14 @@ def main(id_, id_linkedin, password_linkedin):
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
     today_list = df['Dates'].tolist()
-    print('today date:', today, str(today))
-    print('Today list: ', today_list, today_list[0], type(today_list[0]))
-    today_list = [date for date in today_list if date==str(today)]
     print('Today list: ', today_list, today_list[0], type(today_list[0]))
     if len(today_list) >= 20:
         logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
-        sys.exit()
+        return render_template('fin_algo_prematuree.html')
     else:
         logger.info("Demarrage d'une nouvelle journee")
         nb2scrap, pendings = '...', '...'
         update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
-        sys.exit()
 
     """             ******************      1ere partie         ******************              """
 
