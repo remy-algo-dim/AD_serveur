@@ -206,7 +206,6 @@ def dashboard():
 	# le dashboard va chercher les datas dans le json
 	try:
 		if session['email']:
-			print('vous voulez acceder au dashboard')
 			with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(session['id'])+'.json'),'r') as j:
 				json_data = json.load(j)
 				nb_contacted_total = json_data["Total messages envoyes"]
