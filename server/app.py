@@ -163,7 +163,6 @@ def profile_post():
 	password_non_hashed = request.form.get('password')
 	try:
 		connection = db_connect()
-		print('on essaye de se connecter a algo.html puis script')
 		with connection.cursor() as cursor:
 			query_expected_pwd = cursor.execute("""SELECT password FROM linkedin.user WHERE email=%s""", session['email'])
 			password_hached = cursor.fetchall()[0]['password']
@@ -171,9 +170,8 @@ def profile_post():
 			if expected_pwd:
 				session['password_non_hashed'] = password_non_hashed #on cree ce nouvel objet ds la session pr l'utiliser dans la route script
 				connection.close()
-				return render_template('algo.html'), redirect(url_for('script'))
+				return redirect(url_for('script'))
 			else:
-				print('ici le pb bro')
 				connection.close()
 				return redirect(url_for('profile'))
 	except:
