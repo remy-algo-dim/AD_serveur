@@ -14,7 +14,7 @@ from flask import Flask, render_template
 from datetime import date
 
 
-from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit
+from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit, send_message, first_flow_msg
 from premium_filters import location_filter, langue_filter, secteur_filter, degre_filter, ecole_filter
 from premium_filters import niveau_hierarchique_filter, anciennete_poste_actuel_filter, anciennete_entreprise_actuelle_filter
 from premium_filters import fonction_filter, titre_filter, experience, entreprise_filter, effectif_entreprise_filter
@@ -23,7 +23,7 @@ from premium_filters import type_entreprise_filter, validate_research
 CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
 # Logger
-logger = logging.getLogger("main_robot_1.py")
+logger = logging.getLogger("main_robot_2.py")
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(logging.DEBUG)
@@ -56,13 +56,13 @@ def main(id_, id_linkedin, password_linkedin):
 
     # Initialisation des fichiers stats
     if path.exists(os.path.join(os.path.dirname(__file__),CONTACTS_CSV)) is False:
-        df = pd.DataFrame(columns=['Personnes', 'Links', 'Dates'])
+        df = pd.DataFrame(columns=['Personnes', 'Ajouts', 'Dates', 'Nombre messages'])
         df.to_csv(os.path.join(os.path.dirname(__file__), CONTACTS_CSV), sep=';') # A verifier si ce ; est le meme pour tous les clients
     else:
         logger.info('Le CSV existe deja')
 
     if path.exists(os.path.join(os.path.dirname(__file__), CONTACTS_JSON)) is False:
-        updated_json = {"Total messages envoyes": 0, "Total envoyes aujourd'hui": 0, 
+        updated_json = {"Total connexions envoyees": 0, "Total messages envoyes": 0, "Total envoyes aujourd'hui": 0, 
             "Personnes a contacter pour ce filtre": 0, "Pending invit": 0}
                     
         with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON), 'w') as json_file:
@@ -84,19 +84,10 @@ def main(id_, id_linkedin, password_linkedin):
     else:
         logger.info("Demarrage d'une nouvelle journee")
         nb2scrap, pendings = '...', '...'
-        update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+        update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+
 
     """             ******************      1ere partie         ******************              """
-
-
-
-    # Premiere condition a respecter : message ne depasse pas les 300 caracteres
-    msg_length = check_length_msg(MESSAGE_FILE_PATH)
-    if msg_length > 300:
-        logging.info('Votre message depasse les 300 catacteres')
-        sys.exit()
-
-
     
     # CONNEXION 
     logger.info('Initialisation ChromeDriver')
@@ -144,8 +135,6 @@ def main(id_, id_linkedin, password_linkedin):
         logger.info("Code de securite envoye")
     except:
         logger.info('***** Verification par mail non necessaire *****')
-
-
 
 
 
@@ -224,7 +213,6 @@ def main(id_, id_linkedin, password_linkedin):
 
     logger.info("Filtres appliques : valide")
 
-
     validate_research(browser)
     time.sleep(randrange(3, 6))
     # How many profiles to contact (to scrap) ?
@@ -232,14 +220,21 @@ def main(id_, id_linkedin, password_linkedin):
     nb2scrap = how_many_profiles(browser)
     time.sleep(randrange(4, 7))
 
-    """ ---------------------------------- Envoi de messages ---------------------------------- """
+    """ ---------------------------------- Demande de connexions ---------------------------------- """
 
     # On visite les profils
     logger.info("On recupere la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
 
     logger.info("Debut des envois de messages")
-    today_total = connect_note_list_profile(df, browser, list_of_links, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
+    today_total = connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
+
+
+
+	""" ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
+	time.sleep(randrange(10, 20))
+	first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON)
+
 
     time.sleep(randrange(3, 6))
     logger.info("----------------------- Cest fini pour aujourd'hui -----------------------")
