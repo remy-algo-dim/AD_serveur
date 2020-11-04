@@ -162,6 +162,7 @@ def profile_post():
 	password_non_hashed = request.form.get('password')
 	try:
 		connection = db_connect()
+		print('on essaye de se connecter a algo.html puis script')
 		with connection.cursor() as cursor:
 			query_expected_pwd = cursor.execute("""SELECT password FROM linkedin.user WHERE email=%s""", session['email'])
 			password_hached = cursor.fetchall()[0]['password']
@@ -171,6 +172,7 @@ def profile_post():
 				connection.close()
 				return redirect(url_for('algo'))
 			else:
+				print('ici le pb bro')
 				connection.close()
 				return redirect(url_for('profile'))
 	except:
@@ -180,7 +182,8 @@ def profile_post():
 #Cette fonction sert seulement d'intermediaire. Lorsqu'on lance un script, on ne peut pas avoir un template en meme temps
 #qui nous precise que le script est en cours d'execution. Mais en passant par cette page qui ELLE lance le script, on fixe le pb
 @app.route('/algo')
-def execution_algo():
+def algo():
+	time.sleep(2)
 	return redirect(url_for('script'))
 
 
