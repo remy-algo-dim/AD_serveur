@@ -8,7 +8,7 @@ import logging
 import time
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'premium'))
-import main_robot_1
+import main_robot_1, main_robot_2
 
 sys.dont_write_bytecode = True
 
@@ -196,7 +196,7 @@ def script():
 	try:
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
-			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+			return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
 	except:
 		logger.info("Algo non execute jusqu'a la fin")
 		return render_template('error.html')
@@ -213,9 +213,17 @@ def dashboard():
 				nb_contacted_today = json_data["Total envoyes aujourd'hui"]
 				nb_contacted_per_filter = json_data["Personnes a contacter pour ce filtre"]
 				pending_invit = json_data["Pending invit"]
-				print(nb_contacted_total, nb_contacted_today,nb_contacted_per_filter, pending_invit)
-				return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
-						nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit)
+				try:
+					total_connexions = json_data["Total connexions envoyees"]
+					logging.info("Dashboard robot 2")
+					return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
+						nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit, total_connexions=total_connexions)
+				except:
+					logging.info("Dashboard robot 1")
+					total_connexions = nb_contacted_total
+					return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
+						nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit, total_connexions=total_connexions)
+
 	except:
 		return redirect(url_for('login'))
 
