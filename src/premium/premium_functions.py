@@ -298,7 +298,7 @@ def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
 def update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
-    print('Creation du json connect')
+    logger.info('Creation du json connect')
     msg_envoyes = len(df[df['Nombre messages']=='1'])
     updated_json = {"Total connexions envoyees":len(df),
                     "Total messages envoyes": msg_envoyes,
