@@ -78,6 +78,7 @@ def main(id_, id_linkedin, password_linkedin):
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
     today_list = df['Dates'].tolist()
+    today_list = [date for date in today_list if date==str(today)]
     if len(today_list) >= 20:
         logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
         return render_template('fin_algo_prematuree.html')

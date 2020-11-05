@@ -78,11 +78,11 @@ def main(id_, id_linkedin, password_linkedin):
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     print(df.head(2))
-    print('LEN DF : ', len(df))
     logger.info('Update du json')
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
     today_list = df['Dates'].tolist()
+    today_list = [date for date in today_list if date==str(today)]
     print('TODAY LISTE : ', len(today_list))
     if len(today_list) >= 20:
         logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
