@@ -48,15 +48,19 @@ def main(id_, id_linkedin, password_linkedin):
     except:
         logger.info('Le browser precedent a bien ete ferme')
 
-    CONTACTS_JSON = 'Contacts/stats_' + str(id_) + '.json'
-    CONTACTS_CSV = 'Contacts/liste_personnes_' + str(id_) + '.csv'
+    CONTACTS_JSON = 'Contacts/stats_X' + str(id_) + '.json'  ########### temporaire
+    CONTACTS_CSV = 'Contacts/liste_personnes_X' + str(id_) + '.csv'########### temporaire
     MESSAGE_FILE_PATH = 'Config/message_personalise_' + str(id_) + '.txt'
     CONFIG_FILTRES = 'Config/filtres_' + str(id_) + '.xlsx'
 
 
     # Initialisation des fichiers stats
     if path.exists(os.path.join(os.path.dirname(__file__),CONTACTS_CSV)) is False:
-        df = pd.DataFrame(columns=['Personnes', 'Ajouts', 'Dates', 'Nombre messages'])
+        df = pd.DataFrame(columns=['Personnes', 'Links', 'Dates', 'Nombre messages'])
+
+        df_old = pd.read_csv(os.path.join(os.path.dirname(__file__),'Contacts/liste_personnes_' + str(id_) + '.csv'), sep=';', index_col=None)########### temporaire
+        df['Personnes'], df['Links'], df['Dates'], df['Nombre messages'] = df_old['Personnes'].tolist(), df_old['Links'].tolist(), df_old['Dates'].tolist(), [1 for i in range(len(df_old))]########### temporaire
+
         df.to_csv(os.path.join(os.path.dirname(__file__), CONTACTS_CSV), sep=';') # A verifier si ce ; est le meme pour tous les clients
     else:
         logger.info('Le CSV existe deja')
