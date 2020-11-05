@@ -90,6 +90,7 @@ def main(id_, id_linkedin, password_linkedin):
     else:
         logger.info("Demarrage d'une nouvelle journee")
         nb2scrap, pendings = '...', '...'
+        logger.info('rentrons dans update json')
         update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
 
 
