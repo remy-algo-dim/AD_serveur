@@ -108,13 +108,16 @@ def just_connect(browser, profile_link):
     # Menu Ajout
     try:
         browser.get(profile_link)
-        time.sleep(randrange(1, 4))
+        print('on est sur le profil du gars')
+        time.sleep(randrange(4, 7))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
         # Connexion
         name = retrieve_name(browser)
+        print('on a le nom')
         time.sleep(randrange(1, 4))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
         # ON DESACTIVE LE BOUTON ENVOYE PR LINSTANT
+        print('la')
         browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         return name
     except:
@@ -137,9 +140,11 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         if output != 'echec':
             # Ici on a reussi a envoyer
             # On update de suite le csv
+            print('name :', name)
             new_row = {'Personnes':name, 'Links':profile, 'Dates':str(today), 'Nombre messages':0}
             df = df.append(new_row, ignore_index=True)
             df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
+            print('fin update csv')
             # On update egalement le JSON
             update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
         else:
