@@ -232,13 +232,14 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("On recupere la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
 
-    logger.info("Debut des envois de messages")
+    logger.info("Envoi connexions")
     today_total = connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
 
 
 
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     time.sleep(randrange(10, 20))
+    logger.info("Debut des envois de messages")
     first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON)
 
 
