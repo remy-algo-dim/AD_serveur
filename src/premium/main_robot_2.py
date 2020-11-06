@@ -43,10 +43,11 @@ car le script s'appuiera dessus pour ne pas recontacter les memes personnes
 def main(id_, id_linkedin, password_linkedin):
 
     # Dans le cas ou on a rencontre une erreur lors du run precedent, il faut fermer le browser qui ete ouvert
+    bro = 'BROWSER'
     try:
         browser.quit()
     except:
-        logger.info('Le browser precedent a bien ete ferme')
+        logger.info('Le %s precedent a bien ete ferme', bro)
 
     CONTACTS_JSON = 'Contacts/stats_X' + str(id_) + '.json'  ########### temporaire
     CONTACTS_CSV = 'Contacts/liste_personnes_X' + str(id_) + '.csv'########### temporaire
