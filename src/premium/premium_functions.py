@@ -114,11 +114,14 @@ def just_connect(browser, profile_link):
         # Connexion
         name = retrieve_name(browser)
         print('on a le nom')
-        time.sleep(randrange(1, 4))
+        time.sleep(randrange(2, 5))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
+        time.sleep(randrange(2, 5))
         # ON DESACTIVE LE BOUTON ENVOYE PR LINSTANT
         print('la')
-        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
+        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click() # ICI LE BUG
+
+
         return name
     except:
         logger.info('Impossible de se connecter')
