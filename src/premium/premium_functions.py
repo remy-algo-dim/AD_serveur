@@ -131,7 +131,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
         # On envoie
-        name = just_connect(browser, profile_link)
+        name = just_connect(browser, profile)
         print('------------------')
         time.sleep(randrange(5, 8))
         if output != 'echec':
