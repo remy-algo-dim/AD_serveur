@@ -78,9 +78,6 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        print('Len today list ', len(today_list))
-        if len(today_list) > 20:
-            break
         # On envoie
         name, profile_link = connect_add_note_single(browser, profile, message_file_path)
         print(name)
@@ -110,6 +107,7 @@ def just_connect(browser, profile_link):
     """ Permet seulement de se connecter a la personne """
     # Menu Ajout
     try:
+        browser.get(profile_link)
         time.sleep(randrange(1, 4))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
         # Connexion
@@ -132,9 +130,6 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        print('Len today list ', len(today_list))
-        if len(today_list) > 20:
-            break
         # On envoie
         name = just_connect(browser, profile_link)
         print('------------------')
@@ -298,7 +293,6 @@ def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
 def update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
-    logger.info('Creation du json connect')
     print(df['Nombre messages'].dtypes)
     msg_envoyes = len(df[df['Nombre messages']==1])
     updated_json = {"Total connexions envoyees":len(df),
