@@ -43,11 +43,10 @@ car le script s'appuiera dessus pour ne pas recontacter les memes personnes
 def main(id_, id_linkedin, password_linkedin):
 
     # Dans le cas ou on a rencontre une erreur lors du run precedent, il faut fermer le browser qui ete ouvert
-    bro = 'BROWSER'
     try:
         browser.quit()
     except:
-        logger.info('Le %s precedent a bien ete ferme', bro)
+        logger.info("Le browser precedent a bien ete ferme")
 
     CONTACTS_JSON = 'Contacts/stats_X' + str(id_) + '.json'  ########### temporaire
     CONTACTS_CSV = 'Contacts/liste_personnes_X' + str(id_) + '.csv'########### temporaire
@@ -64,7 +63,7 @@ def main(id_, id_linkedin, password_linkedin):
 
         df.to_csv(os.path.join(os.path.dirname(__file__), CONTACTS_CSV), sep=';') # A verifier si ce ; est le meme pour tous les clients
     else:
-        logger.info('Le CSV existe deja')
+        logger.info("Le CSV existe deja")
 
     if path.exists(os.path.join(os.path.dirname(__file__), CONTACTS_JSON)) is False:
         updated_json = {"Total connexions envoyees": 0, "Total messages envoyes": 0, "Total envoyes aujourd'hui": 0, 
@@ -73,31 +72,31 @@ def main(id_, id_linkedin, password_linkedin):
         with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON), 'w') as json_file:
             json.dump(updated_json, json_file)
     else:
-        logger.info('Le JSON existe deja')
+        logger.info("Le JSON existe deja")
 
 
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     print(df.head(2))
-    logger.info('Update du json')
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
     today_list = df['Dates'].tolist()
     today_list = [date for date in today_list if date==str(today)]
-    print('TODAY LISTE : ', len(today_list))
+    logger.info("TODAY LISTE : %s", len(today_list))
     if len(today_list) >= 20:
         logger.info("C'est fini pour aujourd'hui ... Plus de 20 messages envoyes")
         return render_template('fin_algo_prematuree.html')
     else:
         logger.info("Demarrage d'une nouvelle journee")
         nb2scrap, pendings = '...', '...'
+        logger.debug("Update du json")
         update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
 
 
     """             ******************      1ere partie         ******************              """
     
     # CONNEXION 
-    logger.info('Initialisation ChromeDriver')
+    logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
@@ -106,7 +105,7 @@ def main(id_, id_linkedin, password_linkedin):
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
-    logger.info('Connexion a Linkedin')
+    logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
 
@@ -119,7 +118,7 @@ def main(id_, id_linkedin, password_linkedin):
         logger.info("Verifions si une verification par mail est necessaire")
         code_content = browser.find_element_by_class_name('form__input--text')
         code_content.click()
-        logger.info('On a 2 mn pour rentrer le code dans MySQL')
+        logger.info("On a 2 mn pour rentrer le code dans MySQL")
         time.sleep(randrange(120, 180))
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logger.info("Cherchons le code dans MySQL")
@@ -150,10 +149,10 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("Verifions les pending invitations")
     pendings = pending_invit(browser)
     if pendings > 4900:
-        logger.info('ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900')
+        logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
         sys.exit()
     else:
-        print(pendings, ' pending invit')
+        logger.info(" %s pending invit", pendings)
     time.sleep(randrange(2, 5))
 
 
@@ -161,7 +160,7 @@ def main(id_, id_linkedin, password_linkedin):
     """             ******************      2eme partie         ******************              """
 
 
-    logger.info('Accedons aux filtres')
+    logger.info("Accedons aux filtres")
 
     # Recherche des profils
     # All filters Linkedin Premium
@@ -185,7 +184,6 @@ def main(id_, id_linkedin, password_linkedin):
     EFFECTIF = df_filtres['EFFECTIF'].tolist()[0]
     TYPE = df_filtres["TYPE D'ENTREPRISE"].tolist()[0]
 
-    logger.info("Acces aux filtres depuis Excel : ok")
     logger.info("Entrons les filtres")
 
     time.sleep(randrange(5, 8))
@@ -218,34 +216,33 @@ def main(id_, id_linkedin, password_linkedin):
     type_entreprise_filter(browser, TYPE)
     time.sleep(randrange(2, 4))
 
-    logger.info("Filtres appliques : valide")
+    logger.info("Filtres appliques")
 
     validate_research(browser)
     time.sleep(randrange(3, 6))
     # How many profiles to contact (to scrap) ?
-    logger.info("On recupere le nombre de profiles a scrapper")
+    logger.info("Recuperation du nombre de profiles a scrapper")
     nb2scrap = how_many_profiles(browser)
     time.sleep(randrange(4, 7))
 
     """ ---------------------------------- Demande de connexions ---------------------------------- """
 
     # On visite les profils
-    logger.info("On recupere la liste des profiles")
+    logger.debug("Recuperation de la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
 
-    logger.info("Envoi connexions")
+    logger.debug("Envoi connexions")
     today_total = connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
-
-
+    logger.info("Connexions envoyees")
 
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     time.sleep(randrange(10, 20))
-    logger.info("Debut des envois de messages")
+    logger.debug("Debut des envois de messages")
     first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON)
-
-
+    logger.info("Messages envoyes")
     time.sleep(randrange(3, 6))
-    logger.info("----------------------- Cest fini pour aujourd'hui -----------------------")
+
+    logger.info("************************* Cest fini pour aujourd'hui *************************")
     browser.quit()
 
     return render_template('fin_algo.html')
