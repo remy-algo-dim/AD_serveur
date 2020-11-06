@@ -113,15 +113,13 @@ def just_connect(browser, profile_link):
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
         # Connexion
         name = retrieve_name(browser)
-        print('on a le nom')
+        print(' *****', name, ' *****')
         time.sleep(randrange(2, 5))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
         time.sleep(randrange(2, 5))
         # ON DESACTIVE LE BOUTON ENVOYE PR LINSTANT
-        print('la')
-        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click() # ICI LE BUG
-
-
+        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
+        print('Just Connect success')
         return name
     except:
         logger.info('Impossible de se connecter')
@@ -140,7 +138,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         name = just_connect(browser, profile)
         print('------------------')
         time.sleep(randrange(5, 8))
-        if output != 'echec':
+        if name != 'echec':
             # Ici on a reussi a envoyer
             # On update de suite le csv
             print('name :', name)
