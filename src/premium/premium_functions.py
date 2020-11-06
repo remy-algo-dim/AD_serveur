@@ -78,22 +78,26 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        # On envoie
-        name, profile_link = connect_add_note_single(browser, profile, message_file_path)
-        print(name)
-        print('------------------')
-        time.sleep(randrange(5, 8))
-        if name != 'echec':
-            # Ici on a reussi a envoyer
-            # On update de suite le csv
-            new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today)}
-            df = df.append(new_row, ignore_index=True)
-            df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
-            # On update egalement le JSON
-            logger.info('Message envoye')
-            update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+        if len(today_list) >= 20:
+            logger.info("Plus de 20 messages envoyes today")
+            break
         else:
-            print('Echec de connexion pour : ', name)
+            # On envoie
+            name, profile_link = connect_add_note_single(browser, profile, message_file_path)
+            print(name)
+            print('------------------')
+            time.sleep(randrange(5, 8))
+            if name != 'echec':
+                # Ici on a reussi a envoyer
+                # On update de suite le csv
+                new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today)}
+                df = df.append(new_row, ignore_index=True)
+                df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
+                # On update egalement le JSON
+                logger.info("Message envoye")
+                update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+            else:
+                print('Echec de connexion pour : ', name)
 
 
 
@@ -108,18 +112,16 @@ def just_connect(browser, profile_link):
     # Menu Ajout
     try:
         browser.get(profile_link)
-        print('on est sur le profil du gars')
         time.sleep(randrange(4, 7))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
         # Connexion
         name = retrieve_name(browser)
-        print(' *****', name, ' *****')
         time.sleep(randrange(2, 5))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
         time.sleep(randrange(2, 5))
         # ON DESACTIVE LE BOUTON ENVOYE PR LINSTANT
         browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
-        print('Just Connect success')
+        print('Connexion success')
         return name
     except:
         logger.info('Impossible de se connecter')
@@ -134,22 +136,24 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        # On envoie
-        name = just_connect(browser, profile)
-        print('------------------')
-        time.sleep(randrange(5, 8))
-        if name != 'echec':
-            # Ici on a reussi a envoyer
-            # On update de suite le csv
-            print('name :', name)
-            new_row = {'Personnes':name, 'Links':profile, 'Dates':str(today), 'Nombre messages':0}
-            df = df.append(new_row, ignore_index=True)
-            df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
-            print('fin update csv')
-            # On update egalement le JSON
-            update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+        if len(today_list) >= 20:
+            logger.info("Plus de 20 messages envoyes")
+            break
         else:
-            print('Echec de connexion pour : ', name)
+            # On envoie
+            name = just_connect(browser, profile)
+            time.sleep(randrange(5, 8))
+            if name != 'echec':
+                # Ici on a reussi a envoyer
+                # On update de suite le csv
+                print(' *****', name, ' *****')
+                new_row = {'Personnes':name, 'Links':profile, 'Dates':str(today), 'Nombre messages':0}
+                df = df.append(new_row, ignore_index=True)
+                df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
+                # On update egalement le JSON
+                update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+            else:
+                print('Echec de connexion pour : ', name)
 
 
 def send_message(browser, message_file_path, profile_link):
@@ -160,6 +164,7 @@ def send_message(browser, message_file_path, profile_link):
         browser.get(profile_link)
         time.sleep(randrange(3, 6))
         name = retrieve_name(browser)
+        logging.info("Plus de 20 messages envoyes today")
         time.sleep(3)
         #bouton message
         browser.find_element_by_class_name('artdeco-button__text').click()
