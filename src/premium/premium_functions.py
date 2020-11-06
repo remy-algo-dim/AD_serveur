@@ -22,10 +22,8 @@ def Linkedin_connexion(browser, username, password):
     """Connexion to Linkedin platform"""
     elementID = browser.find_element_by_id('username')
     elementID.send_keys(username)
-
     elementID = browser.find_element_by_id('password')
     elementID.send_keys(password)
-
     elementID.submit()
 
 
@@ -39,7 +37,6 @@ def connect_add_note_single(browser, profile_link, message_file_path):
     try:
         time.sleep(randrange(2, 5))
         # Menu Ajout
-        logger.info('On retrieve le name')
         name = retrieve_name(browser)
         time.sleep(randrange(5, 8))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
@@ -83,9 +80,9 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             break
         else:
             # On envoie
+            logger.debug("Tentative de connexion et ajout de note")
             name, profile_link = connect_add_note_single(browser, profile, message_file_path)
-            print(name)
-            print('------------------')
+            logger.info("*** %s ***", "name")
             time.sleep(randrange(5, 8))
             if name != 'echec':
                 # Ici on a reussi a envoyer
@@ -95,9 +92,10 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
                 logger.info("Message envoye")
+                logger.debug("Mise a jour du JSON")
                 update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
             else:
-                print('Echec de connexion pour : ', name)
+                logger.info("Echec de connexion pour : %s", name)
 
 
 
@@ -121,10 +119,10 @@ def just_connect(browser, profile_link):
         time.sleep(randrange(2, 5))
         # ON DESACTIVE LE BOUTON ENVOYE PR LINSTANT
         browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
-        print('Connexion success')
+        logger.info("Connexion success")
         return name
     except:
-        logger.info('Impossible de se connecter')
+        logger.info("Impossible de se connecter")
         return 'echec'
 
 
@@ -146,14 +144,15 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
             if name != 'echec':
                 # Ici on a reussi a envoyer
                 # On update de suite le csv
-                print(' *****', name, ' *****')
+                logger.info("name")
                 new_row = {'Personnes':name, 'Links':profile, 'Dates':str(today), 'Nombre messages':0}
                 df = df.append(new_row, ignore_index=True)
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
+                logger.debug("Misa a jour du JSON")
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
             else:
-                print('Echec de connexion pour : ', name)
+                logger.info("Echec de connexion pour : %s", name)
 
 
 def send_message(browser, message_file_path, profile_link):
@@ -164,8 +163,8 @@ def send_message(browser, message_file_path, profile_link):
         browser.get(profile_link)
         time.sleep(randrange(3, 6))
         name = retrieve_name(browser)
-        logging.info("Plus de 20 messages envoyes today")
-        time.sleep(3)
+        logger.debug("Envoie message %s", name)
+        time.sleep(randrange(2, 4))
         #bouton message
         browser.find_element_by_class_name('artdeco-button__text').click()
         time.sleep(randrange(3, 6))
@@ -190,12 +189,14 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     today_list = df['Dates'].tolist()
     previous_days_list = [date for date in today_list if date!=str(today)]
     #Ceux ajoutes aujourd'hui nous ont surement pas accepte encore, on cherchera les previous contacts alors
+    logger.info("Recuperation des precedentes connexions")
     df_temporary = df[df['Dates'].isin(previous_days_list)]
     print('---------------------------------------- df temporary, meme index que df initiale ?')
     print(df.head(2))
     person2contact = df_temporary['Links'].tolist()
     nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
+    logger.debug("Envoi des messages aux connexions non contactees")
     for index_, person, nb_msg in zip(person2contact, nbe_msg_envoyes, index_list):
         if nb_msg == 0:
             name = send_message(browser, message_file_path, person)
