@@ -6,6 +6,8 @@ import json
 import datetime
 import logging
 import time
+import traceback
+
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'premium'))
 import main_robot_1, main_robot_2
@@ -195,8 +197,8 @@ def script():
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
 			return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
-	except Exception as e:
-		logger.debug("%s", e)
+	except:
+		traceback.print_exc()
 		logger.info("Algo non execute jusqu'a la fin")
 		return render_template('error.html')
 
