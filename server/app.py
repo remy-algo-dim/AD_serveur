@@ -16,7 +16,6 @@ sys.dont_write_bytecode = True
 logger = logging.getLogger("app.py")
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 ch.setFormatter(formatter)
 logger.addHandler(ch)
@@ -207,21 +206,18 @@ def dashboard():
 	# le dashboard va chercher les datas dans le json
 	try:
 		if session['email']:
-			with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_X'+str(session['id'])+'.json'),'r') as j:
+			with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(session['id'])+'.json'),'r') as j:
 				json_data = json.load(j)
 				nb_contacted_total = json_data["Total messages envoyes"]
 				nb_contacted_today = json_data["Total envoyes aujourd'hui"]
 				nb_contacted_per_filter = json_data["Personnes a contacter pour ce filtre"]
 				pending_invit = json_data["Pending invit"]
-				logger.debug("Data supplementaire robot 2 .. ?")
 				try:
-					logger.info("Succes")
 					total_connexions = json_data["Total connexions envoyees"]
 					logging.info("Dashboard robot 2")
 					return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
 						nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit, total_connexions=total_connexions)
 				except:
-					logging.info("Echec ...")
 					logging.info("Dashboard robot 1")
 					total_connexions = nb_contacted_total
 					return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,

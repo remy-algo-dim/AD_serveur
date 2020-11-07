@@ -26,7 +26,6 @@ CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 logger = logging.getLogger("main_robot_2.py")
 logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 ch.setFormatter(formatter)
 logger.addHandler(ch)
@@ -239,7 +238,7 @@ def main(id_, id_linkedin, password_linkedin):
     time.sleep(randrange(10, 20))
     logger.debug("Debut des envois de messages")
     first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON)
-    logger.info("Messages envoyes")
+    logger.info("Fin du flow d'envoi de messages")
     time.sleep(randrange(3, 6))
 
     logger.info("************************* Cest fini pour aujourd'hui *************************")

@@ -144,12 +144,12 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
             if name != 'echec':
                 # Ici on a reussi a envoyer
                 # On update de suite le csv
-                logger.info("name")
+                logger.info("------> %s", name)
                 new_row = {'Personnes':name, 'Links':profile, 'Dates':str(today), 'Nombre messages':0}
                 df = df.append(new_row, ignore_index=True)
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
-                logger.debug("Misa a jour du JSON")
+                logger.debug("Mise a jour du JSON")
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
             else:
                 logger.info("Echec de connexion pour : %s", name)
@@ -205,6 +205,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
                 df.loc[index_, 'Nombre de messages'] = 1
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 time.sleep(randrange(2, 4))
+                logger.info("Message envoye a %s", name)
                 # On update egalement le JSON
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
             else: #echec
