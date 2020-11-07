@@ -23,13 +23,10 @@ from premium_filters import type_entreprise_filter, validate_research
 CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
 # Logger
-logger = logging.getLogger("main_robot_1.py")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-ch.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+logger = logging.getLogger(__name__)
 
 """ 
 Il s'agit de la version que l'on deploiera en production -- D'ou la presence d'une fonction main() afin de l'importer dans le Flask
