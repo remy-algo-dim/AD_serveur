@@ -13,12 +13,11 @@ import main_robot_1, main_robot_2
 sys.dont_write_bytecode = True
 
 # Logger
-logger = logging.getLogger("app.py")
-logger.setLevel(logging.DEBUG)
-ch = logging.StreamHandler()
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-ch.setFormatter(formatter)
-logger.addHandler(ch)
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+logger = logging.getLogger(__name__)
+
 
 
 def db_connect():
