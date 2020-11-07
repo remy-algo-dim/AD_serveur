@@ -195,7 +195,8 @@ def script():
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
 			return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
-	except:
+	except Exception as e:
+		logger.debug("%s", e)
 		logger.info("Algo non execute jusqu'a la fin")
 		return render_template('error.html')
 
