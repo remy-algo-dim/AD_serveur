@@ -26,8 +26,7 @@ CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
 app = Flask(__name__)
 
-logging.basicConfig(stream=sys.stdout,
-                    level=logging.DEBUG,
+logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 logger = logging.getLogger(__name__)
 
