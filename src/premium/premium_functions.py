@@ -10,9 +10,12 @@ import logging
 import pymysql.cursors
 
 # Logger
-logging.basicConfig(level=logging.DEBUG,
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 logger = logging.getLogger(__name__)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("requests").setLevel(logging.WARNING)
 
 def Linkedin_connexion(browser, username, password):
     """Connexion to Linkedin platform"""
