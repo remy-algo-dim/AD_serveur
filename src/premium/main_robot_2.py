@@ -23,9 +23,6 @@ from premium_filters import type_entreprise_filter, validate_research
 CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
 # Logger
-
-app = Flask(__name__)
-
 logging.basicConfig(stream=sys.stdout,
                     level=logging.DEBUG,
                     format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
@@ -234,6 +231,9 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("Connexions envoyees")
 
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
+    #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions
+    #de premium_functions n'a pas actualise ce qui se passe dans ce fichier-ci)
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     time.sleep(randrange(10, 20))
     logger.debug("Debut des envois de messages")
     first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON)

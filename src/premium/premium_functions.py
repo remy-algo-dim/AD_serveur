@@ -136,7 +136,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
         if len(today_list) >= 20:
-            logger.info("Plus de 20 messages envoyes")
+            logger.info("Plus de 20 connexions envoyes")
             break
         else:
             # On envoie
@@ -189,18 +189,24 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     today = date.today()
     today_list = df['Dates'].tolist()
     previous_days_list = [date for date in today_list if date!=str(today)]
+    print('PREVUOUS PROFILES : ', previous_days_list)
+    printt('len previous profils : ', len(previous_days_list))
+    print(df['Dates'])
     #Ceux ajoutes aujourd'hui nous ont surement pas accepte encore, on cherchera les previous contacts alors
     logger.info("Recuperation des precedentes connexions")
     df_temporary = df[df['Dates'].isin(previous_days_list)]
+    print(df_temporary['Dates'])
     print('---------------------------------------- df temporary, meme index que df initiale ?')
     print('LEN DF TOTAL : ', len(df))
     print('LEN DF TEMPORARY : ', len(df_temporary))
+    print(df_temporary['Nombre messages'])
 
     person2contact = df_temporary['Links'].tolist()
     nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
     logger.debug("Envoi des messages aux connexions non contactees")
-    for index_, person, nb_msg in zip(person2contact, nbe_msg_envoyes, index_list):
+    for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
+        print(index, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
             name = send_message(browser, message_file_path, person)
             if name != 'echec':
