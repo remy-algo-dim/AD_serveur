@@ -8,6 +8,7 @@ from random import randrange
 from datetime import date
 import logging
 import pymysql.cursors
+from selenium.webdriver.remote.remote_connection import LOGGER
 
 # Logger
 logging.basicConfig(stream=sys.stdout,
@@ -16,6 +17,7 @@ logging.basicConfig(stream=sys.stdout,
 logger = logging.getLogger(__name__)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("requests").setLevel(logging.WARNING)
+LOGGER.setLevel(logging.WARNING)
 
 def Linkedin_connexion(browser, username, password):
     """Connexion to Linkedin platform"""

@@ -12,7 +12,7 @@ import pymysql.cursors
 import logging
 from flask import Flask, render_template
 from datetime import date
-
+from selenium.webdriver.remote.remote_connection import LOGGER
 
 from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit
 from premium_filters import location_filter, langue_filter, secteur_filter, degre_filter, ecole_filter
@@ -29,6 +29,7 @@ logging.basicConfig(stream=sys.stdout,
 logger = logging.getLogger(__name__)
 logging.getLogger("urllib3").setLevel(logging.WARNING)
 logging.getLogger("requests").setLevel(logging.WARNING)
+LOGGER.setLevel(logging.WARNING)
 
 """ 
 Il s'agit de la version que l'on deploiera en production -- D'ou la presence d'une fonction main() afin de l'importer dans le Flask
@@ -104,8 +105,6 @@ def main(id_, id_linkedin, password_linkedin):
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument("--log-level 3")
-
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
