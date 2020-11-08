@@ -189,7 +189,9 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     logger.info("Recuperation des precedentes connexions")
     df_temporary = df[df['Dates'].isin(previous_days_list)]
     print('---------------------------------------- df temporary, meme index que df initiale ?')
-    print(df.head(2))
+    print('LEN DF TOTAL : ', len(df))
+    print('LEN DF TEMPORARY : ', len(df_temporary))
+
     person2contact = df_temporary['Links'].tolist()
     nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
