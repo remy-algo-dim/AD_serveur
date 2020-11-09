@@ -97,6 +97,7 @@ def main(id_, id_linkedin, password_linkedin):
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
+    chrome_options.add_argument("--start-maximized")
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
