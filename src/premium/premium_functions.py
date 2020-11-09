@@ -252,9 +252,7 @@ def send_message_bis(browser, message_file_path, profile_link):
         logger.debug("Tentons d'envoyer un message a %s", name)
         time.sleep(randrange(2, 4))
         #on clique sur le bouton plus
-        PLUS = browser.find_element_by_class_name("pv-s-profile-actions__overflow-toggle")
-        time.sleep(randrange(1, 2))
-        PLUS.click()
+        PLUS = browser.find_element_by_class_name("pv-s-profile-actions__overflow-toggle").click()
         time.sleep(randrange(2, 4))
         #Si on on peut se connecter a la personne, c'est qu'on l'a pas en ami ... Si on ne peut pas, on peut
         # donc lui envoyer un msg
@@ -264,12 +262,9 @@ def send_message_bis(browser, message_file_path, profile_link):
             return name
         except:
             logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message")
-            MESSAGE = browser.find_element_by_class_name("message-anywhere-button")
-            MESSAGE.click()
+            MESSAGE = browser.find_element_by_class_name("message-anywhere-button").click()
             time.sleep(randrange(2, 4))
-            content_place = browser.find_element_by_class_name("msg-form__contenteditable")
-            time.sleep(randrange(1, 3))
-            content_place.click()
+            content_place = browser.find_element_by_class_name("msg-form__contenteditable").click()
             time.sleep(randrange(2, 4))
             content_place.send_keys(customMessage)
             time.sleep(randrange(2, 4))
