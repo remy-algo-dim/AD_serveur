@@ -248,11 +248,11 @@ if __name__ == "__main__":
 
 # ssh -i remy_key.pem  ubuntu@ec2-15-237-137-177.eu-west-3.compute.amazonaws.com
 # sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
-""" TODO : beaux logs, dashboard AD, stop the algo lorsquon le souhaite, templates error... si jactualise la page script pr rien
-100 fois jaiemrais que lalgo ne se run que sil doit se runner, je veux donc eviter les connexions superflues a linkedin
+""" TODO : dashboard AD,
 ajouter les stats du dash a mysql et pas que les fihiers temporaires
-quand le jour change, remettre a 0 le nbe de messages envoyes ds le dashboard aujourdhui
-
+send flow message, mieux filtrer des le debut, je ne prends que les personnes que je nai pas contacte hier mais je dois mieux
+filtrer en prenanr celles qui ont deja un 1 ds nbe message. Malheureusement je ne peux pas debuger car jai deja envoye le nbe max 
+de connexion, et flemme de changer le cdode que pr ca
 
 """
 

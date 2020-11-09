@@ -179,7 +179,7 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(3, 6))
         return name
     except:
-        logging.info("Impossible d'envoyer un message")
+        logging.info("Impossible d'envoyer un message (send msg fonction)")
         return 'echec'
 
 
@@ -189,8 +189,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     today = date.today()
     today_list = df['Dates'].tolist()
     previous_days_list = [date for date in today_list if date!=str(today)]
-    print('PREVUOUS PROFILES : ', previous_days_list)
-    printt('len previous profils : ', len(previous_days_list))
+    print('len previous profils : ', len(previous_days_list))
     print(df['Dates'])
     #Ceux ajoutes aujourd'hui nous ont surement pas accepte encore, on cherchera les previous contacts alors
     logger.info("Recuperation des precedentes connexions")
@@ -208,6 +207,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
         print(index, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
+            logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
             name = send_message(browser, message_file_path, person)
             if name != 'echec':
                 #message correctement envoye - on ajoute le lien dans la liste
@@ -218,6 +218,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
                 # On update egalement le JSON
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
             else: #echec
+                logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
                 pass
         else:
             logging.info("Message deja envoye au contact")

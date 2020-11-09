@@ -247,10 +247,4 @@ def main(id_, id_linkedin, password_linkedin):
 
 
 
-    
-    #TODO
-
-    #faire un script qui permet de verifier les pending invit et reflechir a quand le lancer et ou save les infos
-    # verifier si les time sleep sont bien places
-
 
