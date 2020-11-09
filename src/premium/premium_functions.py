@@ -164,7 +164,7 @@ def send_message(browser, message_file_path, profile_link):
         browser.get(profile_link)
         time.sleep(randrange(3, 6))
         name = retrieve_name(browser)
-        logger.debug("Envoie message %s", name)
+        logger.debug("Tentative envoie message %s", name)
         time.sleep(randrange(2, 4))
         #bouton message
         browser.find_element_by_class_name('artdeco-button__text').click()
@@ -195,7 +195,6 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     logger.info("Recuperation des precedentes connexions")
     df_temporary = df[df['Dates'].isin(previous_days_list)]
     print(df_temporary['Dates'])
-    print('---------------------------------------- df temporary, meme index que df initiale ?')
     print('LEN DF TOTAL : ', len(df))
     print('LEN DF TEMPORARY : ', len(df_temporary))
     print(df_temporary['Nombre messages'])
@@ -203,10 +202,12 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     person2contact = df_temporary['Links'].tolist()
     nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
+
     logger.debug("Envoi des messages aux connexions non contactees")
     for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
         print(index_, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
+            break
             logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
             name = send_message(browser, message_file_path, person)
             if name != 'echec':
@@ -214,14 +215,16 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
                 df.loc[index_, 'Nombre de messages'] = 1
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 time.sleep(randrange(2, 4))
-                logger.info("Message envoye a %s", name)
                 # On update egalement le JSON
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+                logger.info("Succes ! Message envoye a %s", name)
             else: #echec
                 logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
                 pass
         else:
             logging.info("Message deja envoye au contact")
+    logger.info("Tentons REMY ADDA")
+    send_message(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
 
 
 
