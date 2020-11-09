@@ -249,11 +249,12 @@ def send_message_bis(browser, message_file_path, profile_link):
         html = browser.page_source
         #print(html)
         name = browser.find_element_by_class_name("break-words").text
+        print(name)
         logger.debug("Tentons d'envoyer un message a %s", name)
         time.sleep(randrange(2, 4))
         #on clique sur le bouton plus
-        browser.find_element_by_class_name("pv-s-profile-actions__overflow-toggle").click()
-        time.sleep(randrange(2, 4))
+        ##browser.find_element_by_class_name("pv-s-profile-actions__overflow-toggle").click()
+        ##time.sleep(randrange(2, 4))
         #Si on on peut se connecter a la personne, c'est qu'on l'a pas en ami ... Si on ne peut pas, on peut
         # donc lui envoyer un msg
         try:
