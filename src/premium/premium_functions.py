@@ -163,10 +163,7 @@ def send_message(browser, message_file_path, profile_link):
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
         customMessage = f.read()
     try:
-        print(profile_link)
-        logger.debug('essayons daller sur son lien')
         browser.get(profile_link)
-        logger.debug("on est sur le lien Remy")
         time.sleep(randrange(3, 6))
         name = retrieve_name(browser)
         logger.debug("Tentative envoie message %s", name)
@@ -230,7 +227,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
         else:
             logging.info("Message deja envoye au contact")
     logger.info("Tentons REMY ADDA")
-    name = send_message(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
+    name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAAB0Tn5sBwXrCR4u6FsYkDvM_LIY3k4CAdLQ,NAME_SEARCH,RaHV?")
     print(name)
 
 
