@@ -262,21 +262,22 @@ def send_message_bis(browser, message_file_path, profile_link):
             logger.debug("%s n'est pas encore dans notre reseau", name)
             return name
         except:
-            logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message")
+            logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message", name)
             browser.find_element_by_class_name("message-anywhere-button").click()
             time.sleep(randrange(2, 4))
             content_place = browser.find_element_by_class_name("msg-form__contenteditable")
             time.sleep(randrange(2, 4))
             content_place.click()
+            time.sleep(randrange(4, 7))
             content_place.send_keys(customMessage)
-            time.sleep(randrange(2, 4))
+            time.sleep(randrange(3, 6))
             #il y a 2 moyens d'envoyer : soit cliquer sur entrer
             try:
                 content_place.send_keys(Keys.ENTER)
-                logger.info("Message correctement envoye")
+                logger.info("Message correctement envoye (ENTER)")
             except: #cliquer sur envoyer
                 browser.find_element_by_class_name("msg-form__send-button")
-                logger.info("Message correctement envoye")
+                logger.info("Message correctement envoye (CLICK)")
     except:
         traceback.print_exc()
         logger.info("Impossible d'appliquer la fonction send_message")
