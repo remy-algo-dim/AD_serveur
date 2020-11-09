@@ -10,6 +10,8 @@ import logging
 import pymysql.cursors
 from selenium.webdriver.remote.remote_connection import LOGGER
 import traceback
+from selenium.webdriver.common.keys import Keys
+
 
 
 # Logger
@@ -128,6 +130,48 @@ def just_connect(browser, profile_link):
         logger.info("Impossible de se connecter")
         return 'echec'
 
+def just_connect_bis(browser, profile_link):
+    """ Permet seulement de se connecter a la personne 
+    Prend en entree le lien premium et renvoie le nom ainsi que le lien standard"""
+    # Menu Ajout
+    try:
+        logger.info("Acces au profile Linkedin standard")
+        browser.get(profile_link) # premium
+        name = retrieve_name(browser)
+        time.sleep(randrange(4, 7))
+        # Menu pour acceder a l'URL linkedin standard
+        menu = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]')
+        time.sleep(randrange(1, 2))
+        menu.click()
+        time.sleep(randrange(3, 6))
+        # Linkedin normal
+        linkedinDOTcom = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[3]/div')
+        time.sleep(randrange(1, 2))
+        linkedinDOTcom.click()
+        time.sleep(randrange(3, 6))
+        # Switch window
+        logger.info("Succes. On Switch de browser windows")
+        window_before = browser.window_handles[0]
+        window_after = browser.window_handles[1]
+        browser.switch_to.window(window_after)
+        time.sleep(randrange(3, 6))
+        profile_link = browser.current_url
+        # Connexion
+        logger.info("Connexion au profil")
+        CONNEXION = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[1]/div/button/span')
+        time.sleep(randrange(1, 2))
+        CONNEXION.click()
+        time.sleep(randrange(3, 6))
+        # Envoyer
+        ENVOYER = browser.find_element_by_xpath('/html/body/div[4]/div/div/div[3]/button[2]/span')
+        time.sleep(randrange(1, 2))
+        ENVOYER.click()
+        time.sleep(randrange(1, 3))
+        logger.info("Connexion success")
+        return name, profile_link
+    except:
+        logger.info("Impossible de se connecter")
+        return 'echec'
 
 
 def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON):
@@ -142,13 +186,13 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
             break
         else:
             # On envoie
-            name = just_connect(browser, profile)
+            name, standard_profile_link = just_connect_bis(browser, profile)
             time.sleep(randrange(5, 8))
             if name != 'echec':
                 # Ici on a reussi a envoyer
                 # On update de suite le csv
                 logger.info("------> %s", name)
-                new_row = {'Personnes':name, 'Links':profile, 'Dates':str(today), 'Nombre messages':0}
+                new_row = {'Personnes':name, 'Links':standard_profile_link, 'Dates':str(today), 'Nombre messages':0}
                 df = df.append(new_row, ignore_index=True)
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
@@ -194,6 +238,55 @@ def send_message(browser, message_file_path, profile_link):
 
 
 
+def send_message_bis(browser, message_file_path, profile_link):
+    """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom """
+    with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
+        customMessage = f.read()
+    try: 
+        browser.get(profile_link)
+        time.sleep(randrange(3, 6))
+        name = retrieve_name(browser)
+        logger.debug("Tentons d'envoyer un message a %s", name)
+        time.sleep(randrange(2, 4))
+        #on clique sur le bouton plus
+        PLUS = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[3]/div/button/span')
+        time.sleep(randrange(1, 2))
+        PLUS.click()
+        time.sleep(randrange(2, 4))
+        #Si on on peut se connecter a la personne, c'est qu'on l'a pas en ami ... Si on ne peut pas, on peut
+        # donc lui envoyer un msg
+        try:
+            CONNEXION = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[3]/div/div/div/ul/li[4]/div/div/span[1]')
+            logger.debug("%s n'est pas encore dans notre reseau", name)
+            return name
+        except:
+            logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message")
+            MESSAGE = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[1]/a')
+            time.sleep(randrange(1, 3))
+            MESSAGE.click()
+            time.sleep(randrange(2, 4))
+            content_place = browser.find_element_by_xpath('/html/body/div[7]/aside/div[2]/div[1]/form/div[2]/div/div[1]/div[1]')
+            time.sleep(randrange(1, 3))
+            content_place.click()
+            time.sleep(randrange(2, 4))
+            content_place.send_keys(customMessage)
+            time.sleep(randrange(2, 4))
+            #il y a 2 moyens d'envoyer : soit cliquer sur entrer
+            try:
+                content_place.send_keys(Keys.ENTER)
+                logger.info("Message correctement envoye")
+            except: #cliquer sur envoyer
+                browser.find_element_by_xpath('/html/body/div[7]/aside/div[2]/div[1]/form/footer/div[2]/div[1]/button').click()
+                logger.info("Message correctement envoye")
+    except:
+        logger.info("Impossible d'appliquer la fonction send_message")
+        return 'echec'
+        
+        
+
+
+
+
 def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON):
     """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees"""
     today = date.today()
@@ -217,7 +310,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
         print(index_, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
-            break
+            break ####### a enlever
             logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
             name = send_message(browser, message_file_path, person)
             if name != 'echec':
@@ -234,7 +327,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
         else:
             logging.info("Message deja envoye au contact")
     logger.info("Tentons REMY ADDA")
-    name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAAB0Tn5sBwXrCR4u6FsYkDvM_LIY3k4CAdLQ,NAME_SEARCH,RaHV?")
+    name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
     print(name)
 
 
