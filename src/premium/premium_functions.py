@@ -173,10 +173,12 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(3, 6))
         #contenu + message
         content = browser.find_element_by_class_name('compose-form__message-field')
+        time.sleep(randrange(2, 4))
         content.click()
         time.sleep(randrange(3, 6))
         #Envoi
         content.send_keys(customMessage)
+        time.sleep(randrange(4, 7))
         browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]/span').click()
         time.sleep(randrange(3, 6))
         return name
