@@ -257,11 +257,16 @@ def send_message_bis(browser, message_file_path, profile_link):
         ##time.sleep(randrange(2, 4))
         #Si on on peut se connecter a la personne, c'est qu'on l'a pas en ami ... Si on ne peut pas, on peut
         # donc lui envoyer un msg
-        try:
-            CONNEXION = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[3]/div/div/div/ul/li[4]/div/div/span[1]')
-            logger.debug("%s n'est pas encore dans notre reseau", name)
+        BOUTON = browser.find_element_by_class_name("pv-s-profile-actions").text
+        if BOUTON == 'Se connecter':
+            # CONNEXION
+            logger.debug("%s n'est pas encore dans notre reseau (non demandee)", name)
             return name
-        except:
+        elif BOUTON == 'En attente':
+            logger.debug("%s n'est pas encore dans notre reseau (attente)", name)
+            return name
+        else: #BOUTON=message
+            # Si on a pas reussi a se connecter c'est qu'on peut envoyer un message
             logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message", name)
             browser.find_element_by_class_name("message-anywhere-button").click()
             time.sleep(randrange(2, 4))
@@ -274,11 +279,13 @@ def send_message_bis(browser, message_file_path, profile_link):
             print(customMessage)
             #il y a 2 moyens d'envoyer : soit cliquer sur entrer
             try:
-                browser.find_element_by_class_name("msg-form__send-button")
+                browser.find_element_by_class_name("msg-form__send-button").click()
+                time.sleep(randrange(1, 3))
                 logger.info("Message correctement envoye (CLICK)")
                 return name
             except: #cliquer sur envoyer
-                content_place.send_keys(Keys.ENTER)
+                content_place.send_keys(Keys.ENTER).click()
+                time.sleep(randrange(1, 3))
                 logger.info("Message correctement envoye (ENTER)")
                 return name
     except:
@@ -332,7 +339,6 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
             logging.info("Message deja envoye au contact")
     logger.info("Tentons REMY ADDA")
     name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
-    print(name)
 
 
 

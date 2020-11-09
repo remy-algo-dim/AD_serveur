@@ -94,13 +94,12 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
-    chrome_options.add_argument("--start-maximized")
-      
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
@@ -143,13 +142,13 @@ def main(id_, id_linkedin, password_linkedin):
     # PENDING INVIT
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau
     logger.info("Verifions les pending invitations")
-    pendings = pending_invit(browser)
-    if pendings > 4900:
-        logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
-        sys.exit()
-    else:
-        logger.info(" %s pending invit", pendings)
-    time.sleep(randrange(2, 5))
+    #pendings = pending_invit(browser)
+    #if pendings > 4900:
+     #   logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
+      #  sys.exit()
+    #else:
+     #   logger.info(" %s pending invit", pendings)
+    #time.sleep(randrange(2, 5))
 
 
 
@@ -237,7 +236,7 @@ def main(id_, id_linkedin, password_linkedin):
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     time.sleep(randrange(10, 20))
     logger.debug("Debut des envois de messages")
-    first_flow_msg(browser, df, MESSAGE_FILE_PATH, 1000, pendings, CONTACTS_JSON)
+    first_flow_msg(browser, df, MESSAGE_FILE_PATH, 1000, 11, CONTACTS_JSON)
     logger.info("Fin du flow d'envoi de messages")
     time.sleep(randrange(3, 6))
 
