@@ -205,7 +205,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
     logger.debug("Envoi des messages aux connexions non contactees")
     for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
-        print(index, person, nb_msg, type(nb_msg))
+        print(index_, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
             logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
             name = send_message(browser, message_file_path, person)
