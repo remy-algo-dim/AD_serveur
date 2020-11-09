@@ -10,7 +10,7 @@ import traceback
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'premium'))
-import main_robot_1, main_robot_2
+import main_robot_1, main_robot_2, test_send_msg
 
 sys.dont_write_bytecode = True
 
@@ -196,7 +196,7 @@ def script():
 	try:
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
-			return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
+			return test_send_msg.main(session['id'], session['email'], session['password_non_hashed'])
 	except:
 		traceback.print_exc()
 		logger.info("Algo non execute jusqu'a la fin")
