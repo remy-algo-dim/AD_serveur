@@ -9,6 +9,8 @@ from datetime import date
 import logging
 import pymysql.cursors
 from selenium.webdriver.remote.remote_connection import LOGGER
+import traceback
+
 
 # Logger
 logging.basicConfig(stream=sys.stdout,
@@ -182,6 +184,7 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(3, 6))
         return name
     except:
+        traceback.print_exc()
         logging.info("Impossible d'envoyer un message (send msg fonction)")
         return 'echec'
 
