@@ -179,6 +179,9 @@ def send_message(browser, message_file_path, profile_link):
         #Envoi
         content.send_keys(customMessage)
         time.sleep(randrange(4, 7))
+        print('on est pret a envoyer le message')
+        html = browser.page_source
+        print(html)
         send = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]/span')
         time.sleep(randrange(3, 6))
         send.click()
