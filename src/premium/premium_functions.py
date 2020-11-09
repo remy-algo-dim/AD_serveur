@@ -247,9 +247,8 @@ def send_message_bis(browser, message_file_path, profile_link):
         time.sleep(randrange(3, 6))
         # Name de la page standard (different de la page premium !)
         html = browser.page_source
-        print(html)
-        print(browser.current_url)
-        name = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[2]/div[1]/ul[1]/li[1]').text
+        #print(html)
+        name = browser.find_element_by_class_name("break-words").text
         logger.debug("Tentons d'envoyer un message a %s", name)
         time.sleep(randrange(2, 4))
         #on clique sur le bouton plus
