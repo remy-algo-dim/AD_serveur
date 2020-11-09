@@ -239,13 +239,12 @@ def send_message(browser, message_file_path, profile_link):
 
 
 def send_message_bis(browser, message_file_path, profile_link):
-    """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom """
+    """ Prend en input le lien linkedin standard - Envoie le message """
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
         customMessage = f.read()
     try:
         browser.get(profile_link)
         time.sleep(randrange(3, 6))
-        name = retrieve_name(browser)
         logger.debug("Tentons d'envoyer un message a %s", name)
         time.sleep(randrange(2, 4))
         #on clique sur le bouton plus
@@ -258,7 +257,6 @@ def send_message_bis(browser, message_file_path, profile_link):
         try:
             CONNEXION = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[3]/div/div/div/ul/li[4]/div/div/span[1]')
             logger.debug("%s n'est pas encore dans notre reseau", name)
-            return name
         except:
             logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message")
             MESSAGE = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[1]/a')
@@ -281,7 +279,6 @@ def send_message_bis(browser, message_file_path, profile_link):
     except:
         traceback.print_exc()
         logger.info("Impossible d'appliquer la fonction send_message")
-        return 'echec'
         
         
 
@@ -328,8 +325,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
         else:
             logging.info("Message deja envoye au contact")
     logger.info("Tentons REMY ADDA")
-    name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
-    print(name)
+    send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
 
 
 
