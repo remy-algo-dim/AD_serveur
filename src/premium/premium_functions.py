@@ -242,7 +242,7 @@ def send_message_bis(browser, message_file_path, profile_link):
     """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom """
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
         customMessage = f.read()
-    try: 
+    try:
         browser.get(profile_link)
         time.sleep(randrange(3, 6))
         name = retrieve_name(browser)
@@ -279,6 +279,7 @@ def send_message_bis(browser, message_file_path, profile_link):
                 browser.find_element_by_xpath('/html/body/div[7]/aside/div[2]/div[1]/form/footer/div[2]/div[1]/button').click()
                 logger.info("Message correctement envoye")
     except:
+        traceback.print_exc()
         logger.info("Impossible d'appliquer la fonction send_message")
         return 'echec'
         
