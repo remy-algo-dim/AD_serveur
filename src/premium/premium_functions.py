@@ -252,7 +252,7 @@ def send_message_bis(browser, message_file_path, profile_link):
         logger.debug("Tentons d'envoyer un message a %s", name)
         time.sleep(randrange(2, 4))
         #on clique sur le bouton plus
-        PLUS = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[3]/div/button/span')
+        PLUS = browser.find_element_by_class_name("pv-s-profile-actions__overflow-toggle")
         time.sleep(randrange(1, 2))
         PLUS.click()
         time.sleep(randrange(2, 4))
@@ -264,11 +264,10 @@ def send_message_bis(browser, message_file_path, profile_link):
             return name
         except:
             logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message")
-            MESSAGE = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[1]/a')
-            time.sleep(randrange(1, 3))
+            MESSAGE = browser.find_element_by_class_name("message-anywhere-button")
             MESSAGE.click()
             time.sleep(randrange(2, 4))
-            content_place = browser.find_element_by_xpath('/html/body/div[7]/aside/div[2]/div[1]/form/div[2]/div/div[1]/div[1]')
+            content_place = browser.find_element_by_class_name("msg-form__contenteditable")
             time.sleep(randrange(1, 3))
             content_place.click()
             time.sleep(randrange(2, 4))
@@ -279,7 +278,7 @@ def send_message_bis(browser, message_file_path, profile_link):
                 content_place.send_keys(Keys.ENTER)
                 logger.info("Message correctement envoye")
             except: #cliquer sur envoyer
-                browser.find_element_by_xpath('/html/body/div[7]/aside/div[2]/div[1]/form/footer/div[2]/div[1]/button').click()
+                browser.find_element_by_class_name("msg-form__send-button")
                 logger.info("Message correctement envoye")
     except:
         traceback.print_exc()
