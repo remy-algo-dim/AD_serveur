@@ -274,12 +274,12 @@ def send_message_bis(browser, message_file_path, profile_link):
             print(customMessage)
             #il y a 2 moyens d'envoyer : soit cliquer sur entrer
             try:
-                content_place.send_keys(Keys.ENTER)
-                logger.info("Message correctement envoye (ENTER)")
-                return name
-            except: #cliquer sur envoyer
                 browser.find_element_by_class_name("msg-form__send-button")
                 logger.info("Message correctement envoye (CLICK)")
+                return name
+            except: #cliquer sur envoyer
+                content_place.send_keys(Keys.ENTER)
+                logger.info("Message correctement envoye (ENTER)")
                 return name
     except:
         traceback.print_exc()
