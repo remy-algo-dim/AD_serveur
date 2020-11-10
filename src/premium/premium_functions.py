@@ -234,7 +234,7 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(10, 15))
         #contenu + message
         #content = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea')
-        content = WebDriverWait(browser, 40).until(EC.element_to_be_clickable((By.XPATH,
+        content = WebDriverWait(browser, 120).until(EC.element_to_be_clickable((By.XPATH,
                     "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
         content.click()
         time.sleep(randrange(4, 8))
