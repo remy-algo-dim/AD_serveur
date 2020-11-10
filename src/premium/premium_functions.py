@@ -237,12 +237,14 @@ def send_message(browser, message_file_path, profile_link):
         logger.debug("Attendons que le content place se charge avant de cliquer dessus")
         #content = WebDriverWait(browser, 200).until(EC.element_to_be_clickable((By.XPATH,
                     #"/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
-        content = browser.find_element_by_name('message')          
-        content.click()
+        content = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea')
+        time.sleep(5)
+        browser.execute_script("arguments[0].click();", content)        
+        #content.click()
         time.sleep(randrange(4, 8))
         #Envoi
         html = browser.page_source
-        print(html)
+        #print(html)
         content.send_keys(customMessage)
         time.sleep(randrange(5, 8))
         logger.debug("Bouton ENVOYER")
