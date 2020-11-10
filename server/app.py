@@ -196,7 +196,7 @@ def script():
 	try:
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
-			return test_send_msg.main(session['id'], session['email'], session['password_non_hashed'])
+			return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
 	except:
 		traceback.print_exc()
 		logger.info("Algo non execute jusqu'a la fin")
