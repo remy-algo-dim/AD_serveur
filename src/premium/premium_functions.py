@@ -268,7 +268,7 @@ def send_message(browser, message_file_path, profile_link):
 
 
 def send_message_bis(browser, message_file_path, profile_link):
-    """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom 
+    """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom.
     3 cas sont geres pour bien envoye le message, en fonction du bouton disponible"""
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
         customMessage = f.read()
@@ -385,7 +385,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     #logger.info("Tentons l'INCONNU")
     #name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACBthBYBxaRBRkQRTLttXkV3SUoExJM3Krw,NAME_SEARCH,LcCq")
     logger.info("Tentons ma FEMME")
-    name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACVDV2sBKA0MJwOJcGKmJW-1s7EgWCSFaYA,NAME_SEARCH,dt0z")
+    name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
 
 
 
