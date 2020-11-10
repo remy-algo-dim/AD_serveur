@@ -236,7 +236,7 @@ def main(id_, id_linkedin, password_linkedin):
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     time.sleep(randrange(10, 20))
     logger.debug("Debut des envois de messages")
-    first_flow_msg(browser, df, MESSAGE_FILE_PATH, 1000, 11, CONTACTS_JSON)
+    first_flow_msg(browser, df, MESSAGE_FILE_PATH, 1000, 11, CONTACTS_JSON, CONTACTS_CSV)
     logger.info("Fin du flow d'envoi de messages")
     time.sleep(randrange(3, 6))
 
