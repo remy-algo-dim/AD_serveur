@@ -234,11 +234,13 @@ def send_message(browser, message_file_path, profile_link):
         content.click()
         time.sleep(randrange(7, 10))
         #Envoi
+        html = browser.page_source
+        print(html)
         content.send_keys(customMessage)
         time.sleep(randrange(4, 7))
         logger.debug("Bouton ENVOYER")
         print(customMessage)
-        browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]/span').click()
+        browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]').click()
         time.sleep(randrange(2, 4))
         logger.info("Succes")
         return name
