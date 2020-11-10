@@ -233,8 +233,9 @@ def send_message(browser, message_file_path, profile_link):
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
         time.sleep(randrange(10, 15))
         #contenu + message
-        content = browser.find_element_by_class_name('compose-form__message-field')
-        time.sleep(randrange(4, 8))
+        #content = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea')
+        content = WebDriverWait(browser, 40).until(EC.element_to_be_clickable((By.XPATH,
+                    "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
         content.click()
         time.sleep(randrange(4, 8))
         #Envoi
@@ -242,7 +243,7 @@ def send_message(browser, message_file_path, profile_link):
         content.send_keys(customMessage)
         time.sleep(randrange(5, 8))
         logger.debug("Bouton ENVOYER")
-        
+
         element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH,
                     "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]")))
 
