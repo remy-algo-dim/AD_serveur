@@ -339,7 +339,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     print('LEN DF TEMPORARY : ', len(df_temporary))
     print(df_temporary['Nombre messages'])
 
-    person2contact = df_temporary['Standard_Link'].tolist()
+    person2contact = df_temporary['Links'].tolist()
     nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
 
@@ -364,8 +364,8 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
         else:
             logging.info("Message deja envoye au contact")
 
-    logger.info("Tentons l'INCONNU")
-    name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACBthBYBxaRBRkQRTLttXkV3SUoExJM3Krw,NAME_SEARCH,LcCq")
+    #logger.info("Tentons l'INCONNU")
+    #name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACBthBYBxaRBRkQRTLttXkV3SUoExJM3Krw,NAME_SEARCH,LcCq")
     logger.info("Tentons ma FEMME")
     name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACVDV2sBKA0MJwOJcGKmJW-1s7EgWCSFaYA,NAME_SEARCH,dt0z")
 
