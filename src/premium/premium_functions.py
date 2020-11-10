@@ -357,35 +357,45 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     print('LEN DF TEMPORARY : ', len(df_temporary))
     print(df_temporary['Nombre messages'])
 
-    person2contact = df_temporary['Links'].tolist()
+    person2contact = df_temporary['Standard_Link'].tolist()
     nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
+
+    index_list.append(100)
+    nbe_msg_envoyes.append(0)
+    person2contact.append("https://www.linkedin.com/in/remy-adda-38b456117/")
 
     logger.debug("Envoi des messages aux connexions non contactees")
     for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
         print(index_, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
-            break
             logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
-            name = send_message_bis(browser, message_file_path, person)
-            if name != 'echec':
-                #message correctement envoye - on ajoute le lien dans la liste
-                df.loc[index_, 'Nombre de messages'] = 1
-                df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
-                time.sleep(randrange(2, 4))
-                # On update egalement le JSON
-                update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
-                logger.info("Succes ! Message envoye a %s", name)
-            else: #echec
-                logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
-                pass
+
+            if person == "https://www.linkedin.com/in/remy-adda-38b456117/":
+
+                name = send_message_bis(browser, message_file_path, person)
+                if name != 'echec':
+                    #message correctement envoye - on ajoute le lien dans la liste
+                    df.loc[index_, 'Nombre de messages'] = 1
+                    df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
+                    time.sleep(randrange(2, 4))
+                    # On update egalement le JSON
+                    update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+                    logger.info("Succes ! Message envoye a %s", name)
+                else: #echec
+                    logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
+                    pass
+
+            else: # A SUPPRIMER CE IF ELSE
+                logger.debug("ON AURAIT VOULU LA CONTACTER MAIS ON VA SE CONTENTER DE REMY")
+                print(person, '---->', nb_msg, '---')
         else:
             logging.info("Message deja envoye au contact")
 
     #logger.info("Tentons l'INCONNU")
     #name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACBthBYBxaRBRkQRTLttXkV3SUoExJM3Krw,NAME_SEARCH,LcCq")
-    logger.info("Tentons ma FEMME")
-    name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
+    #logger.info("Tentons ma FEMME")
+    #name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
 
 
 
