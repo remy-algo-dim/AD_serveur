@@ -196,7 +196,7 @@ def script():
 	try:
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
-			return test_send_msg.main(session['id'], session['email'], session['password_non_hashed'])
+			return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
 	except:
 		traceback.print_exc()
 		logger.info("Algo non execute jusqu'a la fin")
@@ -254,5 +254,7 @@ send flow message, mieux filtrer des le debut, je ne prends que les personnes qu
 filtrer en prenanr celles qui ont deja un 1 ds nbe message. Malheureusement je ne peux pas debuger car jai deja envoye le nbe max 
 de connexion, et flemme de changer le cdode que pr ca
 
+jai change le code en passant par linkedin standard mais peut etre que cest juste du au xpath du bouton envoie sur premium
+qui change ebn fonction du profil
 """
 

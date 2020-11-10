@@ -131,9 +131,8 @@ def just_connect(browser, profile_link):
         return 'echec'
 
 def just_connect_bis(browser, profile_link):
-    """ Permet seulement de se connecter a la personne 
-    Prend en entree le lien premium et renvoie le nom ainsi que le lien standard"""
-    # Menu Ajout
+    """ Permet seulement de se connecter a la personne en utilisant le lien standard, meme si en entree elle
+    prend le lien premium. Renvoie le nom ainsi que le lien standard"""
     try:
         logger.info("Acces au profile Linkedin standard")
         browser.get(profile_link) # premium
@@ -168,10 +167,21 @@ def just_connect_bis(browser, profile_link):
         ENVOYER.click()
         time.sleep(randrange(1, 3))
         logger.info("Connexion success")
+        logger.debug("On close la fenetre standard et on revient a la premium")
+        browser.close()
+        time.sleep(1)
+        browser.switch_to.window(window_before)
         return name, profile_link
     except:
+        try:
+            time.sleep(1)
+            browser.close()
+            time.sleep(1)
+            browser.switch_to.window(window_before)
+        except:
+            pass
         logger.info("Impossible de se connecter")
-        return 'echec'
+        return 'echec', 'echec'
 
 
 def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON):
@@ -181,7 +191,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        if len(today_list) >= 20:
+        if len(today_list) >= 3:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
@@ -192,7 +202,8 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
                 # Ici on a reussi a envoyer
                 # On update de suite le csv
                 logger.info("------> %s", name)
-                new_row = {'Personnes':name, 'Links':standard_profile_link, 'Dates':str(today), 'Nombre messages':0}
+                new_row = {'Personnes':name, 'Links':profile, 
+                                    'Standard_Link': standard_profile_link,'Dates':str(today), 'Nombre messages':0}
                 df = df.append(new_row, ignore_index=True)
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
@@ -239,7 +250,8 @@ def send_message(browser, message_file_path, profile_link):
 
 
 def send_message_bis(browser, message_file_path, profile_link):
-    """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom """
+    """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom 
+    3 cas sont geres pour bien envoye le message, en fonction du bouton disponible"""
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
         customMessage = f.read()
     try:
@@ -265,29 +277,42 @@ def send_message_bis(browser, message_file_path, profile_link):
         elif BOUTON == 'En attente':
             logger.debug("%s n'est pas encore dans notre reseau (attente)", name)
             return name
-        else: #BOUTON=message
-            # Si on a pas reussi a se connecter c'est qu'on peut envoyer un message
-            logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message", name)
-            browser.find_element_by_class_name("message-anywhere-button").click()
-            time.sleep(randrange(2, 4))
-            content_place = browser.find_element_by_class_name("msg-form__contenteditable")
-            time.sleep(randrange(2, 4))
-            content_place.click()
-            time.sleep(randrange(4, 7))
-            content_place.send_keys(customMessage)
-            time.sleep(randrange(3, 6))
-            print(customMessage)
-            #il y a 2 moyens d'envoyer : soit cliquer sur entrer
+        else: #BOUTON=message. Mais attention, en premium il se peut que ce bouton apparaisse meme si on est pas connecte a la
+                # personne. Et donc SN va s'ouvrir. On met donc un try except pour gerer ce cas la
             try:
-                browser.find_element_by_class_name("msg-form__send-button").click()
-                time.sleep(randrange(1, 3))
-                logger.info("Message correctement envoye (CLICK)")
-                return name
-            except: #cliquer sur envoyer
-                content_place.send_keys(Keys.ENTER).click()
-                time.sleep(randrange(1, 3))
-                logger.info("Message correctement envoye (ENTER)")
-                return name
+                logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message", name)
+                browser.find_element_by_class_name("message-anywhere-button").click()
+                time.sleep(randrange(2, 4))
+                content_place = browser.find_element_by_class_name("msg-form__contenteditable")
+                time.sleep(randrange(2, 4))
+                content_place.click()
+                time.sleep(randrange(4, 7))
+                content_place.send_keys(customMessage)
+                time.sleep(randrange(3, 6))
+                print(customMessage)
+                #il y a 2 moyens d'envoyer : soit cliquer sur entrer
+                try:
+                    browser.find_element_by_class_name("msg-form__send-button").click()
+                    time.sleep(randrange(1, 3))
+                    logger.info("Message correctement envoye (CLICK)")
+                    return name
+                except: #cliquer sur envoyer
+                    content_place.send_keys(Keys.ENTER).click()
+                    time.sleep(randrange(1, 3))
+                    logger.info("Message correctement envoye (ENTER)")
+                    return name
+            except:
+                logger.info("Apres verification, la personne ne fait pas partie de notre reseau !")
+                try:
+                    # si on est ici, c'est qu'une fenetre SN s'est ouvert, alors on la ferme et onb revient au browser initial
+                    browser.switch_to.window(browser.window_handles[1])
+                    time.sleep(1)
+                    browser.close()
+                    time.sleep(1)
+                    browser.switch_to.window(browser.window_handles[0])
+                except:
+                    pass
+
     except:
         traceback.print_exc()
         logger.info("Impossible d'appliquer la fonction send_message")
@@ -299,7 +324,8 @@ def send_message_bis(browser, message_file_path, profile_link):
 
 
 def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON):
-    """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees"""
+    """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees
+    en passant par les liens standards !"""
     today = date.today()
     today_list = df['Dates'].tolist()
     previous_days_list = [date for date in today_list if date!=str(today)]
@@ -313,7 +339,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     print('LEN DF TEMPORARY : ', len(df_temporary))
     print(df_temporary['Nombre messages'])
 
-    person2contact = df_temporary['Links'].tolist()
+    person2contact = df_temporary['Standard_Link'].tolist()
     nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
 
@@ -321,9 +347,8 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
         print(index_, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
-            break ####### a enlever
             logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
-            name = send_message(browser, message_file_path, person)
+            name = send_message_bis(browser, message_file_path, person)
             if name != 'echec':
                 #message correctement envoye - on ajoute le lien dans la liste
                 df.loc[index_, 'Nombre de messages'] = 1
@@ -337,6 +362,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
                 pass
         else:
             logging.info("Message deja envoye au contact")
+
     logger.info("Tentons REMY ADDA")
     name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
 

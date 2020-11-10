@@ -56,10 +56,15 @@ def main(id_, id_linkedin, password_linkedin):
 
     # Initialisation des fichiers stats
     if path.exists(os.path.join(os.path.dirname(__file__),CONTACTS_CSV)) is False:
-        df = pd.DataFrame(columns=['Personnes', 'Links', 'Dates', 'Nombre messages'])
+        df = pd.DataFrame(columns=['Personnes', 'Links', 'Standard_Link', 'Dates', 'Nombre messages'])
         df.to_csv(os.path.join(os.path.dirname(__file__), CONTACTS_CSV), sep=';') # A verifier si ce ; est le meme pour tous les clients
     else:
         logger.info("Le CSV existe deja")
+
+
+        df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
+        df['Standard_Link'] = ['no link' for i in range(len(df))]
+        df.to_csv(os.path.join(os.path.dirname(__file__), CONTACTS_CSV), sep=';')
 
     if path.exists(os.path.join(os.path.dirname(__file__), CONTACTS_JSON)) is False:
         updated_json = {"Total connexions envoyees": 0, "Total messages envoyes": 0, "Total envoyes aujourd'hui": 0, 
