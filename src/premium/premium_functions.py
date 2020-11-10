@@ -11,7 +11,9 @@ import pymysql.cursors
 from selenium.webdriver.remote.remote_connection import LOGGER
 import traceback
 from selenium.webdriver.common.keys import Keys
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 # Logger
@@ -214,9 +216,6 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
             else:
                 logger.info("Echec de connexion pour : %s", name)
 
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 
 
 def send_message(browser, message_file_path, profile_link):
@@ -341,7 +340,7 @@ def send_message_bis(browser, message_file_path, profile_link):
 
 
 
-def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON):
+def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON, CONTACTS_CSV):
     """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees
     en passant par les liens standards !"""
     today = date.today()
