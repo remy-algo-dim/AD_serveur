@@ -237,13 +237,12 @@ def send_message(browser, message_file_path, profile_link):
         html = browser.page_source
         content.send_keys(customMessage)
         time.sleep(randrange(4, 7))
-        print(html)
         logger.debug("Bouton ENVOYER")
         SEND = browser.find_element_by_class_name('artdeco-button--primary')
         time.sleep(2)
         browser.execute_script("arguments[0].click();", SEND)
         time.sleep(randrange(1, 3))
-        SEND.click()
+        #SEND.click()
         time.sleep(randrange(2, 4))
         logger.info("Succes")
         return name
