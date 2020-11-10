@@ -230,20 +230,19 @@ def send_message(browser, message_file_path, profile_link):
         logger.debug("Tentative envoie message %s", name)
         time.sleep(randrange(2, 4))
         #bouton message
-        #browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
-        MESSAGE = WebDriverWait(browser, 30).until(EC.element_to_be_clickable((By.XPATH,
-                    "/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span")))
-        MESSAGE.click()
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
         time.sleep(randrange(5, 8))
         #contenu + message
         #content = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea')
         logger.debug("Attendons que le content place se charge avant de cliquer dessus")
-        content = WebDriverWait(browser, 200).until(EC.element_to_be_clickable((By.XPATH,
-                    "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
+        #content = WebDriverWait(browser, 200).until(EC.element_to_be_clickable((By.XPATH,
+                    #"/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
+        content = browser.find_element_by_name('message')          
         content.click()
         time.sleep(randrange(4, 8))
         #Envoi
         html = browser.page_source
+        print(html)
         content.send_keys(customMessage)
         time.sleep(randrange(5, 8))
         logger.debug("Bouton ENVOYER")
