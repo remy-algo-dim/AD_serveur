@@ -235,10 +235,11 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(7, 10))
         #Envoi
         html = browser.page_source
+        print(html)
         content.send_keys(customMessage)
         time.sleep(randrange(4, 7))
         logger.debug("Bouton ENVOYER")
-        SEND = browser.find_element_by_class_name('artdeco-button--primary')
+        SEND = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]')
         time.sleep(randrange(1, 3))
         SEND.click()
         time.sleep(randrange(2, 4))
