@@ -227,16 +227,16 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(2, 4))
         #bouton message
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
-        time.sleep(randrange(3, 6))
+        time.sleep(randrange(10, 15))
         #contenu + message
         content = browser.find_element_by_class_name('compose-form__message-field')
-        time.sleep(randrange(2, 4))
+        time.sleep(randrange(10, 15))
         content.click()
-        time.sleep(randrange(7, 10))
+        time.sleep(randrange(10, 15))
         #Envoi
         html = browser.page_source
         content.send_keys(customMessage)
-        time.sleep(randrange(4, 7))
+        time.sleep(randrange(10, 15))
         logger.debug("Bouton ENVOYER")
         SEND = browser.find_element_by_xpath('//*[@id="ember465"]')
         time.sleep(15)
