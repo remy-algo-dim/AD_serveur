@@ -214,6 +214,10 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
             else:
                 logger.info("Echec de connexion pour : %s", name)
 
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 def send_message(browser, message_file_path, profile_link):
     """Permet d'envoyer un message a une personne de notre reseau"""
@@ -230,20 +234,21 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(10, 15))
         #contenu + message
         content = browser.find_element_by_class_name('compose-form__message-field')
-        time.sleep(randrange(10, 15))
+        time.sleep(randrange(4, 8))
         content.click()
-        time.sleep(randrange(10, 15))
+        time.sleep(randrange(4, 8))
         #Envoi
         html = browser.page_source
         content.send_keys(customMessage)
-        time.sleep(randrange(10, 15))
+        time.sleep(randrange(5, 8))
         logger.debug("Bouton ENVOYER")
-        SEND = browser.find_element_by_class_name('artdeco-button--primary')
-        time.sleep(15)
-        try:
-            SEND.click()
-        except:
-            browser.execute_script("arguments[0].click();", SEND)
+        
+        element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH,
+                    "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]")))
+
+        element.click()
+
+        #browser.execute_script("arguments[0].click();", SEND)
         time.sleep(randrange(1, 3))
         #SEND.click()
         time.sleep(randrange(2, 4))
