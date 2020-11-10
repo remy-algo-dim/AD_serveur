@@ -134,6 +134,7 @@ def just_connect_bis(browser, profile_link):
     """ Permet seulement de se connecter a la personne en utilisant le lien standard, meme si en entree elle
     prend le lien premium. Renvoie le nom ainsi que le lien standard"""
     try:
+        logger.info("*******************************************************")
         logger.info("Acces au profile Linkedin standard")
         browser.get(profile_link) # premium
         name = retrieve_name(browser)
@@ -173,6 +174,7 @@ def just_connect_bis(browser, profile_link):
         browser.switch_to.window(window_before)
         return name, profile_link
     except:
+        traceback.print_exc()
         try:
             time.sleep(1)
             browser.close()
@@ -409,7 +411,7 @@ def get_list_of_profiles(browser, df):
 
         # On envoie 20 msg par jour, donc des que notre liste contient 40 contacts (pour compenser les cas
         # ou il y a echec lors de l'envoie du message), on stop la fonctionn
-        if len(final_list_of_profiles) >= 40:
+        if len(final_list_of_profiles) >= 5:
             break
 
         time.sleep(randrange(2, 5))
