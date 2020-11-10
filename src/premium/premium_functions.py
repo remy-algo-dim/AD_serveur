@@ -226,7 +226,7 @@ def send_message(browser, message_file_path, profile_link):
         logger.debug("Tentative envoie message %s", name)
         time.sleep(randrange(2, 4))
         #bouton message
-        browser.find_element_by_class_name('artdeco-button__text').click()
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
         time.sleep(randrange(3, 6))
         #contenu + message
         content = browser.find_element_by_class_name('compose-form__message-field')
