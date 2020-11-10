@@ -236,13 +236,11 @@ def send_message(browser, message_file_path, profile_link):
         #Envoi
         content.send_keys(customMessage)
         time.sleep(randrange(4, 7))
-        print('on est pret a envoyer le message')
+        logger.debug("Bouton ENVOYER")
         print(customMessage)
-        send = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]/span')
-
-        time.sleep(randrange(3, 6))
-        send.click()
-        time.sleep(randrange(3, 6))
+        browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]/span').click()
+        time.sleep(randrange(2, 4))
+        logger.info("Succes")
         return name
     except:
         traceback.print_exc()
@@ -349,6 +347,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
         print(index_, person, nb_msg, type(nb_msg))
         if nb_msg == 0:
+            break
             logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
             name = send_message_bis(browser, message_file_path, person)
             if name != 'echec':
@@ -365,8 +364,10 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
         else:
             logging.info("Message deja envoye au contact")
 
-    logger.info("Tentons REMY ADDA")
-    name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
+    logger.info("Tentons l'INCONNU")
+    name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACBthBYBxaRBRkQRTLttXkV3SUoExJM3Krw,NAME_SEARCH,LcCq")
+    logger.info("Tentons ma FEMME")
+    name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACVDV2sBKA0MJwOJcGKmJW-1s7EgWCSFaYA,NAME_SEARCH,dt0z")
 
 
 
