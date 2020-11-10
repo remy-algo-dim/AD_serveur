@@ -238,7 +238,7 @@ def send_message(browser, message_file_path, profile_link):
         content.send_keys(customMessage)
         time.sleep(randrange(4, 7))
         logger.debug("Bouton ENVOYER")
-        SEND = browser.find_element_by_class_name('artdeco-button--primary')
+        SEND = browser.find_element_by_xpath('//*[@id="ember465"]')
         time.sleep(15)
         try:
             SEND.click()
