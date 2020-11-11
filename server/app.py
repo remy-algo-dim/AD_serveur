@@ -196,7 +196,7 @@ def script():
 	try:
 		if session['email']:
 			logger.info("Lancement de l'algorithme")
-			return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
+			return test_send_msg.main(session['id'], session['email'], session['password_non_hashed'])
 	except:
 		traceback.print_exc()
 		logger.info("Algo non execute jusqu'a la fin")
@@ -246,7 +246,7 @@ if __name__ == "__main__":
 	#        return None  
 
 
-# ssh -i remy_key.pem  ubuntu@ec2-35-180-203-206.eu-west-3.compute.amazonaws.com
+# ssh -i remy_key.pem  ubuntu@ec2-35-180-36-3.eu-west-3.compute.amazonaws.com
 # sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
 """ TODO : dashboard AD,
 ajouter les stats du dash a mysql et pas que les fihiers temporaires
