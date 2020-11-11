@@ -43,6 +43,7 @@ car le script s'appuiera dessus pour ne pas recontacter les memes personnes
 def main(id_, id_linkedin, password_linkedin):
 
     # Dans le cas ou on a rencontre une erreur lors du run precedent, il faut fermer le browser qui ete ouvert
+    logger.info("ID = %s --> %s vient de lancer l'algorithme", id_, id_linkedin)
     try:
         browser.quit()
     except:
@@ -225,10 +226,11 @@ def main(id_, id_linkedin, password_linkedin):
     logger.debug("Recuperation de la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
 
-
+    logger.info("-----------------------------------------------------------------------------------------------")
     logger.debug("Envoi connexions")
     today_total = connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
-    logger.info("Connexions envoyees")
+    logger.info("--- Fin d'envoi des connexions ---")
+    logger.info("-----------------------------------------------------------------------------------------------")
 
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions

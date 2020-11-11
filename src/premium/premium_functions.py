@@ -283,14 +283,8 @@ def send_message_bis(browser, message_file_path, profile_link):
         html = browser.page_source
         #print(html)
         name = browser.find_element_by_class_name("break-words").text
-        print(name)
         logger.debug("Tentons d'envoyer un message a %s", name)
         time.sleep(randrange(2, 4))
-        #on clique sur le bouton plus
-        ##browser.find_element_by_class_name("pv-s-profile-actions__overflow-toggle").click()
-        ##time.sleep(randrange(2, 4))
-        #Si on on peut se connecter a la personne, c'est qu'on l'a pas en ami ... Si on ne peut pas, on peut
-        # donc lui envoyer un msg
         BOUTON = browser.find_element_by_class_name("pv-s-profile-actions").text
         if BOUTON == 'Se connecter':
             # CONNEXION
@@ -311,14 +305,13 @@ def send_message_bis(browser, message_file_path, profile_link):
                 time.sleep(randrange(4, 7))
                 content_place.send_keys(customMessage)
                 time.sleep(randrange(3, 6))
-                print(customMessage)
                 #il y a 2 moyens d'envoyer : soit cliquer sur entrer
                 try:
                     browser.find_element_by_class_name("msg-form__send-button").click()
                     time.sleep(randrange(1, 3))
                     time.sleep(randrange(2, 4))
                     browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()
-                    logger.info("Message correctement envoye a %s (ENTER)", name)
+                    logger.info("Message correctement envoye a %s (CLICK)", name)
                     return name
                 except: #cliquer sur envoyer
                     content_place.send_keys(Keys.ENTER).click()
@@ -352,23 +345,23 @@ def send_message_bis(browser, message_file_path, profile_link):
 def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON, CONTACTS_CSV):
     """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees
     en passant par les liens standards !"""
-    
-    today_list = df['Dates'].tolist()#JSON
-    #On tentera de contacter les personnes ajoutees jusqu'a J-3
+    #JSON
+    today_list = df['Dates'].tolist()
     today = date.today()
+    today_list = [date for date in today_list if date==str(today)]
+    #On tentera de contacter les personnes ajoutees jusqu'a J-3
     logger.info("Recuperation des precedentes connexions")
     upThisDay = today - timedelta(days=3)
     filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre messages'] < 1)
     df_temporary = df.loc[filter_]
 
-    print('LEN DF TOTAL : ', len(df))
-    print('LEN DF TEMPORARY : ', len(df_temporary))
-    print(df_temporary['Personnes'])
+    logger.info("+%s contacts dans notre reseau", len(df))
+    logger.info("%s personnes doivent etre contactees a present", len(df_temporary))
 
     person2contact = df_temporary['Standard_Link'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
 
-    logger.debug("Envoi des messages aux connexions non contactees")
+    logger.debug("Demarrons l'envoi de messages")
     for index_, person in zip(index_list, person2contact):
         logger.info("Tentative de message ...")
         name = send_message_bis(browser, message_file_path, person)
@@ -470,7 +463,6 @@ def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
 def update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
-    print(df['Nombre messages'].dtypes)
     msg_envoyes = len(df[df['Nombre messages']==1])
     updated_json = {"Total connexions envoyees":len(df),
                     "Total messages envoyes": msg_envoyes,
