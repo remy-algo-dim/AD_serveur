@@ -62,7 +62,7 @@ def main(id_, id_linkedin, password_linkedin):
     else:
         logger.info("Le CSV existe deja")
     if path.exists(os.path.join(os.path.dirname(__file__), CONTACTS_JSON)) is False:
-        updated_json = {"Total connexions envoyees": 0, "Total messages envoyes": 0, "Total envoyes aujourd'hui": 0, 
+        updated_json = {"Total connexions envoyees": 0, "Total messages envoyes": 0, "Total connexions envoyees aujourd'hui": 0, 
             "Personnes a contacter pour ce filtre": 0, "Pending invit": 0}
                     
         with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON), 'w') as json_file:
@@ -73,7 +73,6 @@ def main(id_, id_linkedin, password_linkedin):
 
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
     df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
-    print(df.head(2))
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
     today_list = df['Dates'].tolist()
@@ -227,9 +226,11 @@ def main(id_, id_linkedin, password_linkedin):
     list_of_links = get_list_of_profiles(browser, df)
 
     logger.info("-----------------------------------------------------------------------------------------------")
+    logger.info("-----------------------------------------------------------------------------------------------")
     logger.debug("Envoi connexions")
     today_total = connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
     logger.info("--- Fin d'envoi des connexions ---")
+    logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
 
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """

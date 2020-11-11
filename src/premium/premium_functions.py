@@ -37,7 +37,7 @@ def Linkedin_connexion(browser, username, password):
 """ 1er robot ------------------------------------------------------------------------------------------------------------------ """
 
 def connect_add_note_single(browser, profile_link, message_file_path):
-    """ Permet de se connecter a une personne et d'ajouter une note """
+    """ Permet de se connecter a une personne et d'ajouter une note en utilisant uniquement SN """
     with open(os.path.join(os.path.dirname(__file__),message_file_path)) as f:
         customMessage = f.read()
     browser.get(profile_link)
@@ -76,7 +76,8 @@ def connect_add_note_single(browser, profile_link, message_file_path):
 def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON):
     """ Permet d'envoyer des ajouts et notes a une liste de profiles et enregistre egalement
     le nombre de succes ainsi que le nombre d'echecs. Apres 20 messages envoyes pour un meme filtre et pour une
-    meme DATE, ce qui equivaut a 400 par mois, l'algo stop """
+    meme DATE. Je ne recupere pas ici le lien Linkedin, mais seulement le SN. Ce robot ajoute une connexion + une note,
+    donc on comptabilisera la personne comme contactee --> 1"""
     today = date.today()
     for profile in list_profiles:
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
@@ -94,7 +95,7 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             if name != 'echec':
                 # Ici on a reussi a envoyer
                 # On update de suite le csv
-                new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today)}
+                new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today), 'Nombre messages':1}
                 df = df.append(new_row, ignore_index=True)
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
@@ -112,36 +113,18 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
 
 """ 2eme robot ------------------------------------------------------------------------------------------------------------------ """
 
-def just_connect(browser, profile_link):
-    """ Permet seulement de se connecter a la personne """
-    # Menu Ajout
-    try:
-        browser.get(profile_link)
-        time.sleep(randrange(4, 7))
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
-        # Connexion
-        name = retrieve_name(browser)
-        time.sleep(randrange(2, 5))
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
-        time.sleep(randrange(2, 5))
-        # ON DESACTIVE LE BOUTON ENVOYE PR LINSTANT
-        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
-        logger.info("Connexion success")
-        return name
-    except:
-        logger.info("Impossible de se connecter")
-        return 'echec'
 
-def just_connect_bis(browser, profile_link):
+def just_connect(browser, profile_link):
     """ Permet seulement de se connecter a la personne en utilisant le lien standard, meme si en entree elle
-    prend le lien premium. Renvoie le nom ainsi que le lien standard"""
+    prend le lien premium. Renvoie le nom ainsi que le lien standard. Flow : acces au lien SN - acces au lien Linkedin
+    -- copie du lien -- retour sur SN -- ajout"""
     try:
-        logger.info("*******************************************************")
-        logger.info("Acces au profile Linkedin standard")
-        print(profile_link)
+        logger.info("******************************************************************************************************")
         browser.get(profile_link) # premium
         time.sleep(randrange(4, 7))
         name = retrieve_name(browser)
+        logger.info("---> %s, --> %s", name, profile_link)
+        logger.info("Acces au profile Linkedin")
         time.sleep(randrange(4, 7))
         # Menu pour acceder a l'URL linkedin standard
         menu = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]')
@@ -154,7 +137,7 @@ def just_connect_bis(browser, profile_link):
         linkedinDOTcom.click()
         time.sleep(randrange(3, 6))
         # Switch window
-        logger.info("Succes. On Switch de browser windows")
+        logger.info("Succes. On Switch de browser windows (on passe de SN a Linkedin")
         window_before = browser.window_handles[0]
         window_after = browser.window_handles[1]
         browser.switch_to.window(window_after)
@@ -162,61 +145,57 @@ def just_connect_bis(browser, profile_link):
         profile_link = browser.current_url
         browser.close()
         print(profile_link)
-        logger.info("On recupere le standard link, et on revient a la page premium pour se connecter")
+        logger.info("On recupere le standard link, et on revient a la page SN pour se connecter")
         browser.switch_to.window(window_before)
         time.sleep(randrange(2, 4))
-        # Connexion
-        logger.info("Connexion au profil")
+        ## Connexion
+        logger.info("Connexion au profil en cours")
+        # Plus
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
-        ##CONNEXION = browser.find_element_by_xpath('/html/body/div[7]/div[3]/div/div/div/div/div[2]/main/div[1]/section/div[2]/div[1]/div[2]/div/div/div[1]/div/button/span')
         time.sleep(randrange(3, 5))
+        # Connect
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
-        ##CONNEXION.click()
         time.sleep(randrange(3, 6))
-        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         # Envoyer
-        ##ENVOYER = browser.find_element_by_xpath('/html/body/div[4]/div/div/div[3]/button[2]/span')
-        time.sleep(randrange(1, 2))
-        ##ENVOYER.click()
+        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         time.sleep(randrange(1, 3))
         logger.info("Connexion success")
-        logger.debug("On close la fenetre standard et on revient a la premium")
+        logger.debug("On close la fenetre standard et on revient a la SN")
+        logger.info("Update du JSON")
+        logger.info("******************************************************************************************************")
         #browser.close()
-        #time.sleep(1)
-        #browser.switch_to.window(window_before)
         return name, profile_link
     except:
         traceback.print_exc()
         logger.info("Impossible de se connecter")
+        logger.info("******************************************************************************************************")
         return 'echec', 'echec'
 
 
 def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON):
-    """ Permet d'envoyer des ajouts a une liste de profiles et rescence egalement les echecs et les succes """
+    """ Permet d'envoyer des demande d'ajouts a une liste de profiles et rescence egalement les echecs et les succes.
+    Cette fonction n'envoi pas de notes """
     today = date.today()
     for profile in list_profiles:
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        logger.info("On va se connecter a %s", len(list_profiles))
-        print('Profile : ', profile)
+        logger.debug('Profile Link: ', profile)
         if len(today_list) >= 3:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
             # On envoie
-            name, standard_profile_link = just_connect_bis(browser, profile)
+            name, standard_profile_link = just_connect(browser, profile)
             time.sleep(randrange(5, 8))
             if name != 'echec':
                 # Ici on a reussi a envoyer
                 # On update de suite le csv
-                logger.info("------> %s", name)
                 new_row = {'Personnes':name, 'Links':profile, 
-                                    'Standard_Link': standard_profile_link,'Dates':str(today), 'Nombre messages':0}
+                           'Standard_Link': standard_profile_link,'Dates':str(today), 'Nombre messages':0}
                 df = df.append(new_row, ignore_index=True)
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
-                logger.debug("Mise a jour du JSON")
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
             else:
                 logger.info("Echec de connexion pour : %s", name)
@@ -224,54 +203,6 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
 
 
 def send_message(browser, message_file_path, profile_link):
-    """Permet d'envoyer un message a une personne de notre reseau"""
-    with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
-        customMessage = f.read()
-    try:
-        browser.get(profile_link)
-        time.sleep(randrange(3, 6))
-        name = retrieve_name(browser)
-        logger.debug("Tentative envoie message %s", name)
-        time.sleep(randrange(2, 4))
-        #bouton message
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
-        time.sleep(randrange(5, 8))
-        #contenu + message
-        #content = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea')
-        logger.debug("Attendons que le content place se charge avant de cliquer dessus")
-        #content = WebDriverWait(browser, 200).until(EC.element_to_be_clickable((By.XPATH,
-                    #"/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
-        content = browser.find_element_by_name('message')
-        time.sleep(5)
-        browser.execute_script("arguments[0].click();", content)        
-        #content.click()
-        time.sleep(randrange(4, 8))
-        #Envoi
-        html = browser.page_source
-        #print(html)
-        content.send_keys(customMessage)
-        time.sleep(randrange(5, 8))
-        logger.debug("Bouton ENVOYER")
-
-        element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH,
-                    "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]")))
-
-        element.click()
-
-        #browser.execute_script("arguments[0].click();", SEND)
-        time.sleep(randrange(1, 3))
-        #SEND.click()
-        time.sleep(randrange(2, 4))
-        logger.info("Succes")
-        return name
-    except:
-        traceback.print_exc()
-        logging.info("Impossible d'envoyer un message (send msg fonction)")
-        return 'echec'
-
-
-
-def send_message_bis(browser, message_file_path, profile_link):
     """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom.
     3 cas sont geres pour bien envoye le message, en fonction du bouton disponible"""
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
@@ -364,7 +295,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     logger.debug("Demarrons l'envoi de messages")
     for index_, person in zip(index_list, person2contact):
         logger.info("Tentative de message ...")
-        name = send_message_bis(browser, message_file_path, person)
+        name = send_message(browser, message_file_path, person)
         if name != 'echec':
             #message correctement envoye - on ajoute le lien dans la liste
             df.loc[index_, 'Nombre messages'] = 1
@@ -409,7 +340,7 @@ def get_list_of_profiles(browser, df):
 
         final_list_of_profiles.extend(list_of_profiles_per_page)
         final_list_of_profiles = list(set(final_list_of_profiles))
-        print('Page ', page, ' : ', len(final_list_of_profiles), ' liens scrapes')
+        logger.info("page %s : %s liens scrapes", page, final_list_of_profiles)
 
         # On envoie 20 msg par jour, donc des que notre liste contient 40 contacts (pour compenser les cas
         # ou il y a echec lors de l'envoie du message), on stop la fonctionn
@@ -428,9 +359,7 @@ def get_list_of_profiles(browser, df):
         except:
             logger.info('Impossible de cliquer sur SUIVANT')
             break
-
-
-    print('Nombre de profiles trouves : ', len(final_list_of_profiles))
+    logger.info('Nombre de profiles trouves : %s', len(final_list_of_profiles))
     return final_list_of_profiles
 
 
@@ -452,7 +381,8 @@ def pending_invit(browser):
 def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
-    updated_json = {"Total messages envoyes":len(df),
+    updated_json = {"Total connexions envoyees":len(df),
+                    "Total messages envoyes":len(df),
                     "Total envoyes aujourd'hui":len(today_list),
                     "Personnes a contacter pour ce filtre": nb2scrap,
                     "Pending invit": pendings}
@@ -489,5 +419,82 @@ def how_many_profiles(browser):
     print('------------------------------')
     print(total_profiles, ' profiles must be contacted')
     return total_profiles # car parfois ce n'est pas un int !!
+
+
+
+
+""" OBSOLETE FONCTIONS """
+
+def send_message_obsolete(browser, message_file_path, profile_link):
+    """Obsolete.Permet d'envoyer un message a une personne de notre reseau"""
+    with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
+        customMessage = f.read()
+    try:
+        browser.get(profile_link)
+        time.sleep(randrange(3, 6))
+        name = retrieve_name(browser)
+        logger.debug("Tentative envoie message %s", name)
+        time.sleep(randrange(2, 4))
+        #bouton message
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
+        time.sleep(randrange(5, 8))
+        #contenu + message
+        #content = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea')
+        logger.debug("Attendons que le content place se charge avant de cliquer dessus")
+        #content = WebDriverWait(browser, 200).until(EC.element_to_be_clickable((By.XPATH,
+                    #"/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
+        content = browser.find_element_by_name('message')
+        time.sleep(5)
+        browser.execute_script("arguments[0].click();", content)        
+        #content.click()
+        time.sleep(randrange(4, 8))
+        #Envoi
+        html = browser.page_source
+        #print(html)
+        content.send_keys(customMessage)
+        time.sleep(randrange(5, 8))
+        logger.debug("Bouton ENVOYER")
+
+        element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH,
+                    "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]")))
+
+        element.click()
+
+        #browser.execute_script("arguments[0].click();", SEND)
+        time.sleep(randrange(1, 3))
+        #SEND.click()
+        time.sleep(randrange(2, 4))
+        logger.info("Succes")
+        return name
+    except:
+        traceback.print_exc()
+        logging.info("Impossible d'envoyer un message (send msg fonction)")
+        return 'echec'
+
+
+
+def just_connect_obsolete(browser, profile_link):
+    """ Obsoloete. Permet seulement de se connecter a la personne """
+    # Menu Ajout
+    try:
+        browser.get(profile_link)
+        time.sleep(randrange(4, 7))
+        # Plus
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
+        # Connexion
+        name = retrieve_name(browser)
+        time.sleep(randrange(2, 5))
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
+        time.sleep(randrange(2, 5))
+        # Bouton Envoyer
+        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
+        logger.info("Connexion success")
+        return name
+    except:
+        logger.info("Impossible de se connecter")
+        return 'echec'
+
+
+
 
 
