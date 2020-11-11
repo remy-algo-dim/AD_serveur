@@ -5,7 +5,7 @@ from selenium.webdriver import ActionChains
 import re
 import json
 from random import randrange
-from datetime import date
+from datetime import date, datetime, timedelta
 import logging
 import pymysql.cursors
 from selenium.webdriver.remote.remote_connection import LOGGER
@@ -14,7 +14,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-
+import pandas as pd
 
 # Logger
 logging.basicConfig(stream=sys.stdout,
@@ -138,7 +138,9 @@ def just_connect_bis(browser, profile_link):
     try:
         logger.info("*******************************************************")
         logger.info("Acces au profile Linkedin standard")
+        print(profile_link)
         browser.get(profile_link) # premium
+        time.sleep(randrange(4, 7))
         name = retrieve_name(browser)
         time.sleep(randrange(4, 7))
         # Menu pour acceder a l'URL linkedin standard
@@ -185,13 +187,6 @@ def just_connect_bis(browser, profile_link):
         return name, profile_link
     except:
         traceback.print_exc()
-        try:
-            time.sleep(1)
-            browser.close()
-            time.sleep(1)
-            browser.switch_to.window(window_before)
-        except:
-            pass
         logger.info("Impossible de se connecter")
         return 'echec', 'echec'
 
@@ -203,6 +198,8 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
+        logger.info("On va se connecter a %s", len(list_profiles))
+        print('Profile : ', profile)
         if len(today_list) >= 3:
             logger.info("Plus de 20 connexions envoyes")
             break
@@ -305,7 +302,7 @@ def send_message_bis(browser, message_file_path, profile_link):
         else: #BOUTON=message. Mais attention, en premium il se peut que ce bouton apparaisse meme si on est pas connecte a la
                 # personne. Et donc SN va s'ouvrir. On met donc un try except pour gerer ce cas la
             try:
-                logger.debug("%s est dans mon reseau, je devrais donc pouvoir lui envoyer un message", name)
+                logger.debug("Bouton Message disponible pour %s", name)
                 browser.find_element_by_class_name("message-anywhere-button").click()
                 time.sleep(randrange(2, 4))
                 content_place = browser.find_element_by_class_name("msg-form__contenteditable")
@@ -319,15 +316,19 @@ def send_message_bis(browser, message_file_path, profile_link):
                 try:
                     browser.find_element_by_class_name("msg-form__send-button").click()
                     time.sleep(randrange(1, 3))
-                    logger.info("Message correctement envoye (CLICK)")
+                    time.sleep(randrange(2, 4))
+                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()
+                    logger.info("Message correctement envoye a %s (ENTER)", name)
                     return name
                 except: #cliquer sur envoyer
                     content_place.send_keys(Keys.ENTER).click()
                     time.sleep(randrange(1, 3))
-                    logger.info("Message correctement envoye (ENTER)")
+                    time.sleep(randrange(2, 4))
+                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()
+                    logger.info("Message correctement envoye a %s (ENTER)", name)
                     return name
             except:
-                logger.info("Apres verification, la personne ne fait pas partie de notre reseau !")
+                logger.info("Apres verification, %s ne fait pas partie de notre reseau !", name)
                 try:
                     # si on est ici, c'est qu'une fenetre SN s'est ouvert, alors on la ferme et onb revient au browser initial
                     browser.switch_to.window(browser.window_handles[1])
@@ -351,64 +352,36 @@ def send_message_bis(browser, message_file_path, profile_link):
 def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON, CONTACTS_CSV):
     """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees
     en passant par les liens standards !"""
+    
+    today_list = df['Dates'].tolist()#JSON
+    #On tentera de contacter les personnes ajoutees jusqu'a J-3
     today = date.today()
-    today_list = df['Dates'].tolist()
-    previous_days_list = [date for date in today_list if date!=str(today)]
-    print('len previous profils : ', len(previous_days_list))
-    print(df['Dates'])
-    #Ceux ajoutes aujourd'hui nous ont surement pas accepte encore, on cherchera les previous contacts alors
     logger.info("Recuperation des precedentes connexions")
-    df_temporary = df[df['Dates'].isin(previous_days_list)]
-    print(df_temporary['Dates'])
+    upThisDay = today - timedelta(days=3)
+    filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre messages'] < 1)
+    df_temporary = df.loc[filter_]
+
     print('LEN DF TOTAL : ', len(df))
     print('LEN DF TEMPORARY : ', len(df_temporary))
-    print(df_temporary['Nombre messages'])
+    print(df_temporary['Personnes'])
 
     person2contact = df_temporary['Standard_Link'].tolist()
-    nbe_msg_envoyes = df_temporary['Nombre messages'].tolist()
     index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
 
-    index_list.append(100)
-    nbe_msg_envoyes.append(0)
-    person2contact.append("https://www.linkedin.com/in/remy-adda-38b456117/")
-
     logger.debug("Envoi des messages aux connexions non contactees")
-    for index_, person, nb_msg in zip(index_list, person2contact, nbe_msg_envoyes):
-        print(index_, person, nb_msg, type(nb_msg))
-        if nb_msg == 0:
-            logger.info("Essayons d'envoyer un message a ce contact car c'est un 0")
-
-            if person == "https://www.linkedin.com/in/remy-adda-38b456117/":
-
-                name = send_message_bis(browser, message_file_path, person)
-                if name != 'echec':
-                    #message correctement envoye - on ajoute le lien dans la liste
-                    df.loc[index_, 'Nombre de messages'] = 1
-                    df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
-                    time.sleep(randrange(2, 4))
-                    # On update egalement le JSON
-                    update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
-                    logger.info("Succes ! Message envoye a %s", name)
-                else: #echec
-                    logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
-                    pass
-
-            else: # A SUPPRIMER CE IF ELSE
-                logger.debug("ON AURAIT VOULU LA CONTACTER MAIS ON VA SE CONTENTER DE REMY")
-                print(person, '---->', nb_msg, '---')
-        else:
-            logging.info("Message deja envoye au contact")
-
-    #logger.info("Tentons l'INCONNU")
-    #name = send_message(browser, message_file_path, "https://www.linkedin.com/sales/people/ACwAACBthBYBxaRBRkQRTLttXkV3SUoExJM3Krw,NAME_SEARCH,LcCq")
-    #logger.info("Tentons ma FEMME")
-    #name = send_message_bis(browser, message_file_path, "https://www.linkedin.com/in/remy-adda-38b456117/")
-
-
-
- 
-
-
+    for index_, person in zip(index_list, person2contact):
+        logger.info("Tentative de message ...")
+        name = send_message_bis(browser, message_file_path, person)
+        if name != 'echec':
+            #message correctement envoye - on ajoute le lien dans la liste
+            df.loc[index_, 'Nombre messages'] = 1
+            df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
+            time.sleep(randrange(2, 4))
+            # On update egalement le JSON
+            update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+        else: #echec
+            logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
+            pass
 
 
 """ Fonctions communes ---------------------------------------------------------------------------------------------------------- """

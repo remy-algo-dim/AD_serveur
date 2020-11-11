@@ -225,10 +225,12 @@ def main(id_, id_linkedin, password_linkedin):
     # On visite les profils
     #logger.debug("Recuperation de la liste des profiles")
     #list_of_links = get_list_of_profiles(browser, df)
+    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
+    list_of_links = ['https://www.linkedin.com/sales/people/ACwAAAVEP9MBdOoTOWZ0aJxz-FKPxvr5dqQn3XY,NAME_SEARCH,QZC']
 
-    #logger.debug("Envoi connexions")
-    #today_total = connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
-    #logger.info("Connexions envoyees")
+    logger.debug("Envoi connexions")
+    #today_total = connect_list_profile(df, browser, list_of_links, 1000, 11, CONTACTS_CSV, CONTACTS_JSON)
+    logger.info("Connexions envoyees")
 
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions

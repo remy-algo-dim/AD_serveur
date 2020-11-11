@@ -225,6 +225,7 @@ def main(id_, id_linkedin, password_linkedin):
     logger.debug("Recuperation de la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
 
+
     logger.debug("Envoi connexions")
     today_total = connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
     logger.info("Connexions envoyees")
