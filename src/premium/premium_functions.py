@@ -383,7 +383,7 @@ def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
     updated_json = {"Total connexions envoyees":len(df),
                     "Total messages envoyes":len(df),
-                    "Total envoyes aujourd'hui":len(today_list),
+                    "Total connexions envoyes aujourd'hui":len(today_list),
                     "Personnes a contacter pour ce filtre": nb2scrap,
                     "Pending invit": pendings}
                     
@@ -396,7 +396,7 @@ def update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     msg_envoyes = len(df[df['Nombre messages']==1])
     updated_json = {"Total connexions envoyees":len(df),
                     "Total messages envoyes": msg_envoyes,
-                    "Total envoyes aujourd'hui":len(today_list),
+                    "Total connexions envoyes aujourd'hui":len(today_list),
                     "Personnes a contacter pour ce filtre": nb2scrap,
                     "Pending invit": pendings}
                     
@@ -419,6 +419,13 @@ def how_many_profiles(browser):
     print('------------------------------')
     print(total_profiles, ' profiles must be contacted')
     return total_profiles # car parfois ce n'est pas un int !!
+
+
+
+
+
+
+
 
 
 
