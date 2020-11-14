@@ -168,13 +168,16 @@ def profile_post():
 			password_hached = cursor.fetchall()[0]['password']
 			expected_pwd = check_password_hash(password_hached, password_non_hashed)
 			if expected_pwd:
+				logger.info("PSWD linkedin valide")
 				session['password_non_hashed'] = password_non_hashed #on cree ce nouvel objet ds la session pr l'utiliser dans la route script
 				connection.close()
 				return redirect(url_for('script'))
 			else:
+				logger.info("PSWD errone")
 				connection.close()
 				return redirect(url_for('profile'))
 	except:
+		traceback.print_exc()
 		return redirect(url_for('login'))
 
 
