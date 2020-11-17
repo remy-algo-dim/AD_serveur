@@ -127,8 +127,11 @@ def login_post():
 			connection.close()
 			return redirect(url_for('login'))
 		else:
-			query = cursor.execute("""SELECT id FROM linkedin.user WHERE email=%s""", email)
-			session['id'] = cursor.fetchall()[0]['id']
+			query = cursor.execute("""SELECT id, name, robot FROM linkedin.user WHERE email=%s""", email)
+			query_output = cursor.fetchall()[0]
+			session['id'] = query_output['id']
+			session['name'] = query_output['name']
+			session['robot'] = query_output['robot']
 			session['email'] = email
 			session['password'] = password
 			connection.close()
@@ -154,7 +157,7 @@ def profile():
 		# !!!!! Comme vu ds la fonction logout, si la session a expire, on ne rentrera meme pas ds le if car session['email'] n'existe
 		# meme plus et donc on ne peux plus acceder a cette page
 		if session['email']:
-			return render_template('profile.html')
+			return render_template('profile.html', name=session['name'])
 	except:
 		return redirect(url_for('login'))
 
@@ -198,8 +201,16 @@ def logout():
 def script():
 	try:
 		if session['email']:
-			logger.info("Lancement de l'algorithme")
-			return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+			print(session['robot'])
+			if session['robot'] == 1:
+				logger.info("Lancement du robot 1")
+				return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+			elif session['robot'] == 2:
+				logger.info("Lancement du robot 2")
+				return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+			else:
+				logger.info('Erreur dans le choix du robot a lancer')
+				return render_template('error.html')
 	except:
 		traceback.print_exc()
 		logger.info("Algo non execute jusqu'a la fin")
@@ -212,6 +223,7 @@ def dashboard():
 	try:
 		if session['email']:
 			with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(session['id'])+'.json'),'r') as j:
+				logger.debug("Acces au JSON")
 				json_data = json.load(j)
 				nb_contacted_total = json_data["Total messages envoyes"]
 				nb_contacted_today = json_data["Total envoyes aujourd'hui"]
@@ -230,6 +242,7 @@ def dashboard():
 
 	except:
 		return redirect(url_for('login'))
+{"Total connexions envoyees": 200, "Total messages envoyes": 84, "Total envoyes aujourd'hui": 0, "Personnes a contacter pour ce filtre": "...", "Pending invit": "..."}
 
 
 if __name__ == "__main__":

@@ -100,12 +100,12 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
       
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logger.info('Connexion a Linkedin')
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
@@ -169,10 +169,9 @@ def main(id_, id_linkedin, password_linkedin):
     # All filters Linkedin Premium
     browser.get('https://www.linkedin.com/sales/search/people?viewAllFilters=true')
 
-    df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES))
-    # FILTRES
-    MOTS_CLEFS = df_filtres['MOTS CLÉS'].tolist()[0]
-    LOCATION = df_filtres['LOCATION'].tolist()[0]
+    df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES), header=1)
+    # FILTRES - on obtient pr chaque filtre une liste avec les input du user
+    LOCATION = df_filtres['ZONE GÉOGRAPHIQUE'].tolist()[0]
     LANGUE = df_filtres['LANGUE'].tolist()[0]
     SECTEUR = df_filtres['SECTEUR'].tolist()[0]
     DEGRE = df_filtres['NIVEAU DE RELATION'].tolist()[0]
@@ -187,37 +186,108 @@ def main(id_, id_linkedin, password_linkedin):
     EFFECTIF = df_filtres['EFFECTIF'].tolist()[0]
     TYPE = df_filtres["TYPE D'ENTREPRISE"].tolist()[0]
 
-    logger.info("Accedons aux filtres")
+    try:
+        LANGUE = LANGUE.split(';')
+    except:
+        LANGUE = [LANGUE]
+    try:
+        SECTEUR = SECTEUR.split(';')
+    except:
+        SECTEUR = [SECTEUR]
+    try:
+        DEGRE = DEGRE.split(';')
+    except:
+        DEGRE = [DEGRE]
+    try:
+        ANCIENNETE_ENTREPRISE = ANCIENNETE_ENTREPRISE.split(';')
+    except:
+        ANCIENNETE_ENTREPRISE = [ANCIENNETE_ENTREPRISE]
+    try:
+        HIERARCHIE = HIERARCHIE.split(';')
+    except:
+        HIERARCHIE = [HIERARCHIE]
+    try:
+        ANCIENNETE_POSTE = ANCIENNETE_POSTE.split(';')
+    except:
+        ANCIENNETE_POSTE = [ANCIENNETE_POSTE]
+    try:
+        FONCTION = FONCTION.split(';')
+    except:
+        FONCTION = [FONCTION]
+    try:
+        EXPERIENCE = EXPERIENCE.split(';')
+    except:
+        EXPERIENCE = [EXPERIENCE]
+    try:
+        EFFECTIF = EFFECTIF.split(';')
+    except:
+        EFFECTIF = [EFFECTIF]
+    try:
+        TYPE = TYPE.split(';')
+    except:
+        TYPE = [TYPE]
+    try:
+        LOCATION = LOCATION.split(';')
+    except:
+        LOCATION = [LOCATION]
+    try:
+        ECOLE = ECOLE.split(';')
+    except:
+        ECOLE = [ECOLE]
+    try:
+        TITRE = TITRE.split(';')
+    except:
+        TITRE = [TITRE]
+    try:
+        ENTREPRISE = ENTREPRISE.split(';')
+    except:
+        ENTREPRISE = [ENTREPRISE]
+
+    logger.info("Entrons les filtres")
 
     time.sleep(randrange(5, 8))
-    location_filter(browser, LOCATION)
-    time.sleep(randrange(2, 4))
-    langue_filter(browser, LANGUE)
-    time.sleep(randrange(2, 4))
-    secteur_filter(browser, SECTEUR)
-    time.sleep(randrange(2, 4))
-    degre_filter(browser, DEGRE)
-    time.sleep(randrange(2, 4))
-    ecole_filter(browser, ECOLE)
-    time.sleep(randrange(2, 4))
-    niveau_hierarchique_filter(browser, HIERARCHIE)
-    time.sleep(randrange(2, 4))
-    anciennete_poste_actuel_filter(browser, ANCIENNETE_POSTE)
-    time.sleep(randrange(2, 4))
-    anciennete_entreprise_actuelle_filter(browser, ANCIENNETE_ENTREPRISE)
-    time.sleep(randrange(2, 4))
-    fonction_filter(browser, FONCTION)
-    time.sleep(randrange(2, 4))
-    titre_filter(browser, TITRE)
-    time.sleep(randrange(2, 4))
-    experience(browser, EXPERIENCE)
-    time.sleep(randrange(2, 4))
-    entreprise_filter(browser, ENTREPRISE)
-    time.sleep(randrange(2, 4))
-    effectif_entreprise_filter(browser, EFFECTIF)
-    time.sleep(randrange(2, 4))
-    type_entreprise_filter(browser, TYPE)
-    time.sleep(randrange(2, 4))
+    for location in LOCATION:
+        location_filter(browser, location)
+        time.sleep(randrange(2, 4))
+    for langue in LANGUE:
+        langue_filter(browser, langue)
+        time.sleep(randrange(2, 4))
+    for secteur in SECTEUR:
+        secteur_filter(browser, secteur)
+        time.sleep(randrange(2, 4))
+    for degre in DEGRE:
+        degre_filter(browser, degre)
+        time.sleep(randrange(2, 4))
+    for ecole in ECOLE:
+        ecole_filter(browser, ecole)
+        time.sleep(randrange(2, 4))
+    for hierarchie in HIERARCHIE:
+        niveau_hierarchique_filter(browser, hierarchie)
+        time.sleep(randrange(2, 4))
+    for anciennete_poste in ANCIENNETE_POSTE:
+        anciennete_poste_actuel_filter(browser, anciennete_poste)
+        time.sleep(randrange(2, 4))
+    for anciennete_entreprise in ANCIENNETE_ENTREPRISE:
+        anciennete_entreprise_actuelle_filter(browser, anciennete_entreprise)
+        time.sleep(randrange(2, 4))
+    for fonction in FONCTION:
+        fonction_filter(browser, fonction)
+        time.sleep(randrange(2, 4))
+    for titre in TITRE:
+        titre_filter(browser, titre)
+        time.sleep(randrange(2, 4))
+    for exp in EXPERIENCE:
+        experience(browser, exp)
+        time.sleep(randrange(2, 4))
+    for entreprise in ENTREPRISE:
+        entreprise_filter(browser, entreprise)
+        time.sleep(randrange(2, 4))
+    for effectif in EFFECTIF:
+        effectif_entreprise_filter(browser, effectif)
+        time.sleep(randrange(2, 4))
+    for type_ in TYPE:
+        type_entreprise_filter(browser, type_)
+        time.sleep(randrange(2, 4))
 
     logger.info("Filtres appliques")
 

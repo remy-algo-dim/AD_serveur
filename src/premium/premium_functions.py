@@ -45,6 +45,8 @@ def connect_add_note_single(browser, profile_link, message_file_path):
         time.sleep(randrange(2, 5))
         # Menu Ajout
         name = retrieve_name(browser)
+        if 'XXXXXXX' in customMessage:
+            customMessage = customMessage.replace('XXXXXXX', name.split(' ')[0]) #On insere le prenom ds le message uniquement
         time.sleep(randrange(5, 8))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
         # Connexion
@@ -214,6 +216,8 @@ def send_message(browser, message_file_path, profile_link):
         html = browser.page_source
         #print(html)
         name = browser.find_element_by_class_name("break-words").text
+        if 'XXXXXXX' in customMessage:
+            customMessage = customMessage.replace('XXXXXXX', name.split(' ')[0]) #On insere le prenom ds le message uniquement
         logger.debug("Tentons d'envoyer un message a %s", name)
         time.sleep(randrange(2, 4))
         BOUTON = browser.find_element_by_class_name("pv-s-profile-actions").text
@@ -410,7 +414,8 @@ def check_length_msg(message_file_path):
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
         customMessage = f.read()
         print('Nombre de caracteres de votre message : ', len(customMessage))
-        return len(customMessage)
+        lenght_msg = len(customMessage) # On
+        return lenght_msg
 
 
 def how_many_profiles(browser):
