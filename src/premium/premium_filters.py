@@ -73,6 +73,8 @@ def degre_filter(browser, X):
 		degre_2 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[5]/div/div/div[2]/ol/li[2]/button')
 		degre_2.click()
 	if X == 'Relations de 3e niveau et plus':
+		html = browser.page_source
+		print(html)
 		degre_3 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[5]/div/div/div[2]/ol/li[4]/button')
 		degre_3.click()
 

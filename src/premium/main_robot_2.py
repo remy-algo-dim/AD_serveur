@@ -241,6 +241,7 @@ def main(id_, id_linkedin, password_linkedin):
     for location in LOCATION:
         location_filter(browser, location)
         time.sleep(randrange(2, 4))
+    logger.debug("Premier filtres appliqués")
     for langue in LANGUE:
         langue_filter(browser, langue)
         time.sleep(randrange(2, 4))
@@ -249,7 +250,7 @@ def main(id_, id_linkedin, password_linkedin):
         time.sleep(randrange(2, 4))
     for degre in DEGRE:
         degre_filter(browser, degre)
-        time.sleep(randrange(2, 4))
+        time.sleep(randrange(4, 6))
     for ecole in ECOLE:
         ecole_filter(browser, ecole)
         time.sleep(randrange(2, 4))
