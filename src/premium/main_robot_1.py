@@ -120,7 +120,7 @@ def main(id_, id_linkedin, password_linkedin):
         code_content = browser.find_element_by_class_name('form__input--text')
         code_content.click()
         logger.info('On a 2 mn pour rentrer le code dans MySQL')
-        time.sleep(randrange(120, 180))
+        time.sleep(randrange(1200, 1800))
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logger.info("Cherchons le code dans MySQL")
         connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
