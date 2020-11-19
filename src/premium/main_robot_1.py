@@ -85,8 +85,8 @@ def main(id_, id_linkedin, password_linkedin):
         logger.debug("Update du json")
         update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
 
-    """             ******************      1ere partie         ******************              """
 
+    """             ******************      1ere partie         ******************              """
 
 
     # Premiere condition a respecter : message ne depasse pas les 300 caracteres
@@ -96,7 +96,6 @@ def main(id_, id_linkedin, password_linkedin):
         sys.exit()
 
 
-    
     # CONNEXION 
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()

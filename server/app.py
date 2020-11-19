@@ -207,7 +207,7 @@ def script():
 				return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
 			elif session['robot'] == 2:
 				logger.info("Lancement du robot 2")
-				return main_robot_1.main(session['id'], session['email'], session['password_non_hashed'])
+				return main_robot_2.main(session['id'], session['email'], session['password_non_hashed'])
 			else:
 				logger.info('Erreur dans le choix du robot a lancer')
 				return render_template('error.html')
