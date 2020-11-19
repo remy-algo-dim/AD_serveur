@@ -93,12 +93,12 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
       
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
@@ -160,7 +160,7 @@ def main(id_, id_linkedin, password_linkedin):
     # All filters Linkedin Premium
     browser.get('https://www.linkedin.com/sales/search/people?viewAllFilters=true')
 
-    df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES), header=1)
+    df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES))
     # FILTRES - on obtient pr chaque filtre une liste avec les input du user
     LOCATION = df_filtres['ZONE GÉOGRAPHIQUE'].tolist()[0]
     LANGUE = df_filtres['LANGUE'].tolist()[0]

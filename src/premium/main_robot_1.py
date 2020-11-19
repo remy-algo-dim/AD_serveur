@@ -168,7 +168,7 @@ def main(id_, id_linkedin, password_linkedin):
     # All filters Linkedin Premium
     browser.get('https://www.linkedin.com/sales/search/people?viewAllFilters=true')
 
-    df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES), header=1)
+    df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES))
     # FILTRES - on obtient pr chaque filtre une liste avec les input du user
     LOCATION = df_filtres['ZONE GÉOGRAPHIQUE'].tolist()[0]
     LANGUE = df_filtres['LANGUE'].tolist()[0]
