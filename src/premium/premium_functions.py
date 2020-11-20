@@ -182,7 +182,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        logger.debug('Profile Link: ', profile)
+        logger.debug('Profile Link: %s', profile)
         if len(today_list) >= 20:
             logger.info("Plus de 20 connexions envoyes")
             break
@@ -247,6 +247,7 @@ def send_message(browser, message_file_path, profile_link):
                     time.sleep(randrange(2, 4))
                     browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()
                     logger.info("Message correctement envoye a %s (CLICK)", name)
+                    logger.info("------------------------------------------------")
                     return name
                 except: #cliquer sur envoyer
                     content_place.send_keys(Keys.ENTER).click()

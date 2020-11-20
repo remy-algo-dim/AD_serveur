@@ -122,7 +122,6 @@ def niveau_hierarchique_filter(browser, X):
 		jeune_diplome.click()
 
 def anciennete_poste_actuel_filter(browser, X):
-	print(X)
 	""" Permet de specifier l anciennete en nbe d annees ds le poste actuel """
 	anciennete = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[2]/div/div/div/div')
 	anciennete.click()
