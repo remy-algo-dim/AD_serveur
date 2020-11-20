@@ -93,12 +93,12 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
       
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
@@ -179,6 +179,7 @@ def main(id_, id_linkedin, password_linkedin):
 
     try:
         LANGUE = LANGUE.split(';')
+        LANGUE = LANGUE[::-1]
     except:
         LANGUE = [LANGUE]
     try:
@@ -187,18 +188,22 @@ def main(id_, id_linkedin, password_linkedin):
         SECTEUR = [SECTEUR]
     try:
         DEGRE = DEGRE.split(';')
+        DEGRE = DEGRE[::-1]
     except:
         DEGRE = [DEGRE]
     try:
         ANCIENNETE_ENTREPRISE = ANCIENNETE_ENTREPRISE.split(';')
+        ANCIENNETE_ENTREPRISE = ANCIENNETE_ENTREPRISE[::-1]
     except:
         ANCIENNETE_ENTREPRISE = [ANCIENNETE_ENTREPRISE]
     try:
         HIERARCHIE = HIERARCHIE.split(';')
+        HIERARCHIE = HIERARCHIE[::-1]
     except:
         HIERARCHIE = [HIERARCHIE]
     try:
         ANCIENNETE_POSTE = ANCIENNETE_POSTE.split(';')
+        ANCIENNETE_POSTE = ANCIENNETE_POSTE[::-1]
     except:
         ANCIENNETE_POSTE = [ANCIENNETE_POSTE]
     try:
@@ -207,14 +212,17 @@ def main(id_, id_linkedin, password_linkedin):
         FONCTION = [FONCTION]
     try:
         EXPERIENCE = EXPERIENCE.split(';')
+        EXPERIENCE = EXPERIENCE[::-1]
     except:
         EXPERIENCE = [EXPERIENCE]
     try:
         EFFECTIF = EFFECTIF.split(';')
+        EFFECTIF = EFFECTIF[::-1]
     except:
         EFFECTIF = [EFFECTIF]
     try:
         TYPE = TYPE.split(';')
+        TYPE = TYPE[::-1]
     except:
         TYPE = [TYPE]
     try:
@@ -245,9 +253,10 @@ def main(id_, id_linkedin, password_linkedin):
     for langue in LANGUE:
         langue_filter(browser, langue)
         time.sleep(randrange(2, 4))
-    for secteur in SECTEUR:
-        secteur_filter(browser, secteur)
-        time.sleep(randrange(2, 4))
+    #for secteur in SECTEUR:
+    #    print(secteur)
+    #    secteur_filter(browser, secteur)
+    #    time.sleep(randrange(2, 4))
     for degre in DEGRE:
         degre_filter(browser, degre)
         time.sleep(randrange(4, 6))

@@ -461,7 +461,6 @@ def send_message_obsolete(browser, message_file_path, profile_link):
         #content.click()
         time.sleep(randrange(4, 8))
         #Envoi
-        html = browser.page_source
         #print(html)
         content.send_keys(customMessage)
         time.sleep(randrange(5, 8))

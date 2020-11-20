@@ -73,8 +73,7 @@ def degre_filter(browser, X):
 		degre_2 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[5]/div/div/div[2]/ol/li[2]/button')
 		degre_2.click()
 	if X == 'Relations de 3e niveau et plus':
-		html = browser.page_source
-		print(html)
+		#html = browser.page_source
 		degre_3 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[5]/div/div/div[2]/ol/li[4]/button')
 		degre_3.click()
 
@@ -123,6 +122,7 @@ def niveau_hierarchique_filter(browser, X):
 		jeune_diplome.click()
 
 def anciennete_poste_actuel_filter(browser, X):
+	print(X)
 	""" Permet de specifier l anciennete en nbe d annees ds le poste actuel """
 	anciennete = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[2]/div/div/div/div')
 	anciennete.click()
@@ -211,7 +211,7 @@ def titre_filter(browser, X):
 def experience(browser, X):
 	""" Permet de specifier le nbe d'annees d'experience """
 	# annees dexperience
-	annee_exp = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div/div/button')
+	annee_exp = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div/div/div/label')
 	annee_exp.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES - on parlera de level :
@@ -223,13 +223,13 @@ def experience(browser, X):
 	if X == 'Moins d’un an':
 		level_1 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div[2]/ol/li[1]/button')
 		level_1.click()
-	if X == 'Entre 1 et 2 ans':
+	if X == 'De 1 à 2 ans':
 		level_2 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div[2]/ol/li[2]/button')
 		level_2.click()
-	if X == 'Entre 3 et 5 ans':
+	if X == 'De 3 à 5 ans':
 		level_3 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div[2]/ol/li[3]/button')
 		level_3.click()
-	if X == 'Entre 6 et 10 ans':
+	if X == 'De 6 à 10 ans':
 		level_4 = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div[2]/ol/li[4]/button')
 		level_4.click()
 	if X == 'Plus de 10 ans':

@@ -187,6 +187,7 @@ def main(id_, id_linkedin, password_linkedin):
 
     try:
         LANGUE = LANGUE.split(';')
+        LANGUE = LANGUE[::-1]
     except:
         LANGUE = [LANGUE]
     try:
@@ -195,18 +196,22 @@ def main(id_, id_linkedin, password_linkedin):
         SECTEUR = [SECTEUR]
     try:
         DEGRE = DEGRE.split(';')
+        DEGRE = DEGRE[::-1]
     except:
         DEGRE = [DEGRE]
     try:
         ANCIENNETE_ENTREPRISE = ANCIENNETE_ENTREPRISE.split(';')
+        ANCIENNETE_ENTREPRISE = ANCIENNETE_ENTREPRISE[::-1]
     except:
         ANCIENNETE_ENTREPRISE = [ANCIENNETE_ENTREPRISE]
     try:
         HIERARCHIE = HIERARCHIE.split(';')
+        HIERARCHIE = HIERARCHIE[::-1]
     except:
         HIERARCHIE = [HIERARCHIE]
     try:
         ANCIENNETE_POSTE = ANCIENNETE_POSTE.split(';')
+        ANCIENNETE_POSTE = ANCIENNETE_POSTE[::-1]
     except:
         ANCIENNETE_POSTE = [ANCIENNETE_POSTE]
     try:
@@ -215,14 +220,17 @@ def main(id_, id_linkedin, password_linkedin):
         FONCTION = [FONCTION]
     try:
         EXPERIENCE = EXPERIENCE.split(';')
+        EXPERIENCE = EXPERIENCE[::-1]
     except:
         EXPERIENCE = [EXPERIENCE]
     try:
         EFFECTIF = EFFECTIF.split(';')
+        EFFECTIF = EFFECTIF[::-1]
     except:
         EFFECTIF = [EFFECTIF]
     try:
         TYPE = TYPE.split(';')
+        TYPE = TYPE[::-1]
     except:
         TYPE = [TYPE]
     try:
