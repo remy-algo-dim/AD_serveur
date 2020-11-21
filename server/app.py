@@ -4,6 +4,7 @@ import pymysql.cursors
 from werkzeug.security import generate_password_hash, check_password_hash
 import json
 import datetime
+from datetime import date
 import logging
 import time
 import traceback
