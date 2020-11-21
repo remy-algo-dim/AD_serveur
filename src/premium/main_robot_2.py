@@ -97,7 +97,7 @@ def main(id_, id_linkedin, password_linkedin):
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
       
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
@@ -253,10 +253,9 @@ def main(id_, id_linkedin, password_linkedin):
     for langue in LANGUE:
         langue_filter(browser, langue)
         time.sleep(randrange(2, 4))
-    #for secteur in SECTEUR:
-    #    print(secteur)
-    #    secteur_filter(browser, secteur)
-    #    time.sleep(randrange(2, 4))
+    for secteur in SECTEUR:
+        secteur_filter(browser, secteur)
+        time.sleep(randrange(2, 4))
     for degre in DEGRE:
         degre_filter(browser, degre)
         time.sleep(randrange(4, 6))
