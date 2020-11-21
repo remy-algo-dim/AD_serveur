@@ -224,9 +224,12 @@ def dashboard():
 		if session['email']:
 			with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(session['id'])+'.json'),'r') as j:
 				logger.debug("Acces au JSON")
+			    df = pd.read_csv(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/liste_personnes_'+str(session['id']+'.xlsx')), sep=';', index_col=None)
+			    today = date.today()
+			    today_list = df['Dates'].tolist()
 				json_data = json.load(j)
 				nb_contacted_total = json_data["Total messages envoyes"]
-				nb_contacted_today = json_data["Total envoyes aujourd'hui"]
+				nb_contacted_today = len(today_list)
 				nb_contacted_per_filter = json_data["Personnes a contacter pour ce filtre"]
 				pending_invit = json_data["Pending invit"]
 				try:
