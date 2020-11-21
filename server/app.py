@@ -246,6 +246,7 @@ def dashboard():
                         nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit, total_connexions=total_connexions)
 
     except:
+        traceback.print_exc()
         return redirect(url_for('login'))
 
 
