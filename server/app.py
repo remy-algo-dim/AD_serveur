@@ -242,7 +242,6 @@ def dashboard():
 
 	except:
 		return redirect(url_for('login'))
-{"Total connexions envoyees": 200, "Total messages envoyes": 84, "Total envoyes aujourd'hui": 0, "Personnes a contacter pour ce filtre": "...", "Pending invit": "..."}
 
 
 if __name__ == "__main__":
