@@ -225,9 +225,10 @@ def dashboard():
         if session['email']:
             with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(session['id'])+'.json'),'r') as j:
                 logger.debug("Acces au JSON")
-                df = pd.read_csv(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/liste_personnes_'+str(session['id']+'.xlsx')), sep=';', index_col=None)
+                df = pd.read_csv(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/liste_personnes_'+str(session['id']+'.csv')), sep=';', index_col=None)
                 today = date.today()
                 today_list = df['Dates'].tolist()
+                today_list = [date for date in today_list if date==str(today)]
                 json_data = json.load(j)
                 nb_contacted_total = json_data["Total messages envoyes"]
                 nb_contacted_today = len(today_list)
