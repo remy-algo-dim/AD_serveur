@@ -99,7 +99,7 @@ def main(id_, id_linkedin, password_linkedin):
     # CONNEXION 
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
-    #chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
       
