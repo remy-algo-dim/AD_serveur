@@ -43,15 +43,16 @@ def connect_add_note_single(browser, profile_link, message_file_path):
     browser.get(profile_link)
     try:
         time.sleep(randrange(2, 5))
-        # Menu Ajout
         name = retrieve_name(browser)
+        logger.debug(name)
         if 'XXXXXXX' in customMessage:
             customMessage = customMessage.replace('XXXXXXX', name.split(' ')[0]) #On insere le prenom ds le message uniquement
+        # Menu Ajout
         time.sleep(randrange(5, 8))
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
         # Connexion
         time.sleep(randrange(5, 8))
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
         # Note
         time.sleep(randrange(3, 6))
         msg_box = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/label[1]') # Comme pr les filtres, attention aux endroits ou on ecrit, il faut cliquer deux fois
@@ -70,6 +71,7 @@ def connect_add_note_single(browser, profile_link, message_file_path):
         browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
         return name, profile_link    
     except:
+        traceback.print_exc()
         logger.info("Impossible d'ajouter ce contact en ami")
         return 'echec', 'echec'
 
@@ -92,7 +94,7 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             # On envoie
             logger.debug("Tentative de connexion et ajout de note")
             name, profile_link = connect_add_note_single(browser, profile, message_file_path)
-            logger.info("*** %s ***", "name")
+            logger.info("*** %s ***", name)
             time.sleep(randrange(5, 8))
             if name != 'echec':
                 # Ici on a reussi a envoyer
@@ -345,7 +347,7 @@ def get_list_of_profiles(browser, df):
 
         final_list_of_profiles.extend(list_of_profiles_per_page)
         final_list_of_profiles = list(set(final_list_of_profiles))
-        logger.info("page %s : %s liens scrapes", page, final_list_of_profiles)
+        logger.info("page %s : %s liens scrapes", page, len(final_list_of_profiles))
 
         # On envoie 20 msg par jour, donc des que notre liste contient 40 contacts (pour compenser les cas
         # ou il y a echec lors de l'envoie du message), on stop la fonctionn

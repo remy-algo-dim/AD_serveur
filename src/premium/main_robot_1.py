@@ -90,21 +90,21 @@ def main(id_, id_linkedin, password_linkedin):
 
 
     # Premiere condition a respecter : message ne depasse pas les 300 caracteres
-    msg_length = check_length_msg(MESSAGE_FILE_PATH)
-    if msg_length > 300:
-        logging.info('Votre message depasse les 300 catacteres')
-        sys.exit()
+    #msg_length = check_length_msg(MESSAGE_FILE_PATH)
+    #if msg_length > 300:
+    #    logging.info('Votre message depasse les 300 catacteres')
+    #    sys.exit()
 
 
     # CONNEXION 
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
       
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logger.info('Connexion a Linkedin')
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
@@ -256,45 +256,45 @@ def main(id_, id_linkedin, password_linkedin):
     for location in LOCATION:
         location_filter(browser, location)
         time.sleep(randrange(2, 4))
-    for langue in LANGUE:
-        langue_filter(browser, langue)
-        time.sleep(randrange(2, 4))
-    for secteur in SECTEUR:
-        secteur_filter(browser, secteur)
-        time.sleep(randrange(2, 4))
-    for degre in DEGRE:
-        degre_filter(browser, degre)
-        time.sleep(randrange(2, 4))
-    for ecole in ECOLE:
-        ecole_filter(browser, ecole)
-        time.sleep(randrange(2, 4))
-    for hierarchie in HIERARCHIE:
-        niveau_hierarchique_filter(browser, hierarchie)
-        time.sleep(randrange(2, 4))
-    for anciennete_poste in ANCIENNETE_POSTE:
-        anciennete_poste_actuel_filter(browser, anciennete_poste)
-        time.sleep(randrange(2, 4))
-    for anciennete_entreprise in ANCIENNETE_ENTREPRISE:
-        anciennete_entreprise_actuelle_filter(browser, anciennete_entreprise)
-        time.sleep(randrange(2, 4))
-    for fonction in FONCTION:
-        fonction_filter(browser, fonction)
-        time.sleep(randrange(2, 4))
-    for titre in TITRE:
-        titre_filter(browser, titre)
-        time.sleep(randrange(2, 4))
-    for exp in EXPERIENCE:
-        experience(browser, exp)
-        time.sleep(randrange(2, 4))
-    for entreprise in ENTREPRISE:
-        entreprise_filter(browser, entreprise)
-        time.sleep(randrange(2, 4))
-    for effectif in EFFECTIF:
-        effectif_entreprise_filter(browser, effectif)
-        time.sleep(randrange(2, 4))
-    for type_ in TYPE:
-        type_entreprise_filter(browser, type_)
-        time.sleep(randrange(2, 4))
+    #for langue in LANGUE:
+    #    langue_filter(browser, langue)
+    #    time.sleep(randrange(2, 4))
+    #for secteur in SECTEUR:
+    #    secteur_filter(browser, secteur)
+    #    time.sleep(randrange(2, 4))
+    #for degre in DEGRE:
+    #    degre_filter(browser, degre)
+    #    time.sleep(randrange(2, 4))
+    #for ecole in ECOLE:
+    #    ecole_filter(browser, ecole)
+    #    time.sleep(randrange(2, 4))
+    #for hierarchie in HIERARCHIE:
+    #    niveau_hierarchique_filter(browser, hierarchie)
+    #    time.sleep(randrange(2, 4))
+    #for anciennete_poste in ANCIENNETE_POSTE:
+    #    anciennete_poste_actuel_filter(browser, anciennete_poste)
+    #    time.sleep(randrange(2, 4))
+    #for anciennete_entreprise in ANCIENNETE_ENTREPRISE:
+    #    anciennete_entreprise_actuelle_filter(browser, anciennete_entreprise)
+    #    time.sleep(randrange(2, 4))
+    #for fonction in FONCTION:
+    #    fonction_filter(browser, fonction)
+    #    time.sleep(randrange(2, 4))
+    #for titre in TITRE:
+    #    titre_filter(browser, titre)
+    #    time.sleep(randrange(2, 4))
+    #for exp in EXPERIENCE:
+    #    experience(browser, exp)
+    #    time.sleep(randrange(2, 4))
+    #for entreprise in ENTREPRISE:
+    #    entreprise_filter(browser, entreprise)
+    #    time.sleep(randrange(2, 4))
+    #for effectif in EFFECTIF:
+    #    effectif_entreprise_filter(browser, effectif)
+    #    time.sleep(randrange(2, 4))
+    #for type_ in TYPE:
+    #    type_entreprise_filter(browser, type_)
+    #    time.sleep(randrange(2, 4))
 
     logger.info("Filtres appliques")
 
