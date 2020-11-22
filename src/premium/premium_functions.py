@@ -139,7 +139,7 @@ def just_connect(browser, profile_link):
         menu.click()
         time.sleep(randrange(3, 6))
         # Linkedin normal
-        linkedinDOTcom = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[3]/div')
+        linkedinDOTcom = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div[1]/div/ul/li[3]/div')
         time.sleep(randrange(1, 2))
         linkedinDOTcom.click()
         time.sleep(randrange(3, 6))

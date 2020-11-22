@@ -1,0 +1,28 @@
+Robot 1:
+
+Tout se fait depuis SN
+
+
+
+
+
+
+
+Robot 2:
+
+- Que se passe t il si on tombe sur le profil de qq avec qui on est deja en relation (on devrait pas vu que dans les filtres je ne propose
+que degre 2 et 3) ?  ---- Normalement on ne peut meme pas fr une demande de connexion car on ne pourra plus cliquer sur le bouton CONNEXION
+- Est ce qu'il se peut que mon algo essaye d'evnoyer a un message a qui on a deja envoye un mess auparavant ? Normalement l'algo essaye de contacter seulement les personnes dans mon CSV. Et qui se trouve dans mon CSV ? Seulement des personnes que jai ajoute lors des jours precedents. Et qui j ai pu ajouter lors des jours precedents ? Seulement des personnes qui ne faisaient pas partir de mon reseau donc normalement aucun PB
+
+
+
+
+
+
+TODO :
+
+- arreter de travailler ac des CSV pck trop risque (je peux perdre les donnes trop facilement et en plus ac github cest pas pratique)
+- Arreter de rerentrer les filtres a chaque fois, cest lonnnnnnng pour rien
+- Lorsque jenvoie des messages, je dois a chaque fois revisiter les profils un a un et voir si je peux les contacters ... ca ft bcp de visites. N y a t il pas un autre moyen pour envoyer seulement des messages lorsque je sais que la personne ma accepte ? 
+- Amelioration du dashboard
+- Amelioration de l'UI
