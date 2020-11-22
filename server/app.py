@@ -268,7 +268,7 @@ if __name__ == "__main__":
     #        return None  
 
 
-# ssh -i remy_key.pem  ubuntu@ec2-15-236-122-31.eu-west-3.compute.amazonaws.com
+# ssh -i remy_key.pem  ubuntu@ec2-15-237-72-73.eu-west-3.compute.amazonaws.com
 # sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
 """ TODO : dashboard AD,
 ajouter les stats du dash a mysql et pas que les fihiers temporaires

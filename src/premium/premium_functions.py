@@ -44,7 +44,6 @@ def connect_add_note_single(browser, profile_link, message_file_path):
     try:
         time.sleep(randrange(2, 5))
         name = retrieve_name(browser)
-        logger.debug(name)
         if 'XXXXXXX' in customMessage:
             customMessage = customMessage.replace('XXXXXXX', name.split(' ')[0]) #On insere le prenom ds le message uniquement
         # Menu Ajout
@@ -92,6 +91,7 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             break
         else:
             # On envoie
+            counter = 0
             logger.debug("Tentative de connexion et ajout de note")
             name, profile_link = connect_add_note_single(browser, profile, message_file_path)
             logger.info("*** %s ***", name)
@@ -106,6 +106,9 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
                 logger.info("Message envoye")
                 logger.debug("Mise a jour du JSON")
                 update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+                counter += 1
+                logger.debug("%s ajouts + envoyés", counter)
+                logger.info("******************")
             else:
                 logger.info("Echec de connexion pour : %s", name)
 
@@ -119,8 +122,8 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
 
 
 def just_connect(browser, profile_link):
-    """ Permet seulement de se connecter a la personne en utilisant le lien standard, meme si en entree elle
-    prend le lien premium. Renvoie le nom ainsi que le lien standard. Flow : acces au lien SN - acces au lien Linkedin
+    """ Meme si en entree elle prend le lien premium, on enregistre le lien standard pour l'utiliser plus
+    tard dans la fonction envoyant des msgs. Renvoie le nom ainsi que le lien standard. Flow : acces au lien SN - acces au lien Linkedin
     -- copie du lien -- retour sur SN -- ajout"""
     try:
         logger.info("******************************************************************************************************")
@@ -148,7 +151,6 @@ def just_connect(browser, profile_link):
         time.sleep(randrange(3, 6))
         profile_link = browser.current_url
         browser.close()
-        print(profile_link)
         logger.info("On recupere le standard link, et on revient a la page SN pour se connecter")
         browser.switch_to.window(window_before)
         time.sleep(randrange(2, 4))

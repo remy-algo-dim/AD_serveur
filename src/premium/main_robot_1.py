@@ -42,6 +42,7 @@ car le script s'appuiera dessus pour ne pas recontacter les memes personnes
 
 def main(id_, id_linkedin, password_linkedin):
 
+    logger.info("ID = %s --> %s vient de lancer l'algorithme", id_, id_linkedin)
     # Dans le cas ou on a rencontre une erreur lors du run precedent, il faut fermer le browser qui ete ouvert
     try:
         browser.quit()
@@ -311,7 +312,7 @@ def main(id_, id_linkedin, password_linkedin):
     logger.debug("Recuperation de la liste des profiles")
     list_of_links = get_list_of_profiles(browser, df)
 
-    logger.info("Debut des envois de messages")
+    logger.info("--------------------- Debut des envois de messages ---------------------")
     today_total = connect_note_list_profile(df, browser, list_of_links, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
     time.sleep(randrange(3, 6))
 
