@@ -144,7 +144,7 @@ def just_connect(browser, profile_link):
         linkedinDOTcom.click()
         time.sleep(randrange(3, 6))
         # Switch window
-        logger.info("Succes. On Switch de browser windows (on passe de SN a Linkedin")
+        logger.info("Succes. On Switch de browser windows (on passe de SN a Linkedin)")
         window_before = browser.window_handles[0]
         window_after = browser.window_handles[1]
         browser.switch_to.window(window_after)
@@ -156,11 +156,11 @@ def just_connect(browser, profile_link):
         time.sleep(randrange(2, 4))
         ## Connexion
         logger.info("Connexion au profil en cours")
-        # Plus
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
+        # plus
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]').click()
         time.sleep(randrange(3, 5))
         # Connect
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
+        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
         time.sleep(randrange(3, 6))
         # Envoyer
         browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()

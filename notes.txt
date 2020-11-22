@@ -26,3 +26,11 @@ TODO :
 - Lorsque jenvoie des messages, je dois a chaque fois revisiter les profils un a un et voir si je peux les contacters ... ca ft bcp de visites. N y a t il pas un autre moyen pour envoyer seulement des messages lorsque je sais que la personne ma accepte ? 
 - Amelioration du dashboard
 - Amelioration de l'UI
+- J'aimerais que pour le robot 2, lorsqu'on ajoute les contacts, alors certes on ajoute via SN mais on ouvre a chaque fois linkedin premium pr save le lien, et ben jaimerais a ne plus avoir a faire ca.
+
+
+
+PB : Les xpath changent souvent
+Quels sont les xpaths qui ont deja change ? 
+- just connect : linkedinDOTcom
+- just conenct : connexion : encore une fois le xpath change, on a une div en moins ... FAIRE ATTENTION A SI LA PROCHAINE FOIS ON A ENCORE UNE DIV EN PLUS ... DANS CE CAS LA SI ON REPERE LA LOGIQUE DU CHANGEMENT, ON FERA DES TRY EXCEPT DE PARTOUT
