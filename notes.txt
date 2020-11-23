@@ -27,6 +27,8 @@ TODO :
 - Amelioration du dashboard
 - Amelioration de l'UI
 - J'aimerais que pour le robot 2, lorsqu'on ajoute les contacts, alors certes on ajoute via SN mais on ouvre a chaque fois linkedin premium pr save le lien, et ben jaimerais a ne plus avoir a faire ca.
+- meme ceux qu on ne peut pas ajouter, echec, on devrait les mettre dans le csv car on retombera sans cesse sous eux. Et en s accumulant parfois jaurais ds ma today_liste que ce type de profils
+
 
 
 
