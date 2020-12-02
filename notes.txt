@@ -28,7 +28,7 @@ TODO :
 - Amelioration de l'UI
 - J'aimerais que pour le robot 2, lorsqu'on ajoute les contacts, alors certes on ajoute via SN mais on ouvre a chaque fois linkedin premium pr save le lien, et ben jaimerais a ne plus avoir a faire ca.
 - meme ceux qu on ne peut pas ajouter, echec, on devrait les mettre dans le csv car on retombera sans cesse sous eux. Et en s accumulant parfois jaurais ds ma today_liste que ce type de profils
-
+- clean les logs -- trop de logs
 
 
 
@@ -36,3 +36,15 @@ PB : Les xpath changent souvent
 Quels sont les xpaths qui ont deja change ? 
 - just connect : linkedinDOTcom
 - just conenct : connexion : encore une fois le xpath change, on a une div en moins ... FAIRE ATTENTION A SI LA PROCHAINE FOIS ON A ENCORE UNE DIV EN PLUS ... DANS CE CAS LA SI ON REPERE LA LOGIQUE DU CHANGEMENT, ON FERA DES TRY EXCEPT DE PARTOUT
+
+
+
+
+
+
+
+
+Tests : 
+- ma machine crash souvent. Peut etre qu on devrait tester une machine par client ... On va fr que du balaine cette sem
+- 22/11 -- crash (code looks ok)
+- 23/11 -- tb pr les connexions et pour les envois de messages le pb fut que, dans le excel, les personnes a qui on aurait du envoyer des mess navaient pas de standard links, donc normal quelle fonctionne pas .. curieux de voir ce quil se passera ds trois j (pourquoi navaient ils pas de std link ? car jai eu des pb ac git et ca a supprime la bonne version)

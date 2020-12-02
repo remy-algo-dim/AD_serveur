@@ -126,7 +126,8 @@ def just_connect(browser, profile_link):
     tard dans la fonction envoyant des msgs. Renvoie le nom ainsi que le lien standard. Flow : acces au lien SN - acces au lien Linkedin
     -- copie du lien -- retour sur SN -- ajout"""
     try:
-        logger.info("******************************************************************************************************")
+        logger.info("----------------------------------------------------------------------------------------------------")
+        logger.info("----------------------------------------------------------------------------------------------------")
         browser.get(profile_link) # premium
         time.sleep(randrange(4, 7))
         name = retrieve_name(browser)
@@ -138,8 +139,11 @@ def just_connect(browser, profile_link):
         time.sleep(randrange(1, 2))
         menu.click()
         time.sleep(randrange(3, 6))
-        # Linkedin normal
-        linkedinDOTcom = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div[1]/div/ul/li[3]/div')
+        # Linkedin normal - ICI UNE ERREUR REVIENT SOUVENT CAR LE XPATH CHANGE
+        try:
+            linkedinDOTcom = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div[1]/div/ul/li[3]/div')
+        except:
+            linkedinDOTcom = browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div[1]/div/ul/li[3]/div')
         time.sleep(randrange(1, 2))
         linkedinDOTcom.click()
         time.sleep(randrange(3, 6))
@@ -168,7 +172,6 @@ def just_connect(browser, profile_link):
         logger.info("Connexion success")
         logger.debug("On close la fenetre standard et on revient a la SN")
         logger.info("Update du JSON")
-        logger.info("******************************************************************************************************")
         #browser.close()
         return name, profile_link
     except:
@@ -192,6 +195,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
             break
         else:
             # On envoie
+            counter = 0
             name, standard_profile_link = just_connect(browser, profile)
             time.sleep(randrange(5, 8))
             if name != 'echec':
@@ -203,6 +207,8 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+                counter += 1
+                logger.debug("%s ajouts ", counter)
             else:
                 logger.info("Echec de connexion pour : %s", name)
 
