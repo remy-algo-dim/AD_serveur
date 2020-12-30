@@ -14,11 +14,8 @@ from flask import Flask, render_template
 from datetime import date
 from selenium.webdriver.remote.remote_connection import LOGGER
 
-from premium_functions import connect_add_note_single, just_connect, connect_note_list_profile, connect_list_profile, get_list_of_profiles, retrieve_name, Linkedin_connexion, update_json_file, check_length_msg, how_many_profiles, pending_invit
-from premium_filters import location_filter, langue_filter, secteur_filter, degre_filter, ecole_filter
-from premium_filters import niveau_hierarchique_filter, anciennete_poste_actuel_filter, anciennete_entreprise_actuelle_filter
-from premium_filters import fonction_filter, titre_filter, experience, entreprise_filter, effectif_entreprise_filter
-from premium_filters import type_entreprise_filter, validate_research
+import premium_functions
+import premium_filters
 
 CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
@@ -84,14 +81,14 @@ def main(id_, id_linkedin, password_linkedin):
         logger.info("Demarrage d'une nouvelle journee")
         nb2scrap, pendings = '...', '...'
         logger.debug("Update du json")
-        update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
+        premium_functions.update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
 
 
     """             ******************      1ere partie         ******************              """
 
 
     # Premiere condition a respecter : message ne depasse pas les 300 caracteres
-    msg_length = check_length_msg(MESSAGE_FILE_PATH)
+    msg_length = premium_functions.check_length_msg(MESSAGE_FILE_PATH)
     if msg_length > 300:
         logging.info('Votre message depasse les 300 catacteres')
         sys.exit()
@@ -111,7 +108,7 @@ def main(id_, id_linkedin, password_linkedin):
     time.sleep(randrange(1, 3))
 
     #Cette fonction prend en parametre les identifiants et mdp Linkedin afin de les chercher ds la DB SQLITE
-    Linkedin_connexion(browser, id_linkedin, password_linkedin)
+    premium_functions.Linkedin_connexion(browser, id_linkedin, password_linkedin)
     time.sleep(randrange(2, 5))
 
     # SECURITY VERIFICATION
@@ -150,7 +147,7 @@ def main(id_, id_linkedin, password_linkedin):
     # PENDING INVIT
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau
     logger.info("Verifions les pending invitations")
-    pendings = pending_invit(browser)
+    pendings = premium_functions.pending_invit(browser)
     if pendings > 4900:
         logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
         sys.exit()
@@ -255,65 +252,65 @@ def main(id_, id_linkedin, password_linkedin):
 
     time.sleep(randrange(5, 8))
     for location in LOCATION:
-        location_filter(browser, location)
+        premium_filters.location_filter(browser, location)
         time.sleep(randrange(2, 4))
     for langue in LANGUE:
-        langue_filter(browser, langue)
+        premium_filters.langue_filter(browser, langue)
         time.sleep(randrange(2, 4))
     for secteur in SECTEUR:
-        secteur_filter(browser, secteur)
+        premium_filters.secteur_filter(browser, secteur)
         time.sleep(randrange(2, 4))
     for degre in DEGRE:
-        degre_filter(browser, degre)
+        premium_filters.degre_filter(browser, degre)
         time.sleep(randrange(2, 4))
     for ecole in ECOLE:
-        ecole_filter(browser, ecole)
+        premium_filters.ecole_filter(browser, ecole)
         time.sleep(randrange(2, 4))
     for hierarchie in HIERARCHIE:
-        niveau_hierarchique_filter(browser, hierarchie)
+        premium_filters.niveau_hierarchique_filter(browser, hierarchie)
         time.sleep(randrange(2, 4))
     for anciennete_poste in ANCIENNETE_POSTE:
-        anciennete_poste_actuel_filter(browser, anciennete_poste)
+        premium_filters.anciennete_poste_actuel_filter(browser, anciennete_poste)
         time.sleep(randrange(2, 4))
     for anciennete_entreprise in ANCIENNETE_ENTREPRISE:
-        anciennete_entreprise_actuelle_filter(browser, anciennete_entreprise)
+        premium_filters.anciennete_entreprise_actuelle_filter(browser, anciennete_entreprise)
         time.sleep(randrange(2, 4))
     for fonction in FONCTION:
-        fonction_filter(browser, fonction)
+        premium_filters.fonction_filter(browser, fonction)
         time.sleep(randrange(2, 4))
     for titre in TITRE:
-        titre_filter(browser, titre)
+        premium_filters.titre_filter(browser, titre)
         time.sleep(randrange(2, 4))
     for exp in EXPERIENCE:
-        experience(browser, exp)
+        premium_filters.experience(browser, exp)
         time.sleep(randrange(2, 4))
     for entreprise in ENTREPRISE:
-        entreprise_filter(browser, entreprise)
+        premium_filters.entreprise_filter(browser, entreprise)
         time.sleep(randrange(2, 4))
     for effectif in EFFECTIF:
-        effectif_entreprise_filter(browser, effectif)
+        premium_filters.effectif_entreprise_filter(browser, effectif)
         time.sleep(randrange(2, 4))
     for type_ in TYPE:
-        type_entreprise_filter(browser, type_)
+        premium_filters.type_entreprise_filter(browser, type_)
         time.sleep(randrange(2, 4))
 
     logger.info("Filtres appliques")
 
-    validate_research(browser)
+    premium_filters.validate_research(browser)
     time.sleep(randrange(3, 6))
     # How many profiles to contact (to scrap) ?
     logger.info("Recuperation du nombre de profiles a scrapper")
-    nb2scrap = how_many_profiles(browser)
+    nb2scrap = premium_functions.how_many_profiles(browser)
     time.sleep(randrange(4, 7))
 
     """ ---------------------------------- Envoi de messages ---------------------------------- """
 
     # On visite les profils
     logger.debug("Recuperation de la liste des profiles")
-    list_of_links = get_list_of_profiles(browser, df)
+    list_of_links = premium_functions.get_list_of_profiles(browser, df)
 
     logger.info("--------------------- Debut des envois de messages ---------------------")
-    today_total = connect_note_list_profile(df, browser, list_of_links, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
+    today_total = premium_functions.connect_note_list_profile(df, browser, list_of_links, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
     time.sleep(randrange(3, 6))
 
     logger.info("----------------------- Cest fini pour aujourd'hui -----------------------")

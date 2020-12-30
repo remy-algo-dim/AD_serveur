@@ -15,7 +15,9 @@ que degre 2 et 3) ?  ---- Normalement on ne peut meme pas fr une demande de conn
 - Est ce qu'il se peut que mon algo essaye d'evnoyer a un message a qui on a deja envoye un mess auparavant ? Normalement l'algo essaye de contacter seulement les personnes dans mon CSV. Et qui se trouve dans mon CSV ? Seulement des personnes que jai ajoute lors des jours precedents. Et qui j ai pu ajouter lors des jours precedents ? Seulement des personnes qui ne faisaient pas partir de mon reseau donc normalement aucun PB
 
 
-
+Feedback :
+- je conseillerais bien au client de voir les profils issus du scrap avant, parce que les gens sont mechants, repondent souvent des conneries et il est difficile de bien cibler
+- attention donc au google form et aux cibles
 
 
 
@@ -37,7 +39,7 @@ Quels sont les xpaths qui ont deja change ?
 - just connect : linkedinDOTcom
 - just conenct : connexion : encore une fois le xpath change, on a une div en moins ... FAIRE ATTENTION A SI LA PROCHAINE FOIS ON A ENCORE UNE DIV EN PLUS ... DANS CE CAS LA SI ON REPERE LA LOGIQUE DU CHANGEMENT, ON FERA DES TRY EXCEPT DE PARTOUT
 
-
+- bug ds la fonction how many profile. Peut etre que cetait ponctuel. Mais a traiter
 
 
 
