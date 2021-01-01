@@ -16,6 +16,7 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 
 import premium_functions
 import premium_filters
+import mysql_functions
 
 CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
@@ -69,7 +70,8 @@ def main(id_, id_linkedin, password_linkedin):
 
 
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
-    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
+    df = mysql_functions.MYSQL_id_table_to_df(id_)    
+    ###df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
     today_list = df['Dates'].tolist()
@@ -113,18 +115,7 @@ def main(id_, id_linkedin, password_linkedin):
         time.sleep(randrange(1200, 1800))
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logger.info("Cherchons le code dans MySQL")
-        connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
-                                 user='root',
-                                 password='Leomessi9',
-                                 db='linkedin',
-                                 charset='utf8mb4',
-                                 cursorclass=pymysql.cursors.DictCursor)
-        with connection.cursor() as cursor:
-            cursor.execute('use linkedin')
-            cursor.execute('SELECT security_code FROM linkedin.user WHERE email=%s', id_linkedin)
-            security_code = cursor.fetchall()[0]['security_code']
-        connection.close()
-
+        security_code = mysql_functions.MYSQL_code_security_verification()
         code_content.send_keys(security_code)
         time.sleep(randrange(2, 4))
         browser.find_element_by_class_name('form__submit').click()
@@ -319,6 +310,13 @@ def main(id_, id_linkedin, password_linkedin):
     premium_functions.first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON, CONTACTS_CSV)
     logger.info("Fin du flow d'envoi de messages")
     time.sleep(randrange(3, 6))
+
+
+
+    """ ------------------------------------ SQL ------------------------------------ """
+
+    mysql_functions.MYSQL_update_table(df, id_)
+
 
     logger.info("************************* Cest fini pour aujourd'hui *************************")
     browser.quit()

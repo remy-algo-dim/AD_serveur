@@ -444,8 +444,6 @@ def how_many_profiles(browser):
 
 
 
-
-
 """ OBSOLETE FONCTIONS """
 
 def send_message_obsolete(browser, message_file_path, profile_link):
