@@ -69,14 +69,14 @@ def MYSQL_id_table_to_df(id_):
 	return df
 
 
-def MYSQL_code_security_verification():
+def MYSQL_code_security_verification(id_):
 	""" Cette fonction a pour but d'aller chercher le code de verif d'un nouvel utilisateur
 	etant donne que la premiere utilisation de cet algo sur le cloud necessite une verif """
 	connexion = MYSQL_create_connexion()
     with connexion.cursor() as cursor:
     	try:
 	        cursor.execute('use linkedin')
-	        cursor.execute('SELECT security_code FROM linkedin.user WHERE email=%s', id_linkedin)
+	        cursor.execute('SELECT security_code FROM linkedin.user WHERE id=%s', id_)
 	        security_code = cursor.fetchall()[0]['security_code']
 	    	connexion.close()
 	    	return security_code
@@ -85,9 +85,38 @@ def MYSQL_code_security_verification():
 	    	sys.exit()
 
 
+def MYSQL_is_new_filters(id_):
+	""" Permet d'aller chercher dans la table linkedin.user, la colonne : "new_filters",
+	si YES, alors il s'agit de la premiere fois que nous utilisons ces filtres et donc on 
+	appliquera la fonction 'lets_apply_filters'. Si NO, on utilisera le dernier lien enregistre dans MYSQL """
+	connexion = MYSQL_create_connexion()
+	with connexion.cursor() as cursor:
+    	try:
+	        cursor.execute('use linkedin')
+	        cursor.execute('SELECT new_filters FROM linkedin.user WHERE id=%s', id_)
+	        new_filters = cursor.fetchall()[0]['new_filters']
+	        connexion.close()
+	        return new_filters
+	    except:
+	    	print("On a pas pu identifier s'il s'agit d'une nouvelle recherche ... ERROR")
+	    	connexion.close()
+	    	sys.exit()	
 
 
-
+def MYSQL_retrieve_last_link(id_):
+	""" Permet de recuperer le dernier lien de recherche avant d'eviter de relancer tous les filtres """
+	connexion = MYSQL_create_connexion()
+	with connexion.cursor() as cursor:
+    	try:
+	        cursor.execute('use linkedin')
+	        cursor.execute('SELECT last_link_researched FROM linkedin.user WHERE id=%s', id_)
+	        last_link_researched = cursor.fetchall()[0]['last_link_researched']
+	        connexion.close()
+	        return last_link_researched
+	    except:
+	    	print("On a pas pu recuperer le last link researched ... ERROR")
+	    	connexion.close()
+	    	sys.exit()	
 
 
 

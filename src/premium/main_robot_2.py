@@ -17,6 +17,7 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 import premium_functions
 import premium_filters
 import mysql_functions
+import apply_filter
 
 CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
@@ -115,7 +116,7 @@ def main(id_, id_linkedin, password_linkedin):
         time.sleep(randrange(1200, 1800))
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logger.info("Cherchons le code dans MySQL")
-        security_code = mysql_functions.MYSQL_code_security_verification()
+        security_code = mysql_functions.MYSQL_code_security_verification(id_)
         code_content.send_keys(security_code)
         time.sleep(randrange(2, 4))
         browser.find_element_by_class_name('form__submit').click()
@@ -143,145 +144,20 @@ def main(id_, id_linkedin, password_linkedin):
 
 
     logger.info("Accedons aux filtres")
-
-    # Recherche des profils
-    # All filters Linkedin Premium
-    browser.get('https://www.linkedin.com/sales/search/people?viewAllFilters=true')
-
+    # 2 options : soit on entre filtre apres filtre dans le cas d'une nouvelle recherche. Soit on recupere le dernier lien dans MYSQL
     df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES))
-    # FILTRES - on obtient pr chaque filtre une liste avec les input du user
-    LOCATION = df_filtres['ZONE GÉOGRAPHIQUE'].tolist()[0]
-    LANGUE = df_filtres['LANGUE'].tolist()[0]
-    SECTEUR = df_filtres['SECTEUR'].tolist()[0]
-    DEGRE = df_filtres['NIVEAU DE RELATION'].tolist()[0]
-    ECOLE = df_filtres['ÉCOLE'].tolist()[0]
-    HIERARCHIE = df_filtres['HIÉRARCHIE'].tolist()[0]
-    ANCIENNETE_POSTE = df_filtres['ANCIENNETÉ DU POSTE'].tolist()[0]
-    ANCIENNETE_ENTREPRISE = df_filtres["ANCIENNETÉ D'ENTREPRISE"].tolist()[0]
-    FONCTION = df_filtres['FONCTION'].tolist()[0]
-    TITRE = df_filtres['TITRE'].tolist()[0]
-    EXPERIENCE = df_filtres['EXPERIENCE'].tolist()[0]
-    ENTREPRISE = df_filtres['ENTREPRISE'].tolist()[0]
-    EFFECTIF = df_filtres['EFFECTIF'].tolist()[0]
-    TYPE = df_filtres["TYPE D'ENTREPRISE"].tolist()[0]
+    boolean_new_filters = mysql_functions.MYSQL_is_new_filters(id_)
+    if boolean_new_filters == 'YES':
+        logger.debug("Il s'agit d'une nouvelle recherche, on entre chaque filtre")
+        apply_filter.lets_apply_filter(browser, df_filtres)
+        logger.info("Filtres appliques")
+        premium_filters.validate_research(browser)
+        time.sleep(randrange(3, 6))
+    elif boolean_new_filters == 'NO':
+        logger.debug("Nous sommes toujours sur la meme recherche, allons plus vite on recuperant le dernier lien")
+        last_link_researched = mysql_functions.MYSQL_retrieve_last_link(id_)
+        browser.get(last_link_researched)
 
-    try:
-        LANGUE = LANGUE.split(';')
-        LANGUE = LANGUE[::-1]
-    except:
-        LANGUE = [LANGUE]
-    try:
-        SECTEUR = SECTEUR.split(';')
-    except:
-        SECTEUR = [SECTEUR]
-    try:
-        DEGRE = DEGRE.split(';')
-        DEGRE = DEGRE[::-1]
-    except:
-        DEGRE = [DEGRE]
-    try:
-        ANCIENNETE_ENTREPRISE = ANCIENNETE_ENTREPRISE.split(';')
-        ANCIENNETE_ENTREPRISE = ANCIENNETE_ENTREPRISE[::-1]
-    except:
-        ANCIENNETE_ENTREPRISE = [ANCIENNETE_ENTREPRISE]
-    try:
-        HIERARCHIE = HIERARCHIE.split(';')
-        HIERARCHIE = HIERARCHIE[::-1]
-    except:
-        HIERARCHIE = [HIERARCHIE]
-    try:
-        ANCIENNETE_POSTE = ANCIENNETE_POSTE.split(';')
-        ANCIENNETE_POSTE = ANCIENNETE_POSTE[::-1]
-    except:
-        ANCIENNETE_POSTE = [ANCIENNETE_POSTE]
-    try:
-        FONCTION = FONCTION.split(';')
-    except:
-        FONCTION = [FONCTION]
-    try:
-        EXPERIENCE = EXPERIENCE.split(';')
-        EXPERIENCE = EXPERIENCE[::-1]
-    except:
-        EXPERIENCE = [EXPERIENCE]
-    try:
-        EFFECTIF = EFFECTIF.split(';')
-        EFFECTIF = EFFECTIF[::-1]
-    except:
-        EFFECTIF = [EFFECTIF]
-    try:
-        TYPE = TYPE.split(';')
-        TYPE = TYPE[::-1]
-    except:
-        TYPE = [TYPE]
-    try:
-        LOCATION = LOCATION.split(';')
-    except:
-        LOCATION = [LOCATION]
-    try:
-        ECOLE = ECOLE.split(';')
-    except:
-        ECOLE = [ECOLE]
-    try:
-        TITRE = TITRE.split(';')
-    except:
-        TITRE = [TITRE]
-    try:
-        ENTREPRISE = ENTREPRISE.split(';')
-    except:
-        ENTREPRISE = [ENTREPRISE]
-        
-    logger.info("Entrons les filtres")
-
-
-    time.sleep(randrange(5, 8))
-    for location in LOCATION:
-        premium_filters.location_filter(browser, location)
-        time.sleep(randrange(2, 4))
-    logger.debug("Premier filtres appliqués")
-    for langue in LANGUE:
-        premium_filters.langue_filter(browser, langue)
-        time.sleep(randrange(2, 4))
-    for secteur in SECTEUR:
-        premium_filters.secteur_filter(browser, secteur)
-        time.sleep(randrange(2, 4))
-    for degre in DEGRE:
-        premium_filters.degre_filter(browser, degre)
-        time.sleep(randrange(4, 6))
-    for ecole in ECOLE:
-        premium_filters.ecole_filter(browser, ecole)
-        time.sleep(randrange(2, 4))
-    for hierarchie in HIERARCHIE:
-        premium_filters.niveau_hierarchique_filter(browser, hierarchie)
-        time.sleep(randrange(2, 4))
-    for anciennete_poste in ANCIENNETE_POSTE:
-        premium_filters.anciennete_poste_actuel_filter(browser, anciennete_poste)
-        time.sleep(randrange(2, 4))
-    for anciennete_entreprise in ANCIENNETE_ENTREPRISE:
-        premium_filters.anciennete_entreprise_actuelle_filter(browser, anciennete_entreprise)
-        time.sleep(randrange(2, 4))
-    for fonction in FONCTION:
-        premium_filters.fonction_filter(browser, fonction)
-        time.sleep(randrange(2, 4))
-    for titre in TITRE:
-        premium_filters.titre_filter(browser, titre)
-        time.sleep(randrange(2, 4))
-    for exp in EXPERIENCE:
-        premium_filters.experience(browser, exp)
-        time.sleep(randrange(2, 4))
-    for entreprise in ENTREPRISE:
-        premium_filters.entreprise_filter(browser, entreprise)
-        time.sleep(randrange(2, 4))
-    for effectif in EFFECTIF:
-        premium_filters.effectif_entreprise_filter(browser, effectif)
-        time.sleep(randrange(2, 4))
-    for type_ in TYPE:
-        premium_filters.type_entreprise_filter(browser, type_)
-        time.sleep(randrange(2, 4))
-#
-    logger.info("Filtres appliques")
-
-    premium_filters.validate_research(browser)
-    time.sleep(randrange(3, 6))
     # How many profiles to contact (to scrap) ?
     logger.info("Recuperation du nombre de profiles a scrapper")
     nb2scrap = premium_functions.how_many_profiles(browser)
