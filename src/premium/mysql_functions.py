@@ -17,108 +17,99 @@ from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 
 
+# Logger
+logging.basicConfig(stream=sys.stdout,
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
+logger = logging.getLogger(__name__)
+logging.getLogger("urllib3").setLevel(logging.WARNING)
+logging.getLogger("requests").setLevel(logging.WARNING)
+LOGGER.setLevel(logging.WARNING)
+
+
+
 def MYSQL_create_connexion():
-	""" Initialisation d'une connexion MYSQL """
+    """ Initialisation d'une connexion MYSQL """
     connexion = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
-                                 user='root',
-                                 password='Leomessi9',
-                                 db='linkedin',
-                                 charset='utf8mb4',
-                                 cursorclass=pymysql.cursors.DictCursor)
+                                user='root',
+                                password='Leomessi9',
+                                db='linkedin',
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
     return connexion
 
 
 
+def MYSQL_id_table_to_df(id_, connexion):
+    """ Cette fonction a pour but de chercher les datas dans la table d'un user 
+    specifique et la mettre en format pandas dataframe """
+    with connexion.cursor() as cursor:
+        try:
+            cursor.execute("""CREATE TABLE IF NOT EXISTS user_%s (Personnes varchar(255), Links varchar(255),\
+                                        Standard_Link varchar(255), Dates varchar(255), Nombre_messages varchar(255))""", (id_))
+            connexion.commit()
+            query = cursor.execute("SELECT * FROM linkedin.user_%s", (id_))
+            output = cursor.fetchall()
+            df = pd.DataFrame(output)
+            return df
+        except:
+            print("Echec lors de la recuperation des datas MYSQL")
+            sys.exit()  
 
-def MYSQL_update_table(df, id_, CONTACTS_CSV): FONCTION A MODIFIER CAR JE NE VEUX PLUS DU TOUT DE FICHIERS
-    """ Cette fonction permet de mettre a jour la table SQL du client,
+
+
+
+def MYSQL_insert_table(id_, connexion, personne, link, standard_link, date, nombre_message):
+    """ Cette fonction permet d'inserer dans la table SQL du client, un prospect supplementaire
     afin de savoir les personnes contactees, ajoutees ... """
     logger.info("On update ta table SQL du client")
-    connexion = MYSQL_create_connexion()
     try:
-        connexion.cursor().execute("CREATE TABLE IF NOT EXISTS linkedin.user_%s (Personnes varchar(255), Links varchar(255)\
-                                        Standard_Link varchar(255), Dates varchar(255), Nombre messages varchar(255));", (id_))
-
-        for personne, link, standard_link, date, nombre_message in zip(df.Personnes, df.Links,
-                                                                df.Standard_Link, df.Dates, df['Nombre messages']):
-            connexion.cursor().execute("INSERT INTO linkedin.user_%s (Personnes, Links, Standard_Link, Dates, Nombre messages\
-                                VALUES (%s, %s, %s, %s, %s)", (id_, personne, link, standard_link, date, nombre_message))
-            connexion.commit()
-            #Suppression du CSV
-            os.remove(os.path.join(os.path.dirname(__file__),CONTACTS_CSV))
-        connexion.close()
+        connexion.cursor().execute("INSERT INTO linkedin.user_%s (Personnes, Links, Standard_Link, Dates, Nombre_messages\
+                            VALUES (%s, %s, %s, %s, %s)", (id_, personne, link, standard_link, date, nombre_message))
+        connexion.commit()
+        #Suppression du CSV
         logger.debug("Mise a jour de la table SQL reussie")
     except:
         logger.debug("Echec de mise a jour de la table SQL")
-        connexion.close()
 
 
-
-def MYSQL_id_table_to_df(id_):
-	""" Cette fonction a pour but de chercher les datas dans la table d'un user 
-	specifique et la mettre en format pandas dataframe """
-	connexion = MYSQL_create_connexion()
-	with connexion.cursor() as cursor:
-		try:
-		    query = cursor.execute("SELECT * FROM linkedin.user_%s", (id_))
-		    output = cursor.fetchall()
-		    df = pd.DataFrame(output)
-			connexion.close()
-		except:
-			connexion.close()
-	return df
-
-
-def MYSQL_code_security_verification(id_):
-	""" Cette fonction a pour but d'aller chercher le code de verif d'un nouvel utilisateur
-	etant donne que la premiere utilisation de cet algo sur le cloud necessite une verif """
-	connexion = MYSQL_create_connexion()
+def MYSQL_update_table(id_, connexion, column_name, new_column_value):
+    """ Cette fonction permet de mettre a jour la table SQL du client,
+    en updatant notamment le nombre de messages envoyes a un client """
+    logger.info("On update ta table SQL du client")
     with connexion.cursor() as cursor:
-    	try:
-	        cursor.execute('use linkedin')
-	        cursor.execute('SELECT security_code FROM linkedin.user WHERE id=%s', id_)
-	        security_code = cursor.fetchall()[0]['security_code']
-	    	connexion.close()
-	    	return security_code
-	    except:
-	    	connexion.close()
-	    	sys.exit()
+        try:
+            cursor.execute("UPDATE linkedin.user SET %s = %s WHERE id=%s;", (column_name, new_column_value, id_))
+            connexion.commit()
+            #Suppression du CSV
+            logger.debug("Mise a jour de la table SQL reussie")
+        except:
+            logger.debug("Echec de mise a jour de la table SQL")
 
 
-def MYSQL_is_new_filters(id_):
-	""" Permet d'aller chercher dans la table linkedin.user, la colonne : "new_filters",
-	si YES, alors il s'agit de la premiere fois que nous utilisons ces filtres et donc on 
-	appliquera la fonction 'lets_apply_filters'. Si NO, on utilisera le dernier lien enregistre dans MYSQL """
-	connexion = MYSQL_create_connexion()
-	with connexion.cursor() as cursor:
-    	try:
-	        cursor.execute('use linkedin')
-	        cursor.execute('SELECT new_filters FROM linkedin.user WHERE id=%s', id_)
-	        new_filters = cursor.fetchall()[0]['new_filters']
-	        connexion.close()
-	        return new_filters
-	    except:
-	    	print("On a pas pu identifier s'il s'agit d'une nouvelle recherche ... ERROR")
-	    	connexion.close()
-	    	sys.exit()	
+
+def MYSQL_code_security_verification(id_, connexion):
+    """ Cette fonction a pour but d'aller chercher le code de verif d'un nouvel utilisateur
+    etant donne que la premiere utilisation de cet algo sur le cloud necessite une verif """
+    with connexion.cursor() as cursor:
+        cursor.execute('use linkedin')
+        cursor.execute('SELECT security_code FROM linkedin.user WHERE id=%s', id_)
+        security_code = cursor.fetchall()[0]['security_code']
+        return security_code
 
 
-def MYSQL_retrieve_last_link(id_):
-	""" Permet de recuperer le dernier lien de recherche avant d'eviter de relancer tous les filtres """
-	connexion = MYSQL_create_connexion()
-	with connexion.cursor() as cursor:
-    	try:
-	        cursor.execute('use linkedin')
-	        cursor.execute('SELECT last_link_researched FROM linkedin.user WHERE id=%s', id_)
-	        last_link_researched = cursor.fetchall()[0]['last_link_researched']
-	        connexion.close()
-	        return last_link_researched
-	    except:
-	    	print("On a pas pu recuperer le last link researched ... ERROR")
-	    	connexion.close()
-	    	sys.exit()	
 
-
+def MYSQL_retrieve_last_link(id_, connexion):
+    """ Permet de recuperer le dernier lien de recherche avant d'eviter de relancer tous les filtres """
+    with connexion.cursor() as cursor:
+        try:
+            cursor.execute('use linkedin')
+            cursor.execute('SELECT last_link_researched FROM linkedin.user WHERE id=%s', id_)
+            last_link_researched = cursor.fetchall()[0]['last_link_researched']
+            return last_link_researched
+        except:
+            print("On a pas pu recuperer le last link researched ... ERROR")
+            sys.exit()  
 
 
 

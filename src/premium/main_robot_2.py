@@ -17,7 +17,7 @@ from selenium.webdriver.remote.remote_connection import LOGGER
 import premium_functions
 import premium_filters
 import mysql_functions
-import apply_filter
+import apply_filters
 
 CHROME_DRIVER_PATH = '/Users/remyadda/Desktop/chromedriver'
 
@@ -41,25 +41,28 @@ car le script s'appuiera dessus pour ne pas recontacter les memes personnes
 
 def main(id_, id_linkedin, password_linkedin):
 
-    # Dans le cas ou on a rencontre une erreur lors du run precedent, il faut fermer le browser qui ete ouvert
+    # Dans le cas ou il y a eu une erreur lors du run precdt, on ferme le browser qui ete ouvert ainsi que la connexion MYSQL
     logger.info("ID = %s --> %s vient de lancer l'algorithme", id_, id_linkedin)
     try:
         browser.quit()
+        logger.info("Fermons avant tout le browser precedent")
     except:
         logger.info("Le browser precedent a bien ete ferme")
+    try:
+        connexion.close()
+        logger.info("Fermons avant tout la connexion precedente")
+    except:
+        logger.info("La connexion precedente a bien ete fermee")
+
+    # On commencer par ouvrir une connexion MYSQL pour updater en live la DB
+    connexion = mysql_functions.MYSQL_create_connexion()
 
     CONTACTS_JSON = 'Contacts/stats_' + str(id_) + '.json'  ########### temporaire
-    CONTACTS_CSV = 'Contacts/liste_personnes_' + str(id_) + '.csv'########### temporaire
     MESSAGE_FILE_PATH = 'Config/message_personalise_' + str(id_) + '.txt'
     CONFIG_FILTRES = 'Config/filtres_' + str(id_) + '.xlsx'
 
 
     # Initialisation des fichiers stats
-    if path.exists(os.path.join(os.path.dirname(__file__),CONTACTS_CSV)) is False:
-        df = pd.DataFrame(columns=['Personnes', 'Links', 'Standard_Link', 'Dates', 'Nombre messages'])
-        df.to_csv(os.path.join(os.path.dirname(__file__), CONTACTS_CSV), sep=';') # A verifier si ce ; est le meme pour tous les clients
-    else:
-        logger.info("Le CSV existe deja")
     if path.exists(os.path.join(os.path.dirname(__file__), CONTACTS_JSON)) is False:
         updated_json = {"Total connexions envoyees": 0, "Total messages envoyes": 0, "Total connexions envoyees aujourd'hui": 0, 
             "Personnes a contacter pour ce filtre": 0, "Pending invit": 0}
@@ -71,7 +74,11 @@ def main(id_, id_linkedin, password_linkedin):
 
 
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
-    df = mysql_functions.MYSQL_id_table_to_df(id_)    
+    df = mysql_functions.MYSQL_id_table_to_df(id_, connexion)
+    # Dans le cas ou c'est la premiere fois, df est vide, et en la loadant depuis mysql, on ne recoit rien, donc creeons la
+    if len(df) == 0:
+        df = pd.DataFrame(columns=['Personnes', 'Links', 'Standard_Link', 'Dates', 'Nombre_messages'])
+        logger.info("Mazal Tov, Demarrage de la premiere journee")
     ###df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
@@ -88,44 +95,28 @@ def main(id_, id_linkedin, password_linkedin):
         premium_functions.update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
 
 
-    """             ******************      1ere partie         ******************              """
+
+    """             ******************      1ere partie : ChromeDriver, security, info       ******************              """
     
-    # CONNEXION 
+    # CONNEXION A LINKEDIN
     logger.info("Initialisation ChromeDriver")
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    #chrome_options.add_argument("--headless")
     chrome_options.add_argument("--no-sandbox")
     chrome_options.add_argument('--disable-dev-shm-usage')
       
-    #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
-    browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
+    #browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
 
-    #Cette fonction prend en parametre les identifiants et mdp Linkedin afin de les chercher ds la DB SQLITE
+    #Cette fonction prend en parametre les identifiants et mdp Linkedin afin de les chercher ds MYSQL
     premium_functions.Linkedin_connexion(browser, id_linkedin, password_linkedin)
     time.sleep(randrange(2, 5))
 
-    # SECURITY VERIFICATION
-    try:
-        logger.info("Verifions si une verification par mail est necessaire")
-        code_content = browser.find_element_by_class_name('form__input--text')
-        code_content.click()
-        logger.info("On a 2 mn pour rentrer le code dans MySQL")
-        time.sleep(randrange(1200, 1800))
-        # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
-        logger.info("Cherchons le code dans MySQL")
-        security_code = mysql_functions.MYSQL_code_security_verification(id_)
-        code_content.send_keys(security_code)
-        time.sleep(randrange(2, 4))
-        browser.find_element_by_class_name('form__submit').click()
-        time.sleep(randrange(2, 4))
-        logger.info("Code de securite envoye")
-    except:
-        logger.info('***** Verification par mail non necessaire *****')
-
-
+    # SECURITY VERIFICATION : car linkedin nous demande une verif lors de la premiere connexion sur la VM
+    premium_functions.linkedin_security_verification(browser)
 
     # PENDING INVIT
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau
@@ -140,39 +131,47 @@ def main(id_, id_linkedin, password_linkedin):
 
 
 
-    """             ******************      2eme partie         ******************              """
+    """             ******************      2eme partie : Filtres & Recherche        ******************              """
 
 
     logger.info("Accedons aux filtres")
-    # 2 options : soit on entre filtre apres filtre dans le cas d'une nouvelle recherche. Soit on recupere le dernier lien dans MYSQL
     df_filtres = pd.read_excel(os.path.join(os.path.dirname(__file__), CONFIG_FILTRES))
-    boolean_new_filters = mysql_functions.MYSQL_is_new_filters(id_)
-    if boolean_new_filters == 'YES':
-        logger.debug("Il s'agit d'une nouvelle recherche, on entre chaque filtre")
-        apply_filter.lets_apply_filter(browser, df_filtres)
+    # 2 OPTIONS : 
+    # - soit on entre filtre apres filtre dans le cas d'une nouvelle recherche.
+    # - soit on recupere le dernier lien dans MYSQL
+    last_link_researched = mysql_functions.MYSQL_retrieve_last_link(id_, connexion)
+    # Nouvelle recherche
+    if not last_link_researched:
+        # Colonne 'last_link_researched' vide
+        logger.debug("Il s'agit d'une nouvelle recherche, on entre chaque filtre manuellement")
+        apply_filters.lets_apply_filters(browser, df_filtres)
         logger.info("Filtres appliques")
         premium_filters.validate_research(browser)
         time.sleep(randrange(3, 6))
-    elif boolean_new_filters == 'NO':
+        # How many profiles to contact (to scrap) ?
+        logger.info("Recuperation du nombre de profiles a scrapper")
+        nb2scrap = premium_functions.how_many_profiles(browser)
+        time.sleep(randrange(4, 7))
+    # Recuperation des anciens filtres
+    else:
+        # Colonne 'last_link_researched' remplie
         logger.debug("Nous sommes toujours sur la meme recherche, allons plus vite on recuperant le dernier lien")
-        last_link_researched = mysql_functions.MYSQL_retrieve_last_link(id_)
         browser.get(last_link_researched)
 
-    # How many profiles to contact (to scrap) ?
-    logger.info("Recuperation du nombre de profiles a scrapper")
-    nb2scrap = premium_functions.how_many_profiles(browser)
-    time.sleep(randrange(4, 7))
 
     """ ---------------------------------- Demande de connexions ---------------------------------- """
 
     # On visite les profils
     logger.debug("Recuperation de la liste des profiles")
-    list_of_links = premium_functions.get_list_of_profiles(browser, df)
+    list_of_links, last_link = premium_functions.get_list_of_profiles(browser, df)
+    print('Last link :', last_link)
+    # On save le dernier lien visité
+    mysql_functions.MYSQL_update_table(id_, connexion, 'last_link_researched', last_link)
 
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.debug("Envoi connexions")
-    today_total = premium_functions.connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON)
+    today_total = premium_functions.connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_JSON, connexion, id_)
     logger.info("--- Fin d'envoi des connexions ---")
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
@@ -180,21 +179,17 @@ def main(id_, id_linkedin, password_linkedin):
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions
     #de premium_functions n'a pas actualise ce qui se passe dans ce fichier-ci)
-    df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
+    ###df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
+    df = mysql_functions.MYSQL_id_table_to_df(id_, connexion)    
     time.sleep(randrange(10, 20))
     logger.debug("Debut des envois de messages")
-    premium_functions.first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON, CONTACTS_CSV)
+    premium_functions.first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON, id_, connexion)
     logger.info("Fin du flow d'envoi de messages")
     time.sleep(randrange(3, 6))
 
 
-
-    """ ------------------------------------ SQL ------------------------------------ """
-
-    mysql_functions.MYSQL_update_table(df, id_)
-
-
     logger.info("************************* Cest fini pour aujourd'hui *************************")
+    connexion.close()
     browser.quit()
 
     return render_template('fin_algo.html')

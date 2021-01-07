@@ -16,6 +16,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import pandas as pd
 
+import mysql_functions
+
 # Logger
 logging.basicConfig(stream=sys.stdout,
                     level=logging.DEBUG,
@@ -99,7 +101,7 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             if name != 'echec':
                 # Ici on a reussi a envoyer
                 # On update de suite le csv
-                new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today), 'Nombre messages':1}
+                new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today), 'Nombre_messages':1}
                 df = df.append(new_row, ignore_index=True)
                 df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
                 # On update egalement le JSON
@@ -181,7 +183,7 @@ def just_connect(browser, profile_link):
         return 'echec', 'echec'
 
 
-def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON):
+def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACTS_JSON, connexion, id_):
     """ Permet d'envoyer des demande d'ajouts a une liste de profiles et rescence egalement les echecs et les succes.
     Cette fonction n'envoi pas de notes """
     today = date.today()
@@ -190,7 +192,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
         logger.debug('Profile Link: %s', profile)
-        if len(today_list) >= 20:
+        if len(today_list) >= 3:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
@@ -200,11 +202,8 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
             time.sleep(randrange(5, 8))
             if name != 'echec':
                 # Ici on a reussi a envoyer
-                # On update de suite le csv
-                new_row = {'Personnes':name, 'Links':profile, 
-                           'Standard_Link': standard_profile_link,'Dates':str(today), 'Nombre messages':0}
-                df = df.append(new_row, ignore_index=True)
-                df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
+                # On ajoute le prospect dans MYSQL
+                mysql_functions.MYSQL_insert_table(id_, connexion, name, profile, standard_profile_link, str(today), 0)
                 # On update egalement le JSON
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
                 counter += 1
@@ -288,7 +287,7 @@ def send_message(browser, message_file_path, profile_link):
 
 
 
-def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON, CONTACTS_CSV):
+def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON, id_, connexion):
     """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees
     en passant par les liens standards !"""
     #JSON
@@ -298,7 +297,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
     #On tentera de contacter les personnes ajoutees jusqu'a J-3
     logger.info("Recuperation des precedentes connexions")
     upThisDay = today - timedelta(days=3)
-    filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre messages'] < 1)
+    filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre_messages'] < 1)
     df_temporary = df.loc[filter_]
 
     logger.info("+%s contacts dans notre reseau", len(df))
@@ -312,9 +311,8 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
         logger.info("Tentative de message ...")
         name = send_message(browser, message_file_path, person)
         if name != 'echec':
-            #message correctement envoye - on ajoute le lien dans la liste
-            df.loc[index_, 'Nombre messages'] = 1
-            df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
+            # On update la colonne "Nombre de messages" dans MYSQL
+            mysql_functions.MYSQL_update_table(id_, connexion, 'Nombre_messages', 1)
             time.sleep(randrange(2, 4))
             # On update egalement le JSON
             update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
@@ -375,7 +373,7 @@ def get_list_of_profiles(browser, df):
             logger.info('Impossible de cliquer sur SUIVANT')
             break
     logger.info('Nombre de profiles trouves : %s', len(final_list_of_profiles))
-    return final_list_of_profiles
+    return final_list_of_profiles, browser.current_url
 
 
 def retrieve_name(browser):
@@ -408,7 +406,7 @@ def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
 def update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
     """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
     On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
-    msg_envoyes = len(df[df['Nombre messages']==1])
+    msg_envoyes = len(df[df['Nombre_messages']==1])
     updated_json = {"Total connexions envoyees":len(df),
                     "Total messages envoyes": msg_envoyes,
                     "Total connexions envoyes aujourd'hui":len(today_list),
@@ -431,10 +429,43 @@ def check_length_msg(message_file_path):
 
 def how_many_profiles(browser):
     """ Permet de savoir le nomnbre de profils correspondant a une recherche """
-    total_profiles = browser.find_element_by_xpath('/html/body/main/div[1]/div/div/div/div/div/button[1]/span[1]').text
-    print('------------------------------')
-    print(total_profiles, ' profiles must be contacted')
-    return total_profiles # car parfois ce n'est pas un int !!
+    try:
+        total_profiles = browser.find_element_by_xpath('/html/body/main/div[1]/div/div/div/div/div/button[1]/span[1]').text
+        logger.info("------------------------------")
+        logger.info("%s profiles doivent être contactés", total_profiles)
+        return total_profiles # car parfois ce n'est pas un int !!
+    except:
+        logger.debug("fonction 'how_many_profiles' non fonctionelles")
+        return 0
+
+
+
+
+def linkedin_security_verification(browser):
+    """ Permet d'entrer le code de securite recu par mail lors de la
+    premiere utilisation de cet algo """
+    try:
+        logger.info("Verifions si une verification par mail est necessaire")
+        code_content = browser.find_element_by_class_name('form__input--text')
+        code_content.click()
+        logger.info("On a 20 mn pour rentrer le code dans MySQL")
+        time.sleep(randrange(1200, 1800))
+        # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
+        logger.info("Cherchons le code dans MySQL")
+        security_code = mysql_functions.MYSQL_code_security_verification(id_)
+        code_content.send_keys(security_code)
+        time.sleep(randrange(2, 4))
+        browser.find_element_by_class_name('form__submit').click()
+        time.sleep(randrange(2, 4))
+        logger.info("Code de securite envoye")
+    except:
+        logger.info('***** Verification par mail non necessaire *****')
+
+
+
+
+
+
 
 
 

@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 def db_connect():
     logger.info("Connexion to the database")
-    # Connect to the database
+    # Connect to the Database
     connection = pymysql.connect(host='linkedin.c0oaoq9odgfz.eu-west-3.rds.amazonaws.com',
                                  user='root',
                                  password='Leomessi9',
@@ -76,23 +76,29 @@ def signup_post():
     name = request.form.get('name')
     password = request.form.get('password')
     check_pswd = request.form.get('check your password')
+    robot = request.form.get('robot')
     if password != check_pswd:
         flash('Check again your password')
         return redirect(url_for('signup'))
     else:
         connection = db_connect()
         with connection.cursor() as cursor:
-            # On check si le mail n'est pas ds la DB
-            if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", (email)) == 1:
-                flash('Email address already exists')
+            try:
+                # On check si le mail n'est pas ds la DB
+                if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", (email)) == 1:
+                    flash('Email address already exists')
+                    connection.close()
+                    return redirect(url_for('signup'))
+                else:
+                    # On rajoute la personne ds la DB
+                    cursor.execute("""INSERT INTO linkedin.user (email, name, password, robot) VALUES (%s, %s, %s, %s)""", (email, name, generate_password_hash(password, method='sha256'), robot))
+                    connection.commit()
+                    connection.close()
+                    return redirect(url_for('login'))
+            except:
                 connection.close()
+                traceback.print_exc()
                 return redirect(url_for('signup'))
-            else:
-                # On rajoute la personne ds la DB
-                cursor.execute("""INSERT INTO linkedin.user (email, name, password) VALUES (%s, %s, %s)""", (email, name, generate_password_hash(password, method='sha256')))
-                connection.commit()
-                connection.close()
-                return redirect(url_for('login'))
 
 
 
