@@ -62,15 +62,16 @@ def MYSQL_id_table_to_df(id_, connexion):
 def MYSQL_insert_table(id_, connexion, personne, link, standard_link, date, nombre_message):
     """ Cette fonction permet d'inserer dans la table SQL du client, un prospect supplementaire
     afin de savoir les personnes contactees, ajoutees ... """
-    logger.info("On update ta table SQL du client")
-    try:
-        connexion.cursor().execute("INSERT INTO linkedin.user_%s (Personnes, Links, Standard_Link, Dates, Nombre_messages\
-                            VALUES (%s, %s, %s, %s, %s)", (id_, personne, link, standard_link, date, nombre_message))
-        connexion.commit()
-        #Suppression du CSV
-        logger.debug("Mise a jour de la table SQL reussie")
-    except:
-        logger.debug("Echec de mise a jour de la table SQL")
+    logger.info("On insere les données client dans MYSQL")
+    with connexion.cursor() as cursor:
+        query = "INSERT INTO linkedin.user_" + str(id_) + " (Personnes, Links, Standard_Link, Dates, Nombre_messages) VALUES (" + "'" + str(personne) + "','" + str(link) + "','" + str(standard_link) + "','" + str(date) + "','" + str(nombre_message) + "')"
+        try:
+            cursor.execute(query)
+            connexion.commit()
+            #Suppression du CSV
+            logger.debug("Mise a jour de la table SQL reussie")
+        except:
+            logger.debug("Echec de mise a jour de la table SQL")
 
 
 def MYSQL_update_table(id_, connexion, column_name, new_column_value):
@@ -78,8 +79,9 @@ def MYSQL_update_table(id_, connexion, column_name, new_column_value):
     en updatant notamment le nombre de messages envoyes a un client """
     logger.info("On update ta table SQL du client")
     with connexion.cursor() as cursor:
+        query = "UPDATE linkedin.user SET " + str(column_name) + "=" + "'" + new_column_value + "'" " WHERE id=" + str(id_)
         try:
-            cursor.execute("UPDATE linkedin.user SET %s = %s WHERE id=%s;", (column_name, new_column_value, id_))
+            cursor.execute(query)
             connexion.commit()
             #Suppression du CSV
             logger.debug("Mise a jour de la table SQL reussie")

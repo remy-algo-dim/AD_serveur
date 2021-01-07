@@ -84,6 +84,7 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
     meme DATE. Je ne recupere pas ici le lien Linkedin, mais seulement le SN. Ce robot ajoute une connexion + une note,
     donc on comptabilisera la personne comme contactee --> 1"""
     today = date.today()
+    counter = 0
     for profile in list_profiles:
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
@@ -93,7 +94,6 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             break
         else:
             # On envoie
-            counter = 0
             logger.debug("Tentative de connexion et ajout de note")
             name, profile_link = connect_add_note_single(browser, profile, message_file_path)
             logger.info("*** %s ***", name)
@@ -165,8 +165,11 @@ def just_connect(browser, profile_link):
         # plus
         browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]').click()
         time.sleep(randrange(3, 5))
-        # Connect
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
+        # Connect (changement recurrent de xpath)
+        try:
+            browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
+        except:
+            browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
         time.sleep(randrange(3, 6))
         # Envoyer
         browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
@@ -187,26 +190,29 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
     """ Permet d'envoyer des demande d'ajouts a une liste de profiles et rescence egalement les echecs et les succes.
     Cette fonction n'envoi pas de notes """
     today = date.today()
+    counter = 0
     for profile in list_profiles:
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
         logger.debug('Profile Link: %s', profile)
-        if len(today_list) >= 3:
+        if len(today_list) >= 2:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
             # On envoie
-            counter = 0
             name, standard_profile_link = just_connect(browser, profile)
             time.sleep(randrange(5, 8))
             if name != 'echec':
                 # Ici on a reussi a envoyer
                 # On ajoute le prospect dans MYSQL
+                counter += 1
                 mysql_functions.MYSQL_insert_table(id_, connexion, name, profile, standard_profile_link, str(today), 0)
+                # On insere egalement une row dans df pour stopper l'algo après les 20 messages (ça nous evite de passer par MYSQL)
+                new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today), 'Nombre_messages':1}
+                df = df.append(new_row, ignore_index=True)
                 # On update egalement le JSON
                 update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
-                counter += 1
                 logger.debug("%s ajouts ", counter)
             else:
                 logger.info("Echec de connexion pour : %s", name)
@@ -357,7 +363,7 @@ def get_list_of_profiles(browser, df):
 
         # On envoie 20 msg par jour, donc des que notre liste contient 40 contacts (pour compenser les cas
         # ou il y a echec lors de l'envoie du message), on stop la fonctionn
-        if len(final_list_of_profiles) >= 35:
+        if len(final_list_of_profiles) >= 15: #35 normalement
             break
 
         time.sleep(randrange(2, 5))
