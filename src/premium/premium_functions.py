@@ -78,7 +78,7 @@ def connect_add_note_single(browser, profile_link, message_file_path):
 
 
 
-def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2scrap, pendings, CONTACTS_CSV, CONTACTS_JSON):
+def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2scrap, pendings):
     """ Permet d'envoyer des ajouts et notes a une liste de profiles et enregistre egalement
     le nombre de succes ainsi que le nombre d'echecs. Apres 20 messages envoyes pour un meme filtre et pour une
     meme DATE. Je ne recupere pas ici le lien Linkedin, mais seulement le SN. Ce robot ajoute une connexion + une note,
@@ -100,14 +100,7 @@ def connect_note_list_profile(df, browser, list_profiles, message_file_path, nb2
             time.sleep(randrange(5, 8))
             if name != 'echec':
                 # Ici on a reussi a envoyer
-                # On update de suite le csv
                 new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today), 'Nombre_messages':1}
-                df = df.append(new_row, ignore_index=True)
-                df.to_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';')
-                # On update egalement le JSON
-                logger.info("Message envoye")
-                logger.debug("Mise a jour du JSON")
-                update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
                 counter += 1
                 logger.debug("%s ajouts + envoyés", counter)
                 logger.info("******************")
@@ -176,7 +169,6 @@ def just_connect(browser, profile_link):
         time.sleep(randrange(1, 3))
         logger.info("Connexion success")
         logger.debug("On close la fenetre standard et on revient a la SN")
-        logger.info("Update du JSON")
         #browser.close()
         return name, profile_link
     except:
@@ -186,7 +178,7 @@ def just_connect(browser, profile_link):
         return 'echec', 'echec'
 
 
-def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACTS_JSON, connexion, id_):
+def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexion, id_):
     """ Permet d'envoyer des demande d'ajouts a une liste de profiles et rescence egalement les echecs et les succes.
     Cette fonction n'envoi pas de notes """
     today = date.today()
@@ -211,8 +203,6 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, CONTACT
                 # On insere egalement une row dans df pour stopper l'algo après les 20 messages (ça nous evite de passer par MYSQL)
                 new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today), 'Nombre_messages':1}
                 df = df.append(new_row, ignore_index=True)
-                # On update egalement le JSON
-                update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
                 logger.debug("%s ajouts ", counter)
             else:
                 logger.info("Echec de connexion pour : %s", name)
@@ -293,10 +283,9 @@ def send_message(browser, message_file_path, profile_link):
 
 
 
-def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_JSON, id_, connexion):
+def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, connexion):
     """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees
     en passant par les liens standards !"""
-    #JSON
     today_list = df['Dates'].tolist()
     today = date.today()
     today_list = [date for date in today_list if date==str(today)]
@@ -320,8 +309,6 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, CONTACTS_
             # On update la colonne "Nombre de messages" dans MYSQL
             mysql_functions.MYSQL_update_table(id_, connexion, 'Nombre_messages', 1)
             time.sleep(randrange(2, 4))
-            # On update egalement le JSON
-            update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
         else: #echec
             logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
             pass
@@ -396,31 +383,6 @@ def pending_invit(browser):
     pendings = int(re.search(r'\d+', pendings).group())
     return pendings
 
-
-def update_json_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
-    """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
-    On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
-    updated_json = {"Total connexions envoyees":len(df),
-                    "Total messages envoyes":len(df),
-                    "Total connexions envoyes aujourd'hui":len(today_list),
-                    "Personnes a contacter pour ce filtre": nb2scrap,
-                    "Pending invit": pendings}
-                    
-    with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON), 'w') as json_file:
-        json.dump(updated_json, json_file)
-
-def update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON):
-    """ Cette fonction met a jour le json file afin de mettre a jour egalement les stats ainsi que le dashboard,
-    On mettra autant de parametres ds la fonction qu'il y a de parametres dans le json """
-    msg_envoyes = len(df[df['Nombre_messages']==1])
-    updated_json = {"Total connexions envoyees":len(df),
-                    "Total messages envoyes": msg_envoyes,
-                    "Total connexions envoyes aujourd'hui":len(today_list),
-                    "Personnes a contacter pour ce filtre": nb2scrap,
-                    "Pending invit": pendings}
-                    
-    with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON), 'w') as json_file:
-        json.dump(updated_json, json_file)        
 
 
 def check_length_msg(message_file_path):

@@ -34,7 +34,7 @@ LOGGER.setLevel(logging.WARNING)
 Il s'agit de la version que l'on deploiera en production -- D'ou la presence d'une fonction main() afin de l'importer dans le Flask
 
 Il s'agit du script principal du robot qui permet d'envoyer 20 messages par run, en utilisant les filtres
-premium. Il est necessaire pour ce script de creer une df a une colonne : 'Personnes', et de le save en format csv,
+premium. Il est necessaire pour ce script de creer une df a une colonne : 'Personnes', et de le save sur MYSQL,
 car le script s'appuiera dessus pour ne pas recontacter les memes personnes
 
 """
@@ -57,20 +57,8 @@ def main(id_, id_linkedin, password_linkedin):
     # On commencer par ouvrir une connexion MYSQL pour updater en live la DB
     connexion = mysql_functions.MYSQL_create_connexion()
 
-    CONTACTS_JSON = 'Contacts/stats_' + str(id_) + '.json'  ########### temporaire
     MESSAGE_FILE_PATH = 'Config/message_personalise_' + str(id_) + '.txt'
     CONFIG_FILTRES = 'Config/filtres_' + str(id_) + '.xlsx'
-
-
-    # Initialisation des fichiers stats
-    if path.exists(os.path.join(os.path.dirname(__file__), CONTACTS_JSON)) is False:
-        updated_json = {"Total connexions envoyees": 0, "Total messages envoyes": 0, "Total connexions envoyees aujourd'hui": 0, 
-            "Personnes a contacter pour ce filtre": 0, "Pending invit": 0}
-                    
-        with open(os.path.join(os.path.dirname(__file__), CONTACTS_JSON), 'w') as json_file:
-            json.dump(updated_json, json_file)
-    else:
-        logger.info("Le JSON existe deja")
 
 
     # On evite de relancer le script pour rien si les 20 messages ont deja ete envoyes. Le script se stoppera tout de suite
@@ -79,7 +67,6 @@ def main(id_, id_linkedin, password_linkedin):
     if len(df) == 0:
         df = pd.DataFrame(columns=['Personnes', 'Links', 'Standard_Link', 'Dates', 'Nombre_messages'])
         logger.info("Mazal Tov, Demarrage de la premiere journee")
-    ###df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     # Je check le nbe de messages envoyes aujourd'hui
     today = date.today()
     today_list = df['Dates'].tolist()
@@ -91,8 +78,6 @@ def main(id_, id_linkedin, password_linkedin):
     else:
         logger.info("Demarrage d'une nouvelle journee")
         nb2scrap, pendings = '...', '...'
-        logger.debug("Update du json")
-        premium_functions.update_json_connect_file(df, today_list, nb2scrap, pendings, CONTACTS_JSON)
 
 
 
@@ -122,6 +107,7 @@ def main(id_, id_linkedin, password_linkedin):
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau
     logger.info("Verifions les pending invitations")
     pendings = premium_functions.pending_invit(browser)
+    mysql_functions.MYSQL_update_table(id_, connexion, 'pending_invit', pendings)
     if pendings > 4900:
         logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
         sys.exit()
@@ -171,7 +157,7 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.debug("Envoi connexions")
-    today_total = premium_functions.connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, CONTACTS_JSON, connexion, id_)
+    today_total = premium_functions.connect_list_profile(df, browser, list_of_links, nb2scrap, pendings, connexion, id_)
     logger.info("--- Fin d'envoi des connexions ---")
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
@@ -179,11 +165,10 @@ def main(id_, id_linkedin, password_linkedin):
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions
     #de premium_functions n'a pas actualise ce qui se passe dans ce fichier-ci)
-    ###df = pd.read_csv(os.path.join(os.path.dirname(__file__),CONTACTS_CSV), sep=';', index_col=None)
     df = mysql_functions.MYSQL_id_table_to_df(id_, connexion)    
     time.sleep(randrange(10, 20))
     logger.debug("Debut des envois de messages")
-    premium_functions.first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, CONTACTS_JSON, id_, connexion)
+    premium_functions.first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, id_, connexion)
     logger.info("Fin du flow d'envoi de messages")
     time.sleep(randrange(3, 6))
 

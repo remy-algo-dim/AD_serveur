@@ -39,6 +39,19 @@ def MYSQL_create_connexion():
     return connexion
 
 
+def MYSQL_globale_table_to_df(connexion):
+    """ Cette fonction permet de chercher les datas dans la table principale
+    'user', et de les rendre au format df """
+    with connexion.cursor as cursor:
+        try:
+            cursor.execute("""SELECT * FROM linkedin.user""")
+            output = cursor.fetchall()
+            df = pd.DataFrame(output)
+            return df
+        except:
+            print("Echec lors de la recupération des datas MYSQL")
+            ### Je ne mets pas de sys.exit car cette fonction n'est pas utilisee dans l'algo mais seulement dans l'UI (dashboard)
+
 
 def MYSQL_id_table_to_df(id_, connexion):
     """ Cette fonction a pour but de chercher les datas dans la table d'un user 
@@ -68,7 +81,6 @@ def MYSQL_insert_table(id_, connexion, personne, link, standard_link, date, nomb
         try:
             cursor.execute(query)
             connexion.commit()
-            #Suppression du CSV
             logger.debug("Mise a jour de la table SQL reussie")
         except:
             logger.debug("Echec de mise a jour de la table SQL")
@@ -83,7 +95,6 @@ def MYSQL_update_table(id_, connexion, column_name, new_column_value):
         try:
             cursor.execute(query)
             connexion.commit()
-            #Suppression du CSV
             logger.debug("Mise a jour de la table SQL reussie")
         except:
             logger.debug("Echec de mise a jour de la table SQL")

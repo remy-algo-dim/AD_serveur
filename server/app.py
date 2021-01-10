@@ -12,7 +12,7 @@ import pandas as pd
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'premium'))
-import main_robot_1, main_robot_2, test_send_msg
+import main_robot_1, main_robot_2, test_send_msg, mysql_functions
 
 sys.dont_write_bytecode = True
 
@@ -81,7 +81,7 @@ def signup_post():
         flash('Check again your password')
         return redirect(url_for('signup'))
     else:
-        connection = db_connect()
+        connection = mysql_functions.MYSQL_create_connexion()
         with connection.cursor() as cursor:
             try:
                 # On check si le mail n'est pas ds la DB
@@ -114,7 +114,7 @@ def login_post():
     password = request.form.get('password')
     remember = True if request.form.get('remember') else False
 
-    connection = db_connect()
+    connection = mysql_functions.MYSQL_create_connexion()
     with connection.cursor() as cursor:
         # On verifie d'abord si le mail existe
         if cursor.execute("""SELECT email FROM linkedin.user WHERE email=%s""", email) == 0:    
@@ -123,7 +123,7 @@ def login_post():
             return redirect(url_for('login'))
 
     connection.close()
-    connection = db_connect()
+    connection = mysql_functions.MYSQL_create_connexion()
     with connection.cursor() as cursor:
         # On recupere ici le mdp de la db correspondant au mail entre par le user
         query_expected_pwd = cursor.execute("""SELECT password FROM linkedin.user WHERE email=%s""", email)
@@ -173,7 +173,7 @@ def profile():
 def profile_post():
     password_non_hashed = request.form.get('password')
     try:
-        connection = db_connect()
+        connection = mysql_functions.MYSQL_create_connexion()
         with connection.cursor() as cursor:
             query_expected_pwd = cursor.execute("""SELECT password FROM linkedin.user WHERE email=%s""", session['email'])
             password_hached = cursor.fetchall()[0]['password']
@@ -225,34 +225,31 @@ def script():
         return render_template('error.html')
 
 
+
 @app.route('/dash')
 def dashboard():
-    # le dashboard va chercher les datas dans le json
-    try:
-        if session['email']:
-            with open(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/stats_'+str(session['id'])+'.json'),'r') as j:
-                logger.debug("Acces au JSON")
-                df = pd.read_csv(os.path.join(os.path.dirname(__file__), '../src/premium/Contacts/liste_personnes_'+str(session['id'])+'.csv'), sep=';', index_col=None)
-                today = date.today()
-                today_list = df['Dates'].tolist()
-                today_list = [date for date in today_list if date==str(today)]
-                json_data = json.load(j)
-                nb_contacted_total = json_data["Total messages envoyes"]
-                nb_contacted_today = len(today_list)
-                nb_contacted_per_filter = json_data["Personnes a contacter pour ce filtre"]
-                pending_invit = json_data["Pending invit"]
-                try:
-                    total_connexions = json_data["Total connexions envoyees"]
-                    logging.info("Dashboard robot 2")
-                    return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
-                        nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit, total_connexions=total_connexions)
-                except:
-                    logging.info("Dashboard robot 1")
-                    total_connexions = nb_contacted_total
-                    return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
-                        nb_contacted_per_filter=nb_contacted_per_filter, pending_invit=pending_invit, total_connexions=total_connexions)
+    # le dashboard va chercher les datas sur mysql
+    if session['email']:
+        try:
+            connexion = mysql_functions.MYSQL_create_connexion()
+            df_globale = mysql_functions.MYSQL_globale_table_to_df(connexion)
+            df = mysql_functions.MYSQL_id_table_to_df(str(session['id']), connexion)
+            today_ = date.today()
+            today_list = df['Dates'].tolist()
+            today_list = [date for date in today_list if date==str(today_)]
+            nb_contacted_today = len(today_list)
 
-    except:
+            nb_contacted_total = len(df[df['Nombre_messages'] != 0])
+            pending_invit = df_globale.loc[df_globale['id'] == str(session['id'])]['pending_invit']
+            total_connexions = len(df)
+
+            logger.info("Dashboard robot 2")
+            return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
+                    pending_invit=pending_invit, total_connexions=total_connexions)
+        except:
+            logger.info("Erreur dans la fonction dashboard")
+            return redirect(url_for('login'))
+    else:
         traceback.print_exc()
         return redirect(url_for('login'))
 
