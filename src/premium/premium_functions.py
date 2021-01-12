@@ -245,12 +245,17 @@ def send_message(browser, message_file_path, profile_link):
                 time.sleep(randrange(4, 7))
                 content_place.send_keys(customMessage)
                 time.sleep(randrange(3, 6))
+                # Verifions s'il y a une PJ a ajouter
+                for file in os.listdir('Config'):
+                    if 'piece_jointe_' + str(id_) in file:
+                        PJ = 'Config/' + file
+                        attach_file_to_message(browser, PJ)
                 #il y a 2 moyens d'envoyer : soit cliquer sur entrer
                 try:
                     browser.find_element_by_class_name("msg-form__send-button").click()
                     time.sleep(randrange(1, 3))
                     time.sleep(randrange(2, 4))
-                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()
+                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()#reduire window
                     logger.info("Message correctement envoye a %s (CLICK)", name)
                     logger.info("------------------------------------------------")
                     return name
@@ -258,7 +263,7 @@ def send_message(browser, message_file_path, profile_link):
                     content_place.send_keys(Keys.ENTER).click()
                     time.sleep(randrange(1, 3))
                     time.sleep(randrange(2, 4))
-                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()
+                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()#redui<qre window
                     logger.info("Message correctement envoye a %s (ENTER)", name)
                     return name
             except:
@@ -367,6 +372,21 @@ def get_list_of_profiles(browser, df):
             break
     logger.info('Nombre de profiles trouves : %s', len(final_list_of_profiles))
     return final_list_of_profiles, browser.current_url
+
+
+        
+def attach_file_to_message(browser, PJ):
+    """Permet d'ajouter une piece jointe au message Linkedin"""
+    try:
+        pj = browser.find_element_by_class_name("msg-form__attachment-upload-input")
+        pj.send_keys(PJ)
+        # On recupere la taille du fichier et on attend qu'il se load avant d'envoyer (10 sec pour 1MB)
+        size = os.path.getsize(PJ) #la size recupérée est en bytes
+        time.sleep(size/10**6*10)
+        logger.debug("On a ajouté une pièce jointe")
+    except:
+        logger.debug("Probleme avec la fonction piece jointe (attach_file_to_message")
+
 
 
 def retrieve_name(browser):

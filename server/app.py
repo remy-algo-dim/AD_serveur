@@ -12,7 +12,7 @@ import pandas as pd
 
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src', 'premium'))
-import main_robot_1, main_robot_2, test_send_msg, mysql_functions
+import main_robot_1, main_robot_2, mysql_functions
 
 sys.dont_write_bytecode = True
 
