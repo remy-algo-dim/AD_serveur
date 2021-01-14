@@ -233,24 +233,26 @@ def dashboard():
         try:
             connexion = mysql_functions.MYSQL_create_connexion()
             df_globale = mysql_functions.MYSQL_globale_table_to_df(connexion)
-            df = mysql_functions.MYSQL_id_table_to_df(str(session['id']), connexion)
+            df = mysql_functions.MYSQL_id_table_to_df(session['id'], connexion)
             today_ = date.today()
             today_list = df['Dates'].tolist()
             today_list = [date for date in today_list if date==str(today_)]
             nb_contacted_today = len(today_list)
 
             nb_contacted_total = len(df[df['Nombre_messages'] != 0])
-            pending_invit = df_globale.loc[df_globale['id'] == str(session['id'])]['pending_invit']
+            pending_invit = df_globale[df_globale['id'] == session['id']]['pending_invit'].tolist()[0]
             total_connexions = len(df)
 
             logger.info("Dashboard robot 2")
+            connexion.close()
             return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
-                    pending_invit=pending_invit, total_connexions=total_connexions)
+                    pending_invit=int(pending_invit), total_connexions=total_connexions)
         except:
+            connexion.close()
             logger.info("Erreur dans la fonction dashboard")
+            traceback.print_exc()
             return redirect(url_for('login'))
     else:
-        traceback.print_exc()
         return redirect(url_for('login'))
 
 

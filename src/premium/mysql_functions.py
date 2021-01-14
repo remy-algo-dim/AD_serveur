@@ -42,7 +42,7 @@ def MYSQL_create_connexion():
 def MYSQL_globale_table_to_df(connexion):
     """ Cette fonction permet de chercher les datas dans la table principale
     'user', et de les rendre au format df """
-    with connexion.cursor as cursor:
+    with connexion.cursor() as cursor:
         try:
             cursor.execute("""SELECT * FROM linkedin.user""")
             output = cursor.fetchall()
@@ -59,7 +59,7 @@ def MYSQL_id_table_to_df(id_, connexion):
     with connexion.cursor() as cursor:
         try:
             cursor.execute("""CREATE TABLE IF NOT EXISTS user_%s (Personnes varchar(255), Links varchar(255),\
-                                        Standard_Link varchar(255), Dates varchar(255), Nombre_messages varchar(255))""", (id_))
+                                        Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT)""", (id_))
             connexion.commit()
             query = cursor.execute("SELECT * FROM linkedin.user_%s", (id_))
             output = cursor.fetchall()

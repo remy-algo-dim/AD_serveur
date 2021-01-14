@@ -201,7 +201,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
                 counter += 1
                 mysql_functions.MYSQL_insert_table(id_, connexion, name, profile, standard_profile_link, str(today), 0)
                 # On insere egalement une row dans df pour stopper l'algo après les 20 messages (ça nous evite de passer par MYSQL)
-                new_row = {'Personnes':name, 'Links':profile_link, 'Dates':str(today), 'Nombre_messages':1}
+                new_row = {'Personnes':name, 'Links':standard_profile_link, 'Dates':str(today), 'Nombre_messages':0}
                 df = df.append(new_row, ignore_index=True)
                 logger.debug("%s ajouts ", counter)
             else:
@@ -245,25 +245,22 @@ def send_message(browser, message_file_path, profile_link):
                 time.sleep(randrange(4, 7))
                 content_place.send_keys(customMessage)
                 time.sleep(randrange(3, 6))
-                # Verifions s'il y a une PJ a ajouter
-                for file in os.listdir('Config'):
-                    if 'piece_jointe_' + str(id_) in file:
-                        PJ = 'Config/' + file
-                        attach_file_to_message(browser, PJ)
-                #il y a 2 moyens d'envoyer : soit cliquer sur entrer
+
                 try:
+                    logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")
                     browser.find_element_by_class_name("msg-form__send-button").click()
                     time.sleep(randrange(1, 3))
                     time.sleep(randrange(2, 4))
-                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()#reduire window
+                    #browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()#reduire window
                     logger.info("Message correctement envoye a %s (CLICK)", name)
                     logger.info("------------------------------------------------")
                     return name
                 except: #cliquer sur envoyer
+                    logger.debug("ESSAYONS ENCORE DE CLIQUER SUR ENVOYER")
                     content_place.send_keys(Keys.ENTER).click()
                     time.sleep(randrange(1, 3))
                     time.sleep(randrange(2, 4))
-                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()#redui<qre window
+                    browser.find_element_by_xpath('/html/body/div[8]/aside/div[2]/header/section[2]/button[2]').click()#reduire window
                     logger.info("Message correctement envoye a %s (ENTER)", name)
                     return name
             except:
@@ -312,7 +309,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
         name = send_message(browser, message_file_path, person)
         if name != 'echec':
             # On update la colonne "Nombre de messages" dans MYSQL
-            mysql_functions.MYSQL_update_table(id_, connexion, 'Nombre_messages', 1)
+            mysql_functions.MYSQL_update_table(id_, connexion, 'Nombre_messages', '1')
             time.sleep(randrange(2, 4))
         else: #echec
             logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
@@ -425,7 +422,6 @@ def how_many_profiles(browser):
     except:
         logger.debug("fonction 'how_many_profiles' non fonctionelles")
         return 0
-
 
 
 
