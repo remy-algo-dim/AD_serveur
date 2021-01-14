@@ -229,8 +229,8 @@ def script():
 @app.route('/dash')
 def dashboard():
     # le dashboard va chercher les datas sur mysql
-    if session['email']:
-        try:
+    try:
+        if session['email']:
             connexion = mysql_functions.MYSQL_create_connexion()
             df_globale = mysql_functions.MYSQL_globale_table_to_df(connexion)
             df = mysql_functions.MYSQL_id_table_to_df(session['id'], connexion)
@@ -247,13 +247,12 @@ def dashboard():
             connexion.close()
             return render_template('index.html', total_envoyes=nb_contacted_total, total_today=nb_contacted_today,
                     pending_invit=int(pending_invit), total_connexions=total_connexions)
-        except:
-            connexion.close()
-            logger.info("Erreur dans la fonction dashboard")
-            traceback.print_exc()
-            return redirect(url_for('login'))
-    else:
+    except:
+        connexion.close()
+        logger.info("Erreur dans la fonction dashboard")
+        traceback.print_exc()
         return redirect(url_for('login'))
+
 
 
 if __name__ == "__main__":
