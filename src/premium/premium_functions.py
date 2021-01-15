@@ -396,6 +396,8 @@ def pending_invit(browser):
     """ Permet de retourner le nbe de pending invit. Si ce nombre excede 5000 Linkedin ne nous autorise plus
     a agrandir notre reseau"""
     browser.get('https://www.linkedin.com/mynetwork/invitation-manager/sent/')
+    html = browser.page_source
+    print(html)
     pendings = browser.find_element_by_class_name('artdeco-pill__text').text
     pendings = int(re.search(r'\d+', pendings).group())
     return pendings
