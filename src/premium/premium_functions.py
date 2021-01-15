@@ -425,7 +425,7 @@ def how_many_profiles(browser):
 
 
 
-def linkedin_security_verification(browser):
+def linkedin_security_verification(browser, id_):
     """ Permet d'entrer le code de securite recu par mail lors de la
     premiere utilisation de cet algo """
     try:
@@ -433,16 +433,19 @@ def linkedin_security_verification(browser):
         code_content = browser.find_element_by_class_name('form__input--text')
         code_content.click()
         logger.info("On a 20 mn pour rentrer le code dans MySQL")
-        time.sleep(randrange(1200, 1800))
+        #time.sleep(randrange(1200, 1800))
+        time.sleep(100)
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logger.info("Cherchons le code dans MySQL")
         security_code = mysql_functions.MYSQL_code_security_verification(id_)
+        print('Security code :', security_code)
         code_content.send_keys(security_code)
         time.sleep(randrange(2, 4))
         browser.find_element_by_class_name('form__submit').click()
         time.sleep(randrange(2, 4))
         logger.info("Code de securite envoye")
     except:
+        traceback.print_exc()
         logger.info('***** Verification par mail non necessaire *****')
 
 
