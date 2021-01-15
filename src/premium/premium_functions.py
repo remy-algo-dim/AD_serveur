@@ -437,7 +437,7 @@ def linkedin_security_verification(browser, id_):
         time.sleep(100)
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logger.info("Cherchons le code dans MySQL")
-        security_code = mysql_functions.MYSQL_code_security_verification(id_)
+        security_code = mysql_functions.MYSQL_code_security_verification(id_, connexion)
         print('Security code :', security_code)
         code_content.send_keys(security_code)
         time.sleep(randrange(2, 4))
