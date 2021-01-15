@@ -219,7 +219,7 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(3, 6))
         # Name de la page standard (different de la page premium !)
         html = browser.page_source
-        #print(html)
+        print(html)
         name = browser.find_element_by_class_name("break-words").text
         if 'XXXXXXX' in customMessage:
             customMessage = customMessage.replace('XXXXXXX', name.split(' ')[0]) #On insere le prenom ds le message uniquement
