@@ -219,7 +219,7 @@ def send_message(browser, message_file_path, profile_link):
         time.sleep(randrange(3, 6))
         # Name de la page standard (different de la page premium !)
         html = browser.page_source
-        print(html)
+        #print(html)
         name = browser.find_element_by_class_name("break-words").text
         if 'XXXXXXX' in customMessage:
             customMessage = customMessage.replace('XXXXXXX', name.split(' ')[0]) #On insere le prenom ds le message uniquement
@@ -396,8 +396,6 @@ def pending_invit(browser):
     """ Permet de retourner le nbe de pending invit. Si ce nombre excede 5000 Linkedin ne nous autorise plus
     a agrandir notre reseau"""
     browser.get('https://www.linkedin.com/mynetwork/invitation-manager/sent/')
-    html = browser.page_source
-    print(html)
     pendings = browser.find_element_by_class_name('artdeco-pill__text').text
     pendings = int(re.search(r'\d+', pendings).group())
     return pendings

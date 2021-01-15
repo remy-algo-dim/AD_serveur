@@ -101,20 +101,19 @@ def main(id_, id_linkedin, password_linkedin):
     time.sleep(randrange(2, 5))
 
     # SECURITY VERIFICATION : car linkedin nous demande une verif lors de la premiere connexion sur la VM
-    #premium_functions.linkedin_security_verification(browser, id_, connexion)
+    premium_functions.linkedin_security_verification(browser, id_, connexion)
 
     # PENDING INVIT
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau
     logger.info("Verifions les pending invitations")
-    #pendings = premium_functions.pending_invit(browser)
-    #mysql_functions.MYSQL_update_table(id_, connexion, 'pending_invit', str(pendings))
-    #if pendings > 4900:
-    #    logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
-    #    sys.exit()
-    #else:
-    #    logger.info(" %s pending invit", pendings)
-    #time.sleep(randrange(2, 5))
-    pendings = 100
+    pendings = premium_functions.pending_invit(browser)
+    mysql_functions.MYSQL_update_table(id_, connexion, 'pending_invit', str(pendings))
+    if pendings > 4900:
+        logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
+        sys.exit()
+    else:
+        logger.info(" %s pending invit", pendings)
+    time.sleep(randrange(2, 5))
 
 
 
