@@ -101,7 +101,7 @@ def main(id_, id_linkedin, password_linkedin):
     time.sleep(randrange(2, 5))
 
     # SECURITY VERIFICATION : car linkedin nous demande une verif lors de la premiere connexion sur la VM
-    premium_functions.linkedin_security_verification(browser, id_)
+    premium_functions.linkedin_security_verification(browser, id_, connexion)
 
     # PENDING INVIT
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau

@@ -425,7 +425,7 @@ def how_many_profiles(browser):
 
 
 
-def linkedin_security_verification(browser, id_):
+def linkedin_security_verification(browser, id_, connexion):
     """ Permet d'entrer le code de securite recu par mail lors de la
     premiere utilisation de cet algo """
     try:
