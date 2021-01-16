@@ -444,9 +444,6 @@ def linkedin_security_verification(browser, id_, connexion):
         browser.find_element_by_class_name('form__submit').click()
         time.sleep(randrange(2, 4))
         logger.info("Code de securite envoye")
-        
-        html = browser.page_source
-        print(html)
     except:
         traceback.print_exc()
         logger.info('***** Verification par mail non necessaire *****')

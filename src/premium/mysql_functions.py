@@ -104,6 +104,10 @@ def MYSQL_update_table(id_, connexion, column_name, new_column_value):
 def MYSQL_code_security_verification(id_, connexion):
     """ Cette fonction a pour but d'aller chercher le code de verif d'un nouvel utilisateur
     etant donne que la premiere utilisation de cet algo sur le cloud necessite une verif """
+    connexion.close()
+    #ATTENTION: Il s'agit de la seule fois dans le code où l'on update la DB mais qu'on fasse une requête immédiatement après
+    #pour accéder à cette donnée mise a jour. Il est nécessaire de fermer la connexion et d'en réouvrir une nouvelle donc ...
+    connexion = MYSQL_create_connexion()
     with connexion.cursor() as cursor:
         cursor.execute('use linkedin')
         cursor.execute('SELECT security_code FROM linkedin.user WHERE id=%s', id_)

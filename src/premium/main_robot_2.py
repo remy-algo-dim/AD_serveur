@@ -98,11 +98,6 @@ def main(id_, id_linkedin, password_linkedin):
 
     #Cette fonction prend en parametre les identifiants et mdp Linkedin afin de les chercher ds MYSQL
     premium_functions.Linkedin_connexion(browser, id_linkedin, password_linkedin)
-
-
-    html = browser.page_source
-    print(html)
-
     time.sleep(randrange(2, 5))
 
     # SECURITY VERIFICATION : car linkedin nous demande une verif lors de la premiere connexion sur la VM
