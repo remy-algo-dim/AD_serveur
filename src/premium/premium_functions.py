@@ -272,8 +272,9 @@ def send_message(browser, message_file_path, profile_link):
                     browser.close()
                     time.sleep(1)
                     browser.switch_to.window(browser.window_handles[0])
+                    return 'echec'
                 except:
-                    pass
+                    return 'echec'
 
     except:
         traceback.print_exc()
@@ -310,7 +311,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
         name = send_message(browser, message_file_path, person)
         if name != 'échec':
             # On update la colonne "Nombre de messages" dans MYSQL
-            query = "UPDATE linkedin.user_" + str(id_) + " SET Nombre_messages=1 WHERE id=" + str(id_)
+            query = "UPDATE linkedin.user_" + str(id_) + " SET Nombre_messages=1 WHERE id=" + str(ids)
             mysql_functions.MYSQL_update_table(connexion, query)
             time.sleep(randrange(2, 4))
         else: #echec
@@ -447,7 +448,7 @@ def linkedin_security_verification(browser, id_, connexion):
         time.sleep(randrange(2, 4))
         logger.info("Code de securite envoye")
     except:
-        traceback.print_exc()
+        #traceback.print_exc()
         logger.info('***** Verification par mail non necessaire *****')
 
 
