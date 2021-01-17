@@ -109,6 +109,7 @@ def MYSQL_code_security_verification(id_, connexion):
     with connexion.cursor() as cursor:
         cursor.execute('SELECT security_code FROM linkedin.user WHERE id=%s', id_)
         security_code = cursor.fetchall()[0]['security_code']
+        logger.debug("Security code : %s", security_code)
         return security_code
 
 
