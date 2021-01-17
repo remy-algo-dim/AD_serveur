@@ -245,6 +245,11 @@ def send_message(browser, message_file_path, profile_link):
                 time.sleep(randrange(4, 7))
                 content_place.send_keys(customMessage)
                 time.sleep(randrange(3, 6))
+                #On ajoute une eventuelle piece jointe
+                if 'piece_jointe_' + str(id_) in os.listdir(os.path.join(os.path.dirname(__file__), 'Config')):
+                    logger.info("Il y a une pièce jointe a insérer")
+                    PJ = os.path.join(os.path.dirname(__file__), 'Config/piece_jointe_')
+                    attach_file_to_message(browser, PJ)
 
                 try:
                     logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")
