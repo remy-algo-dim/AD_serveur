@@ -59,7 +59,7 @@ def MYSQL_id_table_to_df(id_, connexion):
     with connexion.cursor() as cursor:
         try:
             cursor.execute("""CREATE TABLE IF NOT EXISTS user_%s (id INT NOT NULL AUTO_INCREMENT, Personnes varchar(255),\
-             Links varchar(255), Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT)""", (id_))
+             Links varchar(255), Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT, PRIMARY KEY (id)""", (id_))
             connexion.commit()
             query = cursor.execute("SELECT * FROM linkedin.user_%s", (id_))
             output = cursor.fetchall()
