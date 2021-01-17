@@ -4,6 +4,9 @@ Tout se fait depuis SN
 
 
 
+PB --> pk le last link ds mysql nest pas bon
+pk quand je mets la fonction security verif hje revcois un code mais quand je la mets pas jen recois pas
+name ne marche pas ds lenvoie de mess
 
 
 
