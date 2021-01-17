@@ -58,8 +58,8 @@ def MYSQL_id_table_to_df(id_, connexion):
     specifique et la mettre en format pandas dataframe """
     with connexion.cursor() as cursor:
         try:
-            cursor.execute("""CREATE TABLE IF NOT EXISTS user_%s (id INT NOT NULL AUTO_INCREMENT, Personnes varchar(255),\
-             Links varchar(255), Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT, PRIMARY KEY (id)""", (id_))
+            query = "CREATE TABLE IF NOT EXISTS linkedin.user_" + str(id_) + " (id INT NOT NULL AUTO_INCREMENT, Personnes varchar(255), Links varchar(255), Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT, PRIMARY KEY (id))"
+            cursor.execute(query)
             connexion.commit()
             query = cursor.execute("SELECT * FROM linkedin.user_%s", (id_))
             output = cursor.fetchall()
