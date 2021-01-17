@@ -58,8 +58,8 @@ def MYSQL_id_table_to_df(id_, connexion):
     specifique et la mettre en format pandas dataframe """
     with connexion.cursor() as cursor:
         try:
-            cursor.execute("""CREATE TABLE IF NOT EXISTS user_%s (Personnes varchar(255), Links varchar(255),\
-                                        Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT)""", (id_))
+            cursor.execute("""CREATE TABLE IF NOT EXISTS user_%s (id INT NOT NULL AUTO_INCREMENT, Personnes varchar(255),\
+             Links varchar(255), Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT)""", (id_))
             connexion.commit()
             query = cursor.execute("SELECT * FROM linkedin.user_%s", (id_))
             output = cursor.fetchall()
@@ -86,18 +86,16 @@ def MYSQL_insert_table(id_, connexion, personne, link, standard_link, date, nomb
             logger.debug("Echec de mise a jour de la table SQL")
 
 
-def MYSQL_update_table(id_, connexion, column_name, new_column_value):
-    """ Cette fonction permet de mettre a jour la table SQL du client,
-    en updatant notamment le nombre de messages envoyes a un client """
-    logger.info("On update ta table SQL du client")
+
+def MYSQL_update_table(connexion, query):
+    """Permet de mettre à jour les tables SQL, et non de requeter car la fonction ne retourne rien, elle commit seulement"""
     with connexion.cursor() as cursor:
-        query = "UPDATE linkedin.user SET " + str(column_name) + "=" + "'" + new_column_value + "'" " WHERE id=" + str(id_)
         try:
             cursor.execute(query)
             connexion.commit()
             logger.debug("Mise a jour de la table SQL reussie")
         except:
-            logger.debug("Echec de mise a jour de la table SQL")
+            logger.debug("Echec de mise a jour de la table SQL")    
 
 
 
@@ -109,7 +107,6 @@ def MYSQL_code_security_verification(id_, connexion):
     #pour accéder à cette donnée mise a jour. Il est nécessaire de fermer la connexion et d'en réouvrir une nouvelle donc ...
     connexion = MYSQL_create_connexion()
     with connexion.cursor() as cursor:
-        cursor.execute('use linkedin')
         cursor.execute('SELECT security_code FROM linkedin.user WHERE id=%s', id_)
         security_code = cursor.fetchall()[0]['security_code']
         return security_code
@@ -120,12 +117,11 @@ def MYSQL_retrieve_last_link(id_, connexion):
     """ Permet de recuperer le dernier lien de recherche avant d'eviter de relancer tous les filtres """
     with connexion.cursor() as cursor:
         try:
-            cursor.execute('use linkedin')
             cursor.execute('SELECT last_link_researched FROM linkedin.user WHERE id=%s', id_)
             last_link_researched = cursor.fetchall()[0]['last_link_researched']
             return last_link_researched
         except:
-            print("On a pas pu recuperer le last link researched ... ERROR")
+            logger("On a pas pu recuperer le last link researched ... ERROR")
             sys.exit()  
 
 

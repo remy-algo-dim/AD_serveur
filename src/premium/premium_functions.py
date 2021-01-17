@@ -200,7 +200,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
                 # On ajoute le prospect dans MYSQL
                 counter += 1
                 mysql_functions.MYSQL_insert_table(id_, connexion, name, profile, standard_profile_link, str(today), 0)
-                # On insere egalement une row dans df pour stopper l'algo après les 20 messages (ça nous evite de passer par MYSQL)
+                # On insere également une row dans df pour stopper l'algo après les 20 messages (ça nous evite de passer par MYSQL)
                 new_row = {'Personnes':name, 'Links':standard_profile_link, 'Dates':str(today), 'Nombre_messages':0}
                 df = df.append(new_row, ignore_index=True)
                 logger.debug("%s ajouts ", counter)
@@ -301,15 +301,17 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
     logger.info("%s personnes doivent etre contactees a present", len(df_temporary))
 
     person2contact = df_temporary['Standard_Link'].tolist()
-    index_list = df_temporary.index.values.tolist() #df_temporary (filtree) devrait avoir les meme index que df initiale
+    index_list = df_temporary.index.values.tolist() #df_temporary (filtrée) devrait avoir les meme index que df initiale. PKKK deja ???
+    mysql_ids = df_temporary['id'].tolist()
 
-    logger.debug("Demarrons l'envoi de messages")
-    for index_, person in zip(index_list, person2contact):
+    logger.debug("Démarrons l'envoi de messages")
+    for ids, index_, person in zip(mysql_ids, index_list, person2contact):
         logger.info("Tentative de message ...")
         name = send_message(browser, message_file_path, person)
-        if name != 'echec':
+        if name != 'échec':
             # On update la colonne "Nombre de messages" dans MYSQL
-            mysql_functions.MYSQL_update_table(id_, connexion, 'Nombre_messages', '1')
+            query = "UPDATE linkedin.user_" + str(id_) + " SET Nombre_messages=1 WHERE id=" + str(id_)
+            mysql_functions.MYSQL_update_table(connexion, query)
             time.sleep(randrange(2, 4))
         else: #echec
             logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")

@@ -107,7 +107,8 @@ def main(id_, id_linkedin, password_linkedin):
     # On verifie avant tout combien de Pending Invit on a, afin de voir si nous pouvons continuer a agrandir notre reseau
     logger.info("Verifions les pending invitations")
     pendings = premium_functions.pending_invit(browser)
-    mysql_functions.MYSQL_update_table(id_, connexion, 'pending_invit', str(pendings))
+    query = "UPDATE linkedin.user SET pending_invit=" + "'" + str(pendings) + "'" " WHERE id=" + str(id_)
+    mysql_functions.MYSQL_update_table(connexion, query)
     if pendings > 4900:
         logger.info("ATTENTION, VOTRE NOMBRE DE PENDING INVIT DEPASSE 4900")
         sys.exit()
@@ -150,9 +151,9 @@ def main(id_, id_linkedin, password_linkedin):
     # On visite les profils
     logger.debug("Recuperation de la liste des profiles")
     list_of_links, last_link = premium_functions.get_list_of_profiles(browser, df)
-    print('Last link :', last_link)
     # On save le dernier lien visité
-    mysql_functions.MYSQL_update_table(id_, connexion, 'last_link_researched', last_link)
+    query = "UPDATE linkedin.user SET last_link_researched=" + "'" + last_link + "'" " WHERE id=" + str(id_)
+    mysql_functions.MYSQL_update_table(connexion, query)
 
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
