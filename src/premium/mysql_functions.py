@@ -120,9 +120,10 @@ def MYSQL_retrieve_last_link(id_, connexion):
         try:
             cursor.execute('SELECT last_link_researched FROM linkedin.user WHERE id=%s', id_)
             last_link_researched = cursor.fetchall()[0]['last_link_researched']
+            print(last_link_researched)
             return last_link_researched
         except:
-            logger("On a pas pu recuperer le last link researched ... ERROR")
+            logger.info("On a pas pu recuperer le last link researched ... ERROR")
             sys.exit()  
 
 
