@@ -58,8 +58,8 @@ def MYSQL_id_table_to_df(id_, connexion):
     specifique et la mettre en format pandas dataframe """
     with connexion.cursor() as cursor:
         try:
-            cursor.execute("""CREATE TABLE IF NOT EXISTS user_%s (id INT NOT NULL AUTO_INCREMENT, Personnes varchar(255),\
-             Links varchar(255), Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT)""", (id_))
+            query = "CREATE TABLE IF NOT EXISTS linkedin.user_" + str(id_) + " (id INT NOT NULL AUTO_INCREMENT, Personnes varchar(255), Links varchar(255), Standard_Link varchar(255), Dates varchar(255), Nombre_messages INT, PRIMARY KEY (id))"
+            cursor.execute(query)
             connexion.commit()
             query = cursor.execute("SELECT * FROM linkedin.user_%s", (id_))
             output = cursor.fetchall()
@@ -109,6 +109,7 @@ def MYSQL_code_security_verification(id_, connexion):
     with connexion.cursor() as cursor:
         cursor.execute('SELECT security_code FROM linkedin.user WHERE id=%s', id_)
         security_code = cursor.fetchall()[0]['security_code']
+        logger.debug("Security code : %s", security_code)
         return security_code
 
 
@@ -119,9 +120,10 @@ def MYSQL_retrieve_last_link(id_, connexion):
         try:
             cursor.execute('SELECT last_link_researched FROM linkedin.user WHERE id=%s', id_)
             last_link_researched = cursor.fetchall()[0]['last_link_researched']
+            print(last_link_researched)
             return last_link_researched
         except:
-            logger("On a pas pu recuperer le last link researched ... ERROR")
+            logger.info("On a pas pu recuperer le last link researched ... ERROR")
             sys.exit()  
 
 

@@ -188,7 +188,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
         logger.debug('Profile Link: %s', profile)
-        if len(today_list) >= 2:
+        if len(today_list) >= 20:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
@@ -246,11 +246,10 @@ def send_message(browser, message_file_path, profile_link):
                 content_place.send_keys(customMessage)
                 time.sleep(randrange(3, 6))
                 #On ajoute une eventuelle piece jointe
-                if 'piece_jointe_' + str(id_) in os.listdir(os.path.join(os.path.dirname(__file__), 'Config')):
-                    logger.info("Il y a une pièce jointe a insérer")
-                    PJ = os.path.join(os.path.dirname(__file__), 'Config/piece_jointe_')
-                    attach_file_to_message(browser, PJ)
-
+                for file in os.listdir(os.path.join(os.path.dirname(__file__), 'Config')):
+                    if 'piece_jointe_' + str(id_) in file:
+                        PJ = 'Config/' + file
+                        attach_file_to_message(browser, PJ)
                 try:
                     logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")
                     browser.find_element_by_class_name("msg-form__send-button").click()
@@ -360,7 +359,7 @@ def get_list_of_profiles(browser, df):
 
         # On envoie 20 msg par jour, donc des que notre liste contient 40 contacts (pour compenser les cas
         # ou il y a echec lors de l'envoie du message), on stop la fonctionn
-        if len(final_list_of_profiles) >= 15: #35 normalement
+        if len(final_list_of_profiles) >= 35: #35 normalement
             break
 
         time.sleep(randrange(2, 5))
@@ -442,7 +441,7 @@ def linkedin_security_verification(browser, id_, connexion):
         code_content.click()
         logger.info("On a 20 mn pour rentrer le code dans MySQL")
         #time.sleep(randrange(1200, 1800))
-        time.sleep(100)
+        time.sleep(120)
         # On doit checker le code recu ds les mails (qu'on aura rentre sur sql)
         logger.info("Cherchons le code dans MySQL")
         security_code = mysql_functions.MYSQL_code_security_verification(id_, connexion)
