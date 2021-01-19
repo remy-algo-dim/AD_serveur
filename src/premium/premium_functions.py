@@ -188,7 +188,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
         logger.debug('Profile Link: %s', profile)
-        if len(today_list) >= 2:
+        if len(today_list) >= 20:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
@@ -359,7 +359,7 @@ def get_list_of_profiles(browser, df):
 
         # On envoie 20 msg par jour, donc des que notre liste contient 40 contacts (pour compenser les cas
         # ou il y a echec lors de l'envoie du message), on stop la fonctionn
-        if len(final_list_of_profiles) >= 15: #35 normalement
+        if len(final_list_of_profiles) >= 35: #35 normalement
             break
 
         time.sleep(randrange(2, 5))
