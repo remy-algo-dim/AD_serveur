@@ -269,6 +269,7 @@ def send_message(browser, message_file_path, profile_link):
                     return name
             except:
                 logger.info("Apres verification, %s ne fait pas partie de notre reseau !", name)
+                traceback.print_exc()
                 try:
                     # si on est ici, c'est qu'une fenetre SN s'est ouvert, alors on la ferme et onb revient au browser initial
                     browser.switch_to.window(browser.window_handles[1])
