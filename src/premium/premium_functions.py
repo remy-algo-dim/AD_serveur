@@ -229,10 +229,10 @@ def send_message(browser, message_file_path, profile_link):
         if BOUTON == 'Se connecter':
             # CONNEXION
             logger.debug("%s n'est pas encore dans notre reseau (non demandee)", name)
-            return name
+            return 'echec'
         elif BOUTON == 'En attente':
             logger.debug("%s n'est pas encore dans notre reseau (attente)", name)
-            return name
+            return 'echec'
         else: #BOUTON=message. Mais attention, en premium il se peut que ce bouton apparaisse meme si on est pas connecte a la
                 # personne. Et donc SN va s'ouvrir. On met donc un try except pour gerer ce cas la
             try:
