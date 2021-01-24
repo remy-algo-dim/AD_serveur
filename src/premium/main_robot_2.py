@@ -119,7 +119,7 @@ def main(id_, id_linkedin, password_linkedin):
 
 
 
-    """             ******************      2eme partie : Filtres & Recherche        ******************              """
+    ""             ******************      2eme partie : Filtres & Recherche        ******************              ""
 
 
     logger.info("Accedons aux filtres")
@@ -147,7 +147,7 @@ def main(id_, id_linkedin, password_linkedin):
         browser.get(last_link_researched)
 
 
-    """ ---------------------------------- Demande de connexions ---------------------------------- """
+    "" ---------------------------------- Demande de connexions ---------------------------------- ""
 
     # On visite les profils
     logger.debug("Recuperation de la liste des profiles")
