@@ -250,7 +250,7 @@ def send_message(browser, message_file_path, profile_link, id_):
                     if 'piece_jointe_' + str(id_) in file:
                         PJ = 'Config/' + file
                         print('PJ : ', PJ)
-                        attach_file_to_message(browser, PJ)
+                        attach_file_to_message(browser, os.path.join(os.path.dirname(__file__), PJ))
                 try:
                     logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")
                     browser.find_element_by_class_name("msg-form__send-button").click()
