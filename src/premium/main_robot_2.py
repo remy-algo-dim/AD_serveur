@@ -100,6 +100,7 @@ def main(id_, id_linkedin, password_linkedin):
     premium_functions.Linkedin_connexion(browser, id_linkedin, password_linkedin)
     time.sleep(randrange(2, 5))
 
+    """
     # SECURITY VERIFICATION : car linkedin nous demande une verif lors de la premiere connexion sur la VM
     premium_functions.linkedin_security_verification(browser, id_, connexion)
 
@@ -163,6 +164,7 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
 
+    """
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions
     #de premium_functions n'a pas actualise ce qui se passe dans ce fichier-ci)
