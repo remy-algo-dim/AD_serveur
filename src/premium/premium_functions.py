@@ -249,6 +249,7 @@ def send_message(browser, message_file_path, profile_link, id_):
                 for file in os.listdir(os.path.join(os.path.dirname(__file__), 'Config')):
                     if 'piece_jointe_' + str(id_) in file:
                         PJ = 'Config/' + file
+                        print('PJ : ', PJ)
                         attach_file_to_message(browser, PJ)
                 try:
                     logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")
@@ -390,6 +391,7 @@ def attach_file_to_message(browser, PJ):
         time.sleep(size/10**6*10)
         logger.debug("On a ajouté une pièce jointe")
     except:
+        traceback.print_exc()
         logger.debug("Probleme avec la fonction piece jointe (attach_file_to_message")
 
 
