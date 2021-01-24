@@ -209,7 +209,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
 
 
 
-def send_message(browser, message_file_path, profile_link):
+def send_message(browser, message_file_path, profile_link, id_):
     """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom.
     3 cas sont geres pour bien envoye le message, en fonction du bouton disponible"""
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
@@ -313,7 +313,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
     logger.debug("Démarrons l'envoi de messages")
     for ids, index_, person in zip(mysql_ids, index_list, person2contact):
         logger.info("Tentative de message ...")
-        name = send_message(browser, message_file_path, person)
+        name = send_message(browser, message_file_path, person, id_)
         if name != 'échec':
             # On update la colonne "Nombre de messages" dans MYSQL
             query = "UPDATE linkedin.user_" + str(id_) + " SET Nombre_messages=1 WHERE id=" + str(ids)
