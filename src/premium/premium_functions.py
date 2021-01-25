@@ -251,7 +251,7 @@ def send_message(browser, message_file_path, profile_link, id_):
                     if 'piece_jointe_' + str(id_) in file:
                         PJ = 'Config/' + file
                         print('PJ : ', os.path.join(os.path.dirname(__file__), PJ))
-                        attach_file_to_message(browser, os.path.join(os.path.dirname(__file__), PJ))
+                        attach_file_to_message(browser, "/src/src/premium/" + PJ)
                 time.sleep(30)
                 try:
                     logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")

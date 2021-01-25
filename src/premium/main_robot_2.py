@@ -44,7 +44,7 @@ def main(id_, id_linkedin, password_linkedin):
 
     # Dans le cas ou il y a eu une erreur lors du run precdt, on ferme le browser qui ete ouvert ainsi que la connexion MYSQL
     logger.info("ID = %s --> %s vient de lancer l'algorithme", id_, id_linkedin)
-    print(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Config/piece_jointe_11.pdf')))
+    print(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Config/piece_jointe_12.pdf')))
 
     try:
         browser.quit()
