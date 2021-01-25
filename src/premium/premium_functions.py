@@ -127,7 +127,7 @@ def just_connect(browser, profile_link):
         browser.get(profile_link) # premium
         time.sleep(randrange(4, 7))
         name = retrieve_name(browser)
-        logger.info("---> %s, --> %s", name, profile_link)
+        logger.info("---> %s", name)
         logger.info("Acces au profile Linkedin")
         time.sleep(randrange(4, 7))
         # Menu pour acceder a l'URL linkedin standard
@@ -188,7 +188,6 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        logger.debug('Profile Link: %s', profile)
         if len(today_list) >= 20:
             logger.info("Plus de 20 connexions envoyes")
             break
@@ -317,8 +316,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
     for ids, index_, person in zip(mysql_ids, index_list, person2contact):
         logger.info("Tentative de message ...")
         name = send_message(browser, message_file_path, person, id_)
-        if name != 'échec':
-            logger.debug("NAME ou ECHEC ? ---> %s", name)
+        if name != 'echec':
             # On update la colonne "Nombre de messages" dans MYSQL
             query = "UPDATE linkedin.user_" + str(id_) + " SET Nombre_messages=1 WHERE id=" + str(ids)
             mysql_functions.MYSQL_update_table(connexion, query)
