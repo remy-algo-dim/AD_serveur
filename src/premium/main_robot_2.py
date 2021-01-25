@@ -13,6 +13,7 @@ import logging
 from flask import Flask, render_template
 from datetime import date
 from selenium.webdriver.remote.remote_connection import LOGGER
+from selenium.webdriver.remote.file_detector import UselessFileDetector
 
 import premium_functions
 import premium_filters
@@ -43,6 +44,8 @@ def main(id_, id_linkedin, password_linkedin):
 
     # Dans le cas ou il y a eu une erreur lors du run precdt, on ferme le browser qui ete ouvert ainsi que la connexion MYSQL
     logger.info("ID = %s --> %s vient de lancer l'algorithme", id_, id_linkedin)
+    print(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Config/piece_jointe_11.pdf')))
+
     try:
         browser.quit()
         logger.info("Fermons avant tout le browser precedent")
@@ -92,6 +95,7 @@ def main(id_, id_linkedin, password_linkedin):
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    browser.file_detector = UselessFileDetector()
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
