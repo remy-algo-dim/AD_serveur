@@ -47,8 +47,7 @@ Quels sont les xpaths qui ont deja change ?
 ---------- NOTES ----------
 
 - Le code de verif que linkedin envoie, doit etre mis sur mysql en moins de 2 mn car sinon il expire
-
-
+- Upload un file (piece jointe) c'est pas si evident. Il faut absolument le absolute path du file
 
 
 

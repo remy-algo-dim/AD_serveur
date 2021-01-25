@@ -13,7 +13,7 @@ import logging
 from flask import Flask, render_template
 from datetime import date
 from selenium.webdriver.remote.remote_connection import LOGGER
-from selenium.webdriver.remote.file_detector import UselessFileDetector
+#from selenium.webdriver.remote.file_detector import UselessFileDetector
 
 import premium_functions
 import premium_filters
@@ -44,8 +44,6 @@ def main(id_, id_linkedin, password_linkedin):
 
     # Dans le cas ou il y a eu une erreur lors du run precdt, on ferme le browser qui ete ouvert ainsi que la connexion MYSQL
     logger.info("ID = %s --> %s vient de lancer l'algorithme", id_, id_linkedin)
-    print(os.path.abspath(os.path.join(os.path.dirname(__file__), 'Config/piece_jointe_12.pdf')))
-
     try:
         browser.quit()
         logger.info("Fermons avant tout le browser precedent")
@@ -95,7 +93,7 @@ def main(id_, id_linkedin, password_linkedin):
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
-    browser.file_detector = UselessFileDetector()
+    #browser.file_detector = UselessFileDetector()
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
@@ -104,7 +102,7 @@ def main(id_, id_linkedin, password_linkedin):
     premium_functions.Linkedin_connexion(browser, id_linkedin, password_linkedin)
     time.sleep(randrange(2, 5))
 
-    """
+    
     # SECURITY VERIFICATION : car linkedin nous demande une verif lors de la premiere connexion sur la VM
     premium_functions.linkedin_security_verification(browser, id_, connexion)
 
@@ -123,7 +121,7 @@ def main(id_, id_linkedin, password_linkedin):
 
 
 
-    ""             ******************      2eme partie : Filtres & Recherche        ******************              ""
+    """             ******************      2eme partie : Filtres & Recherche        ******************              """
 
 
     logger.info("Accedons aux filtres")
@@ -151,7 +149,7 @@ def main(id_, id_linkedin, password_linkedin):
         browser.get(last_link_researched)
 
 
-    "" ---------------------------------- Demande de connexions ---------------------------------- ""
+    """ ---------------------------------- Demande de connexions ---------------------------------- """
 
     # On visite les profils
     logger.debug("Recuperation de la liste des profiles")
@@ -168,7 +166,7 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
 
-    """
+    
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions
     #de premium_functions n'a pas actualise ce qui se passe dans ce fichier-ci)
