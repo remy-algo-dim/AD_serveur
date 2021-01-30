@@ -13,6 +13,7 @@ import logging
 from flask import Flask, render_template
 from datetime import date
 from selenium.webdriver.remote.remote_connection import LOGGER
+#from selenium.webdriver.remote.file_detector import UselessFileDetector
 
 import premium_functions
 import premium_filters
@@ -92,6 +93,7 @@ def main(id_, id_linkedin, password_linkedin):
       
     #browser = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,   chrome_options=chrome_options) # Local
     browser = webdriver.Chrome(chrome_options=chrome_options) # AWS
+    #browser.file_detector = UselessFileDetector()
     logger.info("Connexion a Linkedin")
     browser.get('https://www.linkedin.com/login/us?')
     time.sleep(randrange(1, 3))
@@ -100,6 +102,7 @@ def main(id_, id_linkedin, password_linkedin):
     premium_functions.Linkedin_connexion(browser, id_linkedin, password_linkedin)
     time.sleep(randrange(2, 5))
 
+    
     # SECURITY VERIFICATION : car linkedin nous demande une verif lors de la premiere connexion sur la VM
     premium_functions.linkedin_security_verification(browser, id_, connexion)
 
@@ -163,6 +166,7 @@ def main(id_, id_linkedin, password_linkedin):
     logger.info("-----------------------------------------------------------------------------------------------")
     logger.info("-----------------------------------------------------------------------------------------------")
 
+    
     """ ---------------------------------- Envoie de messages aux NOUVEAUX amis ---------------------------------- """
     #Je dois reouvrir df avant l'envoi des messages pour actualiser ce qui vient d'etre fait (ce qui s'est fait dans les fonctions
     #de premium_functions n'a pas actualise ce qui se passe dans ce fichier-ci)

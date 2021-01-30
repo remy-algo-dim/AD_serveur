@@ -26,16 +26,13 @@ def location_filter(browser, X):
 
 def langue_filter(browser, X):
 	""" Permet de choisir entre Anglais et Francais dans la langue du profil """
-	langue = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[8]/div/div/div/div')
-	langue.click()
+	#langue = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[8]/div/div/div/div')
+	#langue.click()
 	time.sleep(randrange(2, 5))
-	# Possibilites
-	# 1 anglais
 	try:
 		if X == 'Anglais':
 			anglais = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[8]/div/div/div[2]/ol/li[2]/button')
 			anglais.click()
-		# 2 francais
 		if X == 'Français':
 			francais = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[8]/div/div/div[2]/ol/li[6]/button')
 			francais.click()
@@ -62,8 +59,8 @@ def secteur_filter(browser, X):
 
 def degre_filter(browser, X):
 	""" Permet de choisir le degre de relation entre 1, 2 ou 3 """
-	degre = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[5]/div/div/div/div')
-	degre.click()
+	#degre = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[5]/div/div/div/div')
+	#degre.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES
 	if X == 'Relations de 1er niveau':
@@ -92,8 +89,8 @@ def ecole_filter(browser, X):
 def niveau_hierarchique_filter(browser, X):
 	""" Permet de specifier le niveau hierarchique"""
 	# niveau hierarchique
-	hierarchie = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[1]/div/div/div/div')
-	hierarchie.click()
+	#hierarchie = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[1]/div/div/div/div')
+	#hierarchie.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES
 	if X == 'Propriétaire':
@@ -123,8 +120,8 @@ def niveau_hierarchique_filter(browser, X):
 
 def anciennete_poste_actuel_filter(browser, X):
 	""" Permet de specifier l anciennete en nbe d annees ds le poste actuel """
-	anciennete = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[2]/div/div/div/div')
-	anciennete.click()
+	#anciennete = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[2]/div/div/div/div')
+	#anciennete.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES - on parlera de level :
 	# level 1 = moins d'un an
@@ -151,8 +148,8 @@ def anciennete_poste_actuel_filter(browser, X):
 def anciennete_entreprise_actuelle_filter(browser, X):
 	""" Permet de specifier l'anciennete au sein de cette meme entreprise """
 	# anciennete dans lnterprise actuelle
-	anciennete_entreprise = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[3]/div/div/div/div')
-	anciennete_entreprise.click()
+	#anciennete_entreprise = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[3]/div/div/div/div')
+	#anciennete_entreprise.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES - on parlera de level :
 	# level 1 = moins d'un an
@@ -210,8 +207,8 @@ def titre_filter(browser, X):
 def experience(browser, X):
 	""" Permet de specifier le nbe d'annees d'experience """
 	# annees dexperience
-	annee_exp = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div/div/div/label')
-	annee_exp.click()
+	#annee_exp = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div/div/div/label')
+	#annee_exp.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES - on parlera de level :
 	# level 1 = moins d'un an
@@ -255,8 +252,8 @@ def entreprise_filter(browser, X):
 
 def effectif_entreprise_filter(browser, X):
 	""" Permet de specifier l'effectif de l'entreprise en question """
-	effectif = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[3]/ul/li[2]/div/div/div/div')
-	effectif.click()
+	#effectif = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[3]/ul/li[2]/div/div/div/div')
+	#effectif.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES - on parlera de palliers :
 	# palliers 1 = independant
@@ -298,8 +295,8 @@ def effectif_entreprise_filter(browser, X):
 
 def type_entreprise_filter(browser, X):
 	""" Permet de specifier le type de l'entreprise """
-	type_entreprise = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[3]/ul/li[3]/div/div/div/div/button')
-	type_entreprise.click()
+	#type_entreprise = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[3]/ul/li[3]/div/div/div/div/button')
+	#type_entreprise.click()
 	time.sleep(randrange(2, 5))
 	# POSSIBILITES
 	if X == 'Société cotée en bourse':

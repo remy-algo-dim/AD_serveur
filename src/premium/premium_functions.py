@@ -14,6 +14,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 import pandas as pd
 
 import mysql_functions
@@ -126,7 +127,7 @@ def just_connect(browser, profile_link):
         browser.get(profile_link) # premium
         time.sleep(randrange(4, 7))
         name = retrieve_name(browser)
-        logger.info("---> %s, --> %s", name, profile_link)
+        logger.info("---> %s", name)
         logger.info("Acces au profile Linkedin")
         time.sleep(randrange(4, 7))
         # Menu pour acceder a l'URL linkedin standard
@@ -187,7 +188,6 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        logger.debug('Profile Link: %s', profile)
         if len(today_list) >= 20:
             logger.info("Plus de 20 connexions envoyes")
             break
@@ -209,7 +209,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
 
 
 
-def send_message(browser, message_file_path, profile_link):
+def send_message(browser, message_file_path, profile_link, id_):
     """ Prend en input le lien linkedin standard - Envoie le message et retourne le nom.
     3 cas sont geres pour bien envoye le message, en fonction du bouton disponible"""
     with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
@@ -229,10 +229,10 @@ def send_message(browser, message_file_path, profile_link):
         if BOUTON == 'Se connecter':
             # CONNEXION
             logger.debug("%s n'est pas encore dans notre reseau (non demandee)", name)
-            return name
+            return 'echec'
         elif BOUTON == 'En attente':
             logger.debug("%s n'est pas encore dans notre reseau (attente)", name)
-            return name
+            return 'echec'
         else: #BOUTON=message. Mais attention, en premium il se peut que ce bouton apparaisse meme si on est pas connecte a la
                 # personne. Et donc SN va s'ouvrir. On met donc un try except pour gerer ce cas la
             try:
@@ -249,7 +249,9 @@ def send_message(browser, message_file_path, profile_link):
                 for file in os.listdir(os.path.join(os.path.dirname(__file__), 'Config')):
                     if 'piece_jointe_' + str(id_) in file:
                         PJ = 'Config/' + file
-                        attach_file_to_message(browser, PJ)
+                        #En REMOTE, upload un fichier est plus compliqué. Il FAUT utiliser le ABSOLUTE PATH. Et en le printant,
+                        #J'ai remarque que le absolute path commençait par src/src...
+                        attach_file_to_message(browser, "/src/src/premium/" + PJ)
                 try:
                     logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")
                     browser.find_element_by_class_name("msg-form__send-button").click()
@@ -269,6 +271,7 @@ def send_message(browser, message_file_path, profile_link):
                     return name
             except:
                 logger.info("Apres verification, %s ne fait pas partie de notre reseau !", name)
+                traceback.print_exc()
                 try:
                     # si on est ici, c'est qu'une fenetre SN s'est ouvert, alors on la ferme et onb revient au browser initial
                     browser.switch_to.window(browser.window_handles[1])
@@ -312,8 +315,8 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
     logger.debug("Démarrons l'envoi de messages")
     for ids, index_, person in zip(mysql_ids, index_list, person2contact):
         logger.info("Tentative de message ...")
-        name = send_message(browser, message_file_path, person)
-        if name != 'échec':
+        name = send_message(browser, message_file_path, person, id_)
+        if name != 'echec':
             # On update la colonne "Nombre de messages" dans MYSQL
             query = "UPDATE linkedin.user_" + str(id_) + " SET Nombre_messages=1 WHERE id=" + str(ids)
             mysql_functions.MYSQL_update_table(connexion, query)
@@ -389,6 +392,7 @@ def attach_file_to_message(browser, PJ):
         time.sleep(size/10**6*10)
         logger.debug("On a ajouté une pièce jointe")
     except:
+        traceback.print_exc()
         logger.debug("Probleme avec la fonction piece jointe (attach_file_to_message")
 
 

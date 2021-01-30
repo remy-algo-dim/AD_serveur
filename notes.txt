@@ -11,6 +11,10 @@ de connexion sur sql. Et qui se trouve dans mon sql ? Seulement des personnes qu
 ---------- Feedback ----------- 
 je conseillerais bien au client de voir les profils issus du scrap avant, parce que les gens sont mechants, repondent souvent des conneries et il est difficile de bien cibler
 - attention donc au google form et aux cibles !!!
+- Attention, le linkedin de dab bonan lui a bloque ses invit par une sem car ils jugent
+qu'il a atteint la limite hebdo. C'est vrai que pr lui, avec cette histoire d'algo qui tournait en double a chaque fois (car il appuyait deux fois sur START), jai du ajouter un peu plus que prevu, mais bn pas trop non plus. Attention donc aux gens qui nous acceptent pas, car linkedin comprend que je ne les connais pas et jugent ma recherche pas assez pertinente et donc me bloque pr une sem
+- Peut etre que je devrais attendre quelques temps avant dajouter les gens en fonction du nombre de pending invit que jai encore ... EN GROS, PLUS LES GENS MACCEPTENT, MIEUX CEST PR MOI.
+- Il serait tres judicieux d'espacer les demandes aussi, mais flemme de voir mon algo tournaer des heures a chaque fois
 
 
 
@@ -21,8 +25,9 @@ je conseillerais bien au client de voir les profils issus du scrap avant, parce 
 - J'aimerais que pour le robot 2, lorsqu'on ajoute les contacts, alors certes on ajoute via SN mais on ouvre a chaque fois linkedin premium pr save le lien, et ben jaimerais a ne plus avoir a faire ca.
 - meme ceux qu on ne peut pas ajouter, echec, on devrait les mettre dans le csv car on retombera sans cesse sous eux. Et en s accumulant parfois jaurais ds ma today_liste que ce type de profils
 - clean les logs -- trop de logs
-- On a plus de CSV et de JSON. Ca serait bien de penser a un truc pareil pour els messages_personalises, filtres, et pieces jointes
+- On a plus de CSV et de JSON. Ca serait bien de penser a un truc pareil pour les messages_personalises, filtres, et pieces jointes
 - Mieux organiser la structure du fichier Config, avoir une sorte de dossier par client pour que ce soit plus clair (plutot que des ids)
+- Une machine par client
 
 
 ---------- XPATH ----------
@@ -36,20 +41,21 @@ Quels sont les xpaths qui ont deja change ?
 
 
 ---------- CRASH AWS ----------
-- ma machine crash souvent. Peut etre qu on devrait tester une machine par client ... On va fr que du balaine cette sem
-- 22/11 -- crash (code looks ok)
-
-
-19/01 : Tout se passe sur MYSQL - on a plus de CSV/JSON
+- ma machine crash souvent. Je suis passer a t2 small, ca na plus crasher
 
 
 
 ---------- NOTES ----------
 
 - Le code de verif que linkedin envoie, doit etre mis sur mysql en moins de 2 mn car sinon il expire
+- Upload un file (piece jointe) c'est pas si evident. Il faut absolument le absolute path du file
+- Le message ne doit pas comporter d'emoticones
+- Un client par machine, sinon ca s'emmele les pinceaux !
 
 
+----------- DOCKER --------------
 
+Le nom de mon image docker est : algo-dimension
 
 
 

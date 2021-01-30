@@ -114,30 +114,41 @@ def lets_apply_filters(browser, df_filtres):
     except:
         ENTREPRISE = [ENTREPRISE]
         
-
+    """ Ici, pour les filtres a choix multiples, on doit cliquer une premiere fois sur l'emplacement du filtre, puis ensuite on
+    applique la fonction filtre pour chaque valeur, mais on ne reclique pas A CHAQUE FOIS sur l'emplacement du filtre ! """
     time.sleep(randrange(5, 8))
     for location in LOCATION:
         premium_filters.location_filter(browser, location)
         time.sleep(randrange(2, 4))
-    logger.debug("Premier filtres appliqués")
+    logger.debug("Premiers filtres appliqués")
+    langue_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[8]/div/div/div/div')
+    langue_filter.click()
     for langue in LANGUE:
         premium_filters.langue_filter(browser, langue)
         time.sleep(randrange(2, 4))
     for secteur in SECTEUR:
         premium_filters.secteur_filter(browser, secteur)
         time.sleep(randrange(2, 4))
+    degre_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[1]/ul/li[5]/div/div/div/div')
+    degre_filter.click()
     for degre in DEGRE:
         premium_filters.degre_filter(browser, degre)
         time.sleep(randrange(4, 6))
     for ecole in ECOLE:
         premium_filters.ecole_filter(browser, ecole)
         time.sleep(randrange(2, 4))
+    hierarchie_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[1]/div/div/div/div')
+    hierarchie_filter.click()
     for hierarchie in HIERARCHIE:
         premium_filters.niveau_hierarchique_filter(browser, hierarchie)
         time.sleep(randrange(2, 4))
+    anciennete_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[2]/div/div/div/div')
+    anciennete_filter.click()
     for anciennete_poste in ANCIENNETE_POSTE:
         premium_filters.anciennete_poste_actuel_filter(browser, anciennete_poste)
         time.sleep(randrange(2, 4))
+    anciennete_entreprise_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[3]/div/div/div/div')
+    anciennete_entreprise_filter.click()
     for anciennete_entreprise in ANCIENNETE_ENTREPRISE:
         premium_filters.anciennete_entreprise_actuelle_filter(browser, anciennete_entreprise)
         time.sleep(randrange(2, 4))
@@ -147,17 +158,23 @@ def lets_apply_filters(browser, df_filtres):
     for titre in TITRE:
         premium_filters.titre_filter(browser, titre)
         time.sleep(randrange(2, 4))
+    annee_exp_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[2]/ul/li[6]/div/div/div/div/div/label')
+    annee_exp_filter.click()
     for exp in EXPERIENCE:
         premium_filters.experience(browser, exp)
         time.sleep(randrange(2, 4))
     for entreprise in ENTREPRISE:
         premium_filters.entreprise_filter(browser, entreprise)
         time.sleep(randrange(2, 4))
+    effectif_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[3]/ul/li[2]/div/div/div/div')
+    effectif_filter.click()
     for effectif in EFFECTIF:
         premium_filters.effectif_entreprise_filter(browser, effectif)
         time.sleep(randrange(2, 4))
+    logger.debug('Filtre problématique')                     
+    type_entreprise_filter = browser.find_element_by_xpath('/html/body/div[3]/div/div/div[2]/div/div[2]/div/section[3]/ul/li[3]/div/div/div/div')
+    type_entreprise_filter.click()
     for type_ in TYPE:
-        print(type_)
         premium_filters.type_entreprise_filter(browser, type_)
         time.sleep(randrange(2, 4))
 
