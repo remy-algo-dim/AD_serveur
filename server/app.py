@@ -273,7 +273,6 @@ if __name__ == "__main__":
     #        return None  
 
 
-# ssh -i remy_key.pem  ubuntu@ec2-35-180-136-208.eu-west-3.compute.amazonaws.com
 # sudo docker run -v /home/ubuntu/AD_serveur/:/src -p 80:5000 -t -d --restart always algo-dimension
 """ TODO : dashboard AD,
 ajouter les stats du dash a mysql et pas que les fihiers temporaires
@@ -284,4 +283,3 @@ de connexion, et flemme de changer le cdode que pr ca
 jai change le code en passant par linkedin standard mais peut etre que cest juste du au xpath du bouton envoie sur premium
 qui change ebn fonction du profil
 """
-

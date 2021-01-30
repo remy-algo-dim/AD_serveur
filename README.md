@@ -12,7 +12,7 @@ Author : Remy ADDA & David ZERAH
 
 ```shell   
 
-sudo docker build -t <CONTAINER_NAME>.
+docker build -t <CONTAINER_NAME>.sudo 
 
 ```
 
