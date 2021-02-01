@@ -294,8 +294,8 @@ def send_message(browser, message_file_path, profile_link, id_):
 
 
 def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, connexion):
-    """Fonction permettant d'envoyer des messages aux personnes qui nous ont acceptees
-    en passant par les liens standards !"""
+    """Fonction permettant d'envoyer des messages aux personnes SUSCEPTIBLES de nous avoir accepteé
+    en passant par les liens standards ! Problème: on visite a chaque fois les profils de tout le monde"""
     today_list = df['Dates'].tolist()
     today = date.today()
     today_list = [date for date in today_list if date==str(today)]
@@ -326,6 +326,50 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
             pass
 
 
+
+def first_flow_msg_NEW(browser, df, message_file_path, nb2scrap, pendings, id_, connexion):
+    """Amélioration de la fonction précédente - On essaye d'envoyer un message uniquement aux gens qui nous 
+    ont accepté"""
+    browser.get('https://www.linkedin.com/mynetwork/invitation-manager/sent/')
+    final_list_of_profiles = []
+    # On utilise une boucle while pour scrapper les liens de toutes les pages
+    page = 1
+
+    while page <= 25: #chiffre choisi aleatoirement
+        CURRENT_URL = browser.current_url
+        list_of_profiles_per_page = []
+        time.sleep(randrange(2, 5))
+        # On va scroller progressivement en utilisant la taille de la page
+        total_height = int(browser.execute_script("return document.body.scrollHeight"))
+        for i in range(1, total_height, 5):
+            browser.execute_script("window.scrollTo(0, {});".format(i))
+
+        # On recupere des liens, donc des href
+        time.sleep(randrange(3, 6))
+        elems = browser.find_elements_by_xpath("//a[@href]")
+        links = [elem.get_attribute('href') for elem in elems]
+        # On ne garde que les liens de personnes
+        for link in links:
+            if '/in/' in link and link:#ca signifie qu'il s'agit d'une personne
+                list_of_profiles_per_page.append(link)
+        final_list_of_profiles.extend(list_of_profiles_per_page)
+        final_list_of_profiles = list(set(final_list_of_profiles))
+        #TODO
+        #Pour l'instant je n'ai pas eu affaire a des profiles ou il fallait changer de page pour scrapper les
+        #pendings invit. Donc cette page renverra une erreur lorsque ca sera le cas
+        page += 1
+        # Puis on passe a la page suivante et on verifie si l'url n'est pas le meme que le precedent, ce qui justifierait la fin
+        try:
+            browser.find_element_by_xpath('/html/body/main/div[1]/div/section/div[2]/nav/button[2]/span').click()
+            time.sleep(randrange(2, 5))
+            NEXT_URL = browser.current_url
+            if NEXT_URL == CURRENT_URL:
+                break
+        except:
+            print('Impossible de cliquer sur SUIVANT')
+            break
+    #TODO
+    NE GARDER QUE LES PERSONNES QUI NE SONT PAS DANS CETTE LISTE POUR ENVOYER DES MESS
 """ Fonctions communes ---------------------------------------------------------------------------------------------------------- """
 
 
@@ -349,7 +393,7 @@ def get_list_of_profiles(browser, df):
         elems = browser.find_elements_by_class_name("search-results__result-list [href]")
         links = [elem.get_attribute('href') for elem in elems]
 
-        # TODO : jene garde qu'une partie du lien car la deuxieme change tout le temps. Est ce suffisant
+        # TODO : je ne garde qu'une partie du lien car la deuxieme change tout le temps. Est ce suffisant
         # On ne gardera que les liens 'people' et on verifie ensuite si les personnes n'ont pas deja ete contactees
         for link in links:
             base_link = link.split('_ntb')[0]
@@ -459,89 +503,6 @@ def linkedin_security_verification(browser, id_, connexion):
         #traceback.print_exc()
         logger.info('***** Verification par mail non necessaire *****')
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-""" OBSOLETE FONCTIONS """
-
-def send_message_obsolete(browser, message_file_path, profile_link):
-    """Obsolete.Permet d'envoyer un message a une personne de notre reseau"""
-    with open(os.path.join(os.path.dirname(__file__), message_file_path)) as f:
-        customMessage = f.read()
-    try:
-        browser.get(profile_link)
-        time.sleep(randrange(3, 6))
-        name = retrieve_name(browser)
-        logger.debug("Tentative envoie message %s", name)
-        time.sleep(randrange(2, 4))
-        #bouton message
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[2]/button/span').click()
-        time.sleep(randrange(5, 8))
-        #contenu + message
-        #content = browser.find_element_by_xpath('/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea')
-        logger.debug("Attendons que le content place se charge avant de cliquer dessus")
-        #content = WebDriverWait(browser, 200).until(EC.element_to_be_clickable((By.XPATH,
-                    #"/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/section/textarea")))
-        content = browser.find_element_by_name('message')
-        time.sleep(5)
-        browser.execute_script("arguments[0].click();", content)        
-        #content.click()
-        time.sleep(randrange(4, 8))
-        #Envoi
-        #print(html)
-        content.send_keys(customMessage)
-        time.sleep(randrange(5, 8))
-        logger.debug("Bouton ENVOYER")
-
-        element = WebDriverWait(browser, 20).until(EC.element_to_be_clickable((By.XPATH,
-                    "/html/body/div[6]/div[1]/section/div[2]/section/div[2]/form[1]/div/section/button[2]")))
-
-        element.click()
-
-        #browser.execute_script("arguments[0].click();", SEND)
-        time.sleep(randrange(1, 3))
-        #SEND.click()
-        time.sleep(randrange(2, 4))
-        logger.info("Succes")
-        return name
-    except:
-        traceback.print_exc()
-        logging.info("Impossible d'envoyer un message (send msg fonction)")
-        return 'echec'
-
-
-
-def just_connect_obsolete(browser, profile_link):
-    """ Obsoloete. Permet seulement de se connecter a la personne """
-    # Menu Ajout
-    try:
-        browser.get(profile_link)
-        time.sleep(randrange(4, 7))
-        # Plus
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/button').click()
-        # Connexion
-        name = retrieve_name(browser)
-        time.sleep(randrange(2, 5))
-        browser.find_element_by_xpath('/html/body/main/div[1]/div[2]/div/div[2]/div[1]/div[3]/div/div/div/div/div[1]/div/ul/li[1]/div/div[1]').click()
-        time.sleep(randrange(2, 5))
-        # Bouton Envoyer
-        browser.find_element_by_xpath('/html/body/div[3]/div/div/div[3]/div/button[2]').click()
-        logger.info("Connexion success")
-        return name
-    except:
-        logger.info("Impossible de se connecter")
-        return 'echec'
 
 
 
