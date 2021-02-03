@@ -188,7 +188,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        if len(today_list) >= 20:
+        if len(today_list) >= 2:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
@@ -296,22 +296,11 @@ def send_message(browser, message_file_path, profile_link, id_):
 def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, connexion):
     """Fonction permettant d'envoyer des messages aux personnes SUSCEPTIBLES de nous avoir accepteé
     en passant par les liens standards ! Problème: on visite a chaque fois les profils de tout le monde"""
-    today_list = df['Dates'].tolist()
-    today = date.today()
-    today_list = [date for date in today_list if date==str(today)]
-    #On tentera de contacter les personnes ajoutees jusqu'a J-3
-    logger.info("Recuperation des precedentes connexions")
-    upThisDay = today - timedelta(days=3)
-    filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre_messages'] < 1)
-    df_temporary = df.loc[filter_]
 
     logger.info("+%s contacts dans notre reseau", len(df))
-    logger.info("%s personnes doivent etre contactees a present", len(df_temporary))
-
-    person2contact = df_temporary['Standard_Link'].tolist()
-    index_list = df_temporary.index.values.tolist() #df_temporary (filtrée) devrait avoir les meme index que df initiale. PKKK deja ???
-    mysql_ids = df_temporary['id'].tolist()
-
+    #Cherchons les personnes a contacter reelement
+    person2contact, index_list, mysql_ids = get_list_of_profiles_for_sending_msg(browser, df)
+    logger.info("+%s messages doivent être envoyés", len(person2contact))
     logger.debug("Démarrons l'envoi de messages")
     for ids, index_, person in zip(mysql_ids, index_list, person2contact):
         logger.info("Tentative de message ...")
@@ -327,7 +316,7 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
 
 
 
-def first_flow_msg_NEW(browser, df, message_file_path, nb2scrap, pendings, id_, connexion):
+def get_list_of_profiles_for_sending_msg(browser, df):
     """Amélioration de la fonction précédente - On essaye d'envoyer un message uniquement aux gens qui nous 
     ont accepté"""
     browser.get('https://www.linkedin.com/mynetwork/invitation-manager/sent/')
@@ -366,10 +355,28 @@ def first_flow_msg_NEW(browser, df, message_file_path, nb2scrap, pendings, id_, 
             if NEXT_URL == CURRENT_URL:
                 break
         except:
-            print('Impossible de cliquer sur SUIVANT')
+            print('Impossible de cliquer sur SUIVANT CAR JE NETAIS JAMAIS TOMBE DANS CE CAS LA')
             break
-    #TODO
-    NE GARDER QUE LES PERSONNES QUI NE SONT PAS DANS CETTE LISTE POUR ENVOYER DES MESS
+
+    #On contacte donc ceux qui sont dans SQL (depuis au moins 3 jours), car on les ajoutes, et qui ne sont pas dans 
+    #final_list_of_profiles (pendings)
+    today_list = df['Dates'].tolist()
+    today = date.today()
+    today_list = [date for date in today_list if date==str(today)]
+    #On tentera de contacter les personnes ajoutees jusqu'a J-3
+    logger.info("Recuperation des precedentes connexions")
+    upThisDay = today - timedelta(days=3)
+    filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre_messages'] < 1)
+    df_temporary = df.loc[filter_]
+    df_temporary = df_temporary[~df_temporary.Standard_Link.isin(final_list_of_profiles)]
+
+    person2contact = df_temporary.Standard_Link.tolist()
+    index_list = df_temporary.index.values.tolist() #df_temporary (filtrée) devrait avoir les meme index que df initiale sinon on update pas bien SQL
+    mysql_ids = df_temporary['id'].tolist()
+
+    return person2contact, index_list, mysql_ids
+
+
 """ Fonctions communes ---------------------------------------------------------------------------------------------------------- """
 
 
