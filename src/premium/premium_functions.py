@@ -188,7 +188,7 @@ def connect_list_profile(df, browser, list_profiles, nb2scrap, pendings, connexi
         # On check si on a pas deja envoye 20 msg AUJOURD'HUI (en utilisant les dates pr eviter tout pb)
         today_list = df['Dates'].tolist()
         today_list = [date for date in today_list if date==str(today)]
-        if len(today_list) >= 2:
+        if len(today_list) >= 20:
             logger.info("Plus de 20 connexions envoyes")
             break
         else:
@@ -330,7 +330,7 @@ def get_list_of_profiles_for_sending_msg(browser, df):
         time.sleep(randrange(2, 5))
         # On va scroller progressivement en utilisant la taille de la page
         total_height = int(browser.execute_script("return document.body.scrollHeight"))
-        for i in range(1, total_height, 5):
+        for i in range(1, total_height, 2):
             browser.execute_script("window.scrollTo(0, {});".format(i))
 
         # On recupere des liens, donc des href
