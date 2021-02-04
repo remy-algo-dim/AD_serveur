@@ -288,8 +288,6 @@ def send_message(browser, message_file_path, profile_link, id_):
         logger.info("Impossible d'appliquer la fonction send_message")
         return 'echec'
         
-        
-
 
 
 
@@ -311,8 +309,9 @@ def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, conn
             mysql_functions.MYSQL_update_table(connexion, query)
             time.sleep(randrange(2, 4))
         else: #echec
-            logger.info("Echec pour ce 0, surement qu'il nous a pas accepte")
-            pass
+            logger.info("Impossible à contacter via Linkedin Standard")
+            query = "UPDATE linkedin.user_" + str(id_) + " SET Nombre_messages=2 WHERE id=" + str(ids)
+            mysql_functions.MYSQL_update_table(connexion, query)
 
 
 
@@ -355,6 +354,7 @@ def get_list_of_profiles_for_sending_msg(browser, df):
             if NEXT_URL == CURRENT_URL:
                 break
         except:
+            logger.debug("%s relevés dans pending invit", len(final_list_of_profiles))
             print('Impossible de cliquer sur SUIVANT CAR JE NETAIS JAMAIS TOMBE DANS CE CAS LA')
             break
 
@@ -370,9 +370,9 @@ def get_list_of_profiles_for_sending_msg(browser, df):
     df_temporary = df.loc[filter_]
     df_temporary = df_temporary[~df_temporary.Standard_Link.isin(final_list_of_profiles)]
 
-    person2contact = df_temporary.Standard_Link.tolist()
-    index_list = df_temporary.index.values.tolist() #df_temporary (filtrée) devrait avoir les meme index que df initiale sinon on update pas bien SQL
-    mysql_ids = df_temporary['id'].tolist()
+    person2contact = df_temporary.Standard_Link.tolist()[:20]
+    index_list = df_temporary.index.values.tolist()[:20] #df_temporary (filtrée) devrait avoir les meme index que df initiale. Je sais plus pk jai ecrit ca
+    mysql_ids = df_temporary['id'].tolist()[:20]
 
     return person2contact, index_list, mysql_ids
 
