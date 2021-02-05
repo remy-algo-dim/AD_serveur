@@ -250,7 +250,7 @@ def send_message(browser, message_file_path, profile_link, id_):
                     if 'piece_jointe_' + str(id_) in file:
                         PJ = 'Config/' + file
                         #En REMOTE, upload un fichier est plus compliqué. Il FAUT utiliser le ABSOLUTE PATH. Et en le printant,
-                        #J'ai remarque que le absolute path commençait par src/src...
+                        #J'ai remarque que le absolute path commençait par src/src... (du coup en local ce n'est pas ce path)
                         attach_file_to_message(browser, "/src/src/premium/" + PJ)
                 try:
                     logger.debug("ESSAYONS DE CLIQUER SUR ENVOYER")
@@ -291,7 +291,7 @@ def send_message(browser, message_file_path, profile_link, id_):
 
 
 
-def first_flow_msg(browser, df, message_file_path, nb2scrap, pendings, id_, connexion):
+def first_flow_msg(browser, df, message_file_path, id_, connexion):
     """Fonction permettant d'envoyer des messages aux personnes SUSCEPTIBLES de nous avoir accepteé
     en passant par les liens standards ! Problème: on visite a chaque fois les profils de tout le monde"""
 
@@ -348,14 +348,15 @@ def get_list_of_profiles_for_sending_msg(browser, df):
         page += 1
         # Puis on passe a la page suivante et on verifie si l'url n'est pas le meme que le precedent, ce qui justifierait la fin
         try:
-            browser.find_element_by_xpath('/html/body/main/div[1]/div/section/div[2]/nav/button[2]/span').click()
+            browser.find_element_by_xpath("/html/body/div[7]/div[3]/div/div/div/div/div/div/main/section/div[2]/div[2]/div/button[2]/span").click()
+            logger.info("Accès page suivante pending invit")
             time.sleep(randrange(2, 5))
             NEXT_URL = browser.current_url
             if NEXT_URL == CURRENT_URL:
                 break
         except:
+            logger.debug("Bouton SUIVANT indisponible")
             logger.debug("%s relevés dans pending invit", len(final_list_of_profiles))
-            print('Impossible de cliquer sur SUIVANT CAR JE NETAIS JAMAIS TOMBE DANS CE CAS LA')
             break
 
     #On contacte donc ceux qui sont dans SQL (depuis au moins 3 jours), car on les ajoutes, et qui ne sont pas dans 
@@ -368,6 +369,7 @@ def get_list_of_profiles_for_sending_msg(browser, df):
     upThisDay = today - timedelta(days=3)
     filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre_messages'] < 1)
     df_temporary = df.loc[filter_]
+    logger.info("%s personnes de notre table SQL sont eventuellement contactables (avant soustraction des pendings)")
     df_temporary = df_temporary[~df_temporary.Standard_Link.isin(final_list_of_profiles)]
 
     person2contact = df_temporary.Standard_Link.tolist()[:20]
@@ -444,7 +446,7 @@ def attach_file_to_message(browser, PJ):
         logger.debug("On a ajouté une pièce jointe")
     except:
         traceback.print_exc()
-        logger.debug("Probleme avec la fonction piece jointe (attach_file_to_message")
+        logger.debug("Probleme avec la fonction piece jointe (attach_file_to_message)")
 
 
 

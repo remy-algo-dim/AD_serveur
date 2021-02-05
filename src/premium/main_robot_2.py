@@ -173,7 +173,7 @@ def main(id_, id_linkedin, password_linkedin):
     df = mysql_functions.MYSQL_id_table_to_df(id_, connexion)    
     time.sleep(randrange(10, 20))
     logger.debug("Debut des envois de messages")
-    premium_functions.first_flow_msg(browser, df, MESSAGE_FILE_PATH, nb2scrap, pendings, id_, connexion)
+    premium_functions.first_flow_msg(browser, df, MESSAGE_FILE_PATH, id_, connexion)
     logger.info("Fin du flow d'envoi de messages")
     time.sleep(randrange(3, 6))
 
