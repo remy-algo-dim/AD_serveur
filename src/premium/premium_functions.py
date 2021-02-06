@@ -236,6 +236,8 @@ def send_message(browser, message_file_path, profile_link, id_):
         else: #BOUTON=message. Mais attention, en premium il se peut que ce bouton apparaisse meme si on est pas connecte a la
                 # personne. Et donc SN va s'ouvrir. On met donc un try except pour gerer ce cas la
             try:
+                html = browser.page_source
+                print(html)
                 logger.debug("Bouton Message disponible pour %s", name)
                 browser.find_element_by_class_name("message-anywhere-button").click()
                 time.sleep(randrange(2, 4))
@@ -369,13 +371,13 @@ def get_list_of_profiles_for_sending_msg(browser, df):
     upThisDay = today - timedelta(days=3)
     filter_ = (pd.to_datetime(df['Dates']) < pd.Timestamp(upThisDay)) & (df['Nombre_messages'] < 1)
     df_temporary = df.loc[filter_]
-    logger.info("%s personnes de notre table SQL sont eventuellement contactables (avant soustraction des pendings)")
+    logger.info("%s personnes de notre table SQL sont eventuellement contactables (avant soustraction des pendings)", len(df_temporary))
     df_temporary = df_temporary[~df_temporary.Standard_Link.isin(final_list_of_profiles)]
 
     person2contact = df_temporary.Standard_Link.tolist()[:20]
     index_list = df_temporary.index.values.tolist()[:20] #df_temporary (filtrée) devrait avoir les meme index que df initiale. Je sais plus pk jai ecrit ca
     mysql_ids = df_temporary['id'].tolist()[:20]
-
+    
     return person2contact, index_list, mysql_ids
 
 
