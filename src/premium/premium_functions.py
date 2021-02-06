@@ -237,6 +237,9 @@ def send_message(browser, message_file_path, profile_link, id_):
                 # personne. Et donc SN va s'ouvrir. On met donc un try except pour gerer ce cas la
             try:
                 logger.debug("Bouton Message disponible pour %s", name)
+                #On essaye de cliquer sur les fenetres qui overlappent
+                overlap_windows(browser)
+                time.sleep(3)
                 browser.find_element_by_class_name("message-anywhere-button").click()
                 time.sleep(randrange(2, 4))
                 content_place = browser.find_element_by_class_name("msg-form__contenteditable")
@@ -511,6 +514,54 @@ def linkedin_security_verification(browser, id_, connexion):
     except:
         #traceback.print_exc()
         logger.info('***** Verification par mail non necessaire *****')
+
+
+
+def overlap_windows(browser):
+    """Parfois il y a des fenetres qui s'ouvrent et nous empechent
+    de cliquer la ou on le souhaite. On doit donc toutes les trouver"""
+    try:
+        browser.find_element_by_class_name("msg-conversation-card__message-snippet-body").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("msg-overlay-list-bubble__message-snippet").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("truncate").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("m0").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("t-black").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("t-12").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("t-normal").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("t-black--light").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("msg-overlay-list-bubble__convo-card-content").click()
+    except:
+        pass
+    try:
+        browser.find_element_by_class_name("overflow-hidden").click()
+    except:
+        pass
+
+
 
 
 
